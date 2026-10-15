@@ -1,1 +1,547 @@
 
+@import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&family=VT323&display=swap');
+
+:root {
+  --green: #47ff91;
+  --green-dark: #14894d;
+  --black: #030906;
+  --cream: #e6ffe9;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  background: #06130d;
+  color: var(--cream);
+  font-family: 'VT323', monospace;
+  font-size: 22px;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+button {
+  font-family: inherit;
+  cursor: pointer;
+}
+
+.landing {
+  background:
+    radial-gradient(ellipse at 20% 20%, #1d693a 0, transparent 35%),
+    radial-gradient(ellipse at 85% 70%, #634524 0, transparent 30%),
+    linear-gradient(#102f20, #06130d 70%);
+}
+
+.topbar {
+  max-width: 1380px;
+  margin: 16px auto;
+  padding: 14px 18px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 16px;
+  background: #020805;
+  border: 2px solid var(--green-dark);
+  border-radius: 8px;
+  box-shadow: 0 0 20px #15ff7530;
+}
+
+.brand {
+  color: var(--green);
+  font-family: 'Press Start 2P', monospace;
+  font-size: 13px;
+}
+
+.tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.tab {
+  padding: 10px 15px;
+  background: #050b07;
+  border: 1px solid #17683c;
+  border-radius: 4px;
+  text-align: center;
+}
+
+.tab:hover,
+.tab.active {
+  color: var(--green);
+  border-color: var(--green);
+  box-shadow: inset 0 0 0 1px var(--green);
+}
+
+.landing-main {
+  max-width: 1320px;
+  margin: 50px auto 30px;
+  padding: 0 18px;
+  display: grid;
+  grid-template-columns: 1.7fr 1fr;
+  gap: 18px;
+}
+
+.panel {
+  background: rgba(2, 9, 5, .95);
+  border: 2px solid var(--green-dark);
+  border-radius: 8px;
+  box-shadow: 0 0 20px #11c35a20;
+}
+
+.hero {
+  padding: 30px;
+  text-align: center;
+}
+
+.eyebrow {
+  color: var(--green);
+  font: 10px/2 'Press Start 2P', monospace;
+}
+
+h1 {
+  color: var(--green);
+  font: clamp(20px, 3vw, 34px)/1.6 'Press Start 2P', monospace;
+  overflow-wrap: anywhere;
+}
+
+.hero h1 {
+  border-bottom: 3px solid var(--green);
+  padding-bottom: 14px;
+}
+
+.lead {
+  font-size: 28px;
+}
+
+.hero p {
+  line-height: 1.3;
+}
+
+.play-button {
+  display: inline-block;
+  padding: 14px 24px;
+  color: var(--green);
+  background: #020906;
+  border: 2px solid var(--green);
+  border-radius: 6px;
+  box-shadow: 0 4px 0 #08783e;
+  font: 13px 'Press Start 2P', monospace;
+  text-align: center;
+  margin: 12px 0;
+}
+
+.play-button:hover {
+  background: #10351d;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 0 #08783e;
+}
+
+.play-button.compact {
+  padding: 12px;
+  font-size: 11px;
+}
+
+.controls {
+  padding: 22px;
+}
+
+.controls h2,
+.journey > h2 {
+  color: var(--green);
+  font: 14px/1.8 'Press Start 2P', monospace;
+}
+
+.controls p {
+  line-height: 1.4;
+}
+
+kbd {
+  display: inline-block;
+  padding: 6px;
+  background: #041109;
+  color: var(--green);
+  border: 1px solid var(--green-dark);
+  border-radius: 3px;
+  font: 9px 'Press Start 2P', monospace;
+}
+
+.muted {
+  color: #a7c9b3;
+  font-size: 18px;
+}
+
+.journey {
+  grid-column: 1 / -1;
+  padding: 20px;
+}
+
+.chapters {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.chapter {
+  min-width: 0;
+  padding: 10px;
+  background: #020805;
+  border: 1px solid var(--green-dark);
+  border-radius: 6px;
+}
+
+.chapter h3 {
+  color: var(--green);
+  font: 10px/1.8 'Press Start 2P', monospace;
+}
+
+.chapter p {
+  line-height: 1.15;
+}
+
+.pixel-scene {
+  height: 110px;
+  display: grid;
+  place-items: center;
+  font-size: 45px;
+  border: 1px solid #276b45;
+  background-color: #17472b;
+  background-image:
+    radial-gradient(#317b43 2px, transparent 2px),
+    linear-gradient(145deg, #102f28, #255e39);
+  background-size: 13px 13px, cover;
+}
+
+.snow {
+  background-image: radial-gradient(#fff 2px, transparent 2px),
+    linear-gradient(145deg, #12395a, #b5eaff);
+}
+
+.cages {
+  background-image: repeating-linear-gradient(
+    90deg, #171c20 0 9px, #6d7774 10px 12px
+  );
+}
+
+.cave {
+  background-image: radial-gradient(#5368a0 2px, transparent 2px),
+    linear-gradient(145deg, #171a43, #050715);
+}
+
+.spirit {
+  background-image: radial-gradient(#a01ad8 2px, transparent 2px),
+    linear-gradient(145deg, #180b30, #40115b);
+}
+
+.lair {
+  background-image: radial-gradient(#c52c3c 2px, transparent 2px),
+    linear-gradient(145deg, #300e1d, #09080d);
+}
+
+.ending {
+  margin-top: 18px;
+  padding: 16px;
+  text-align: center;
+  border: 1px solid var(--green-dark);
+  background: #020805;
+}
+
+.ending strong {
+  color: var(--green);
+  font: 11px/1.8 'Press Start 2P', monospace;
+}
+
+.ending a,
+.text-link {
+  color: var(--green);
+  text-decoration: underline;
+}
+
+footer {
+  padding: 24px 12px;
+  text-align: center;
+  color: #a7c9b3;
+}
+
+.subpage {
+  background: radial-gradient(ellipse at top, #123c25, #06130d 70%);
+}
+
+.subpage-main {
+  max-width: 1100px;
+  margin: 55px auto;
+  padding: 30px;
+}
+
+.subpage-main h1 {
+  border-bottom: 2px solid var(--green);
+  padding-bottom: 12px;
+}
+
+.review-grid,
+.dlc-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 16px;
+  margin: 28px 0;
+}
+
+.review-card,
+.dlc-card,
+.version-card {
+  padding: 20px;
+  background: #030b07;
+  border: 1px solid var(--green-dark);
+  border-radius: 6px;
+}
+
+.review-card h2,
+.dlc-card h2,
+.version-card h2 {
+  color: var(--green);
+  font: 12px/1.8 'Press Start 2P', monospace;
+}
+
+.review-card p,
+.dlc-card p,
+.version-card p {
+  line-height: 1.25;
+}
+
+.stars {
+  color: #d8ff7a;
+  font-size: 28px;
+}
+
+.notice {
+  padding: 12px;
+  border-left: 3px solid var(--green);
+  background: #07170e;
+}
+
+.status {
+  display: inline-block;
+  margin-top: 10px;
+  padding: 7px;
+  color: #ffdf9b;
+  border: 1px solid #b58c43;
+  font: 9px 'Press Start 2P', monospace;
+}
+
+.status.live {
+  color: var(--green);
+  border-color: var(--green);
+}
+
+.version-list {
+  display: grid;
+  gap: 14px;
+  margin: 25px 0;
+}
+
+.version-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+
+.version-card > div {
+  flex: 1;
+  min-width: 200px;
+}
+
+.game-body {
+  background: radial-gradient(ellipse at top, #153b27, #030906 72%);
+}
+
+.game-header {
+  max-width: 1000px;
+  margin: auto;
+  padding: 18px 12px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+}
+
+.game-wrap {
+  position: relative;
+  max-width: 1000px;
+  margin: 12px auto 35px;
+  padding: 0 16px;
+}
+
+.game-hud {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  padding: 12px;
+  background: #020906;
+  border: 1px solid var(--green-dark);
+}
+
+.game-hud strong {
+  color: var(--green);
+  font: 11px/1.8 'Press Start 2P', monospace;
+}
+
+.game-hud p {
+  margin: 8px 0;
+}
+
+.stats {
+  display: flex;
+  gap: 15px;
+  white-space: nowrap;
+  color: #ff8797;
+}
+
+.stats span:last-child {
+  color: #ffcf70;
+}
+
+canvas {
+  display: block;
+  width: 100%;
+  height: auto;
+  background: #163d25;
+  border: 2px solid var(--green-dark);
+  image-rendering: pixelated;
+  touch-action: manipulation;
+}
+
+.game-below {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 12px;
+  background: #020906;
+  border: 1px solid var(--green-dark);
+}
+
+.game-below p {
+  margin: 0;
+}
+
+.small-button {
+  padding: 8px 12px;
+  color: var(--green);
+  background: #07160c;
+  border: 1px solid var(--green-dark);
+  font-size: 20px;
+}
+
+.message-box {
+  position: absolute;
+  z-index: 3;
+  top: 47%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: min(90%, 520px);
+  padding: 24px;
+  text-align: center;
+  background: rgba(2, 8, 5, .97);
+  border: 2px solid var(--green);
+  border-radius: 8px;
+  box-shadow: 0 0 25px #24ff8c55;
+}
+
+.message-box h2,
+.modal-card h2 {
+  color: var(--green);
+  font: 14px/1.8 'Press Start 2P', monospace;
+}
+
+.message-box p,
+.modal-card p {
+  line-height: 1.3;
+}
+
+.modal {
+  position: fixed;
+  inset: 0;
+  z-index: 10;
+  display: grid;
+  place-items: center;
+  padding: 20px;
+  background: #000c;
+}
+
+.modal-card {
+  max-width: 520px;
+  padding: 28px;
+  text-align: center;
+  background: #030b07;
+  border: 2px solid var(--green);
+  border-radius: 8px;
+}
+
+.hidden {
+  display: none !important;
+}
+
+@media (max-width: 900px) {
+  .topbar {
+    margin: 10px;
+  }
+
+  .tabs {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    width: 100%;
+  }
+
+  .landing-main {
+    margin-top: 25px;
+    grid-template-columns: 1fr;
+  }
+
+  .journey {
+    grid-column: 1;
+  }
+
+  .chapters {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .review-grid,
+  .dlc-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .subpage-main {
+    margin: 25px 12px;
+  }
+}
+
+@media (max-width: 480px) {
+  .chapters {
+    grid-template-columns: 1fr;
+  }
+
+  .hero {
+    padding: 18px;
+  }
+
+  .game-hud {
+    align-items: flex-start;
+    flex-wrap: wrap;
+  }
+
+  .brand {
+    font-size: 10px;
+  }
+}
+
