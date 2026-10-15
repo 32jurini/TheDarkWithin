@@ -1,1 +1,58 @@
 
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Play TheDarkWithin</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body class="game-body">
+  <header class="game-header">
+    <a class="brand" href="index.html">🌳 TheDarkWithin</a>
+    <a class="tab" href="index.html">Exit to Menu</a>
+  </header>
+
+  <main class="game-wrap">
+    <section class="game-hud">
+      <div>
+        <strong id="chapterTitle">Chapter 1: The Missing</strong>
+        <p id="chapterText">Explore the forest and find the trail.</p>
+      </div>
+      <div class="stats">
+        <span>❤ <b id="health">5</b></span>
+        <span>☠ <b id="kills">0</b>/5</span>
+      </div>
+    </section>
+
+    <canvas id="gameCanvas" width="960" height="540" tabindex="0">
+      Your browser does not support the game canvas.
+    </canvas>
+
+    <div class="game-below">
+      <p><kbd>WASD</kbd> / <kbd>ARROWS</kbd> Move</p>
+      <p><kbd>SPACE</kbd> Punch</p>
+      <button id="restartBtn" class="small-button">Restart Chapter</button>
+    </div>
+
+    <section id="messageBox" class="message-box">
+      <h2 id="messageTitle">Welcome to TheDarkWithin</h2>
+      <p id="messageText">Find the missing villagers. Move with WASD or arrow keys, and press Space to punch nearby monsters.</p>
+      <button id="startBtn" class="play-button compact">Start Adventure</button>
+    </section>
+
+    <section id="chapterModal" class="modal hidden">
+      <div class="modal-card">
+        <p class="eyebrow">CHAPTER COMPLETE</p>
+        <h2 id="modalTitle">A new path opens</h2>
+        <p id="modalText"></p>
+        <button id="nextBtn" class="play-button compact">Continue →</button>
+        <a id="menuLink" class="text-link hidden" href="index.html">Return to Main Menu</a>
+      </div>
+    </section>
+  </main>
+
+  <script src="game.js"></script>
+</body>
+</html>
+
