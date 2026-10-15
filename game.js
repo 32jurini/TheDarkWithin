@@ -183,6 +183,7 @@
 
   function startGame() {
     started = true;
+   document.getElementById("messageBox")?.style.setProperty("display", "none");
     gameOver = false;
     chapterCleared = false;
     difficultySelect.disabled = true;
