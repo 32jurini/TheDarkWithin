@@ -2,1527 +2,1586 @@
 (() => {
   "use strict";
 
-  // =========================================================
-  // THE DARK WITHIN — COMPLETE GAME
-  // Movement: WASD / Arrow keys
-  // Sword: Space / J / Mouse click
-  // M: Water Wheel (Chapters 1-5) / Black Flash (Chapters 6-8)
-  // N: Divergent Fist (Chapters 6-8)
-  // K: Flame Arrow
-  // =========================================================
+  // ============================================================
+  // THEDARKWITHIN - COMPLETE GAME ENGINE
+  // Controls:
+  // WASD / Arrows = Move
+  // Space / J / Click canvas = Sword
+  // M = Water Wheel (Chapters 1-5) / Black Flash (Chapter 6+)
+  // N = Divergent Fist (Chapter 6+)
+  // K = Flame Arrow
+  // ============================================================
 
-  const W = 960;
-  const H = 540;
-  const MAX_CHAPTER = 8;
+  const old = document.getElementById("darkWithinUI");
+  if (old) old.remove();
 
-  // Reuse the canvas if the HTML already contains one.
-  let canvas = document.querySelector("canvas");
-
-  if (!canvas) {
-    canvas = document.createElement("canvas");
-    document.body.appendChild(canvas);
-  }
+  const canvas =
+    document.getElementById("darkWithinCanvas") ||
+    document.querySelector("canvas") ||
+    document.createElement("canvas");
 
   canvas.id = "darkWithinCanvas";
-  canvas.width = W;
-  canvas.height = H;
-  canvas.style.cssText =
-    "display:block;width:100%;max-width:960px;height:auto;" +
-    "margin:12px auto;background:#101010;" +
-    "border:2px solid #624078;image-rendering:pixelated;";
+  canvas.width = 960;
+  canvas.height = 540;
 
-  document.body.style.cssText =
-    "margin:0;background:#08070b;color:#f0e8ff;" +
-    "font-family:monospace;text-align:center;";
+  if (!canvas.isConnected) document.body.appendChild(canvas);
+
+  document.body.style.background = "#08080d";
+  document.body.style.color = "#eee";
+  document.body.style.margin = "0";
+  document.body.style.fontFamily = "monospace";
+  document.body.style.overflowX = "hidden";
+
+  canvas.style.display = "block";
+  canvas.style.width = "min(960px, 100%)";
+  canvas.style.height = "auto";
+  canvas.style.margin = "12px auto";
+  canvas.style.border = "2px solid #34343d";
+  canvas.style.imageRendering = "pixelated";
+  canvas.style.background = "#111";
 
   const ctx = canvas.getContext("2d");
   ctx.imageSmoothingEnabled = false;
 
-  // -------------------- GAME INTERFACE --------------------
+  // ---------------- UI ----------------
 
-  let ui = document.getElementById("darkWithinUI");
+  const ui = document.createElement("div");
+  ui.id = "darkWithinUI";
+  ui.style.cssText = `
+    max-width:960px;margin:12px auto;padding:12px;
+    box-sizing:border-box;background:#111116;
+    border:2px solid #34343d;color:#eee;
+    font:14px monospace;
+  `;
+  canvas.insertAdjacentElement("beforebegin", ui);
 
-  if (!ui) {
-    ui = document.createElement("div");
-    ui.id = "darkWithinUI";
-    canvas.before(ui);
+  ui.innerHTML = `
+    <div style="font-size:25px;font-weight:bold;color:#e9e9ed;
+      margin-bottom:8px">THE DARK WITHIN</div>
+    <div id="dwChapter" style="color:#aaa;margin-bottom:5px">
+      Chapter 1
+    </div>
+    <div id="dwStatus" style="margin-bottom:12px">
+      Find the missing villagers.
+    </div>
+
+    <div style="display:flex;flex-wrap:wrap;gap:8px;align-items:center;
+      margin-bottom:12px">
+      <label for="dwDifficulty">Difficulty:</label>
+      <select id="dwDifficulty" style="padding:7px;background:#202027;
+        color:white;border:1px solid #555">
+        <option value="easy">Easy</option>
+        <option value="medium" selected>Medium</option>
+        <option value="hard">Hard</option>
+        <option value="extreme">Extreme</option>
+      </select>
+      <button id="dwStart">Start Adventure</button>
+      <button id="dwRestart">Restart Game</button>
+    </div>
+
+    <div style="line-height:1.9;color:#ccc">
+      <b>Move:</b> WASD / Arrow Keys &nbsp; | &nbsp;
+      <b>Sword:</b> Space / J / Click the game<br>
+      <b>M:</b> Water Wheel before the takeover; Black Flash after it
+      &nbsp; | &nbsp; <b>N:</b> Divergent Fist after takeover
+      &nbsp; | &nbsp; <b>K:</b> Flame Arrow
+    </div>
+
+    <div id="dwMoves" style="margin-top:8px;color:#b9b9c7">
+      Water Wheel: M &nbsp; | &nbsp; Flame Arrow: K
+    </div>
+  `;
+
+  const chapterLabel = document.getElementById("dwChapter");
+  const statusLabel = document.getElementById("dwStatus");
+  const movesLabel = document.getElementById("dwMoves");
+  const difficultySelect = document.getElementById("dwDifficulty");
+  const startButton = document.getElementById("dwStart");
+
+  for (const b of ui.querySelectorAll("button")) {
+    b.style.cssText = `
+      padding:9px 12px;background:#19191f;color:#eee;
+      border:1px solid #50505a;cursor:pointer;font:inherit;
+    `;
+    b.addEventListener("mouseenter", () => {
+      b.style.borderColor = "#66ee88";
+      b.style.color = "#8cff9d";
+    });
+    b.addEventListener("mouseleave", () => {
+      b.style.borderColor = "#50505a";
+      b.style.color = "#eee";
+    });
   }
 
-  ui.innerHTML = "";
-  ui.style.cssText =
-    "max-width:960px;margin:12px auto;padding:12px;" +
-    "display:flex;flex-wrap:wrap;justify-content:center;" +
-    "align-items:center;gap:10px;background:#120d18;" +
-    "border:1px solid #624078;color:#f0e8ff;";
+  // ---------------- CHAPTERS ----------------
 
-  const status = document.createElement("div");
-  status.style.cssText =
-    "width:100%;line-height:1.8;font-size:13px;";
-  ui.appendChild(status);
+  const chapters = [
+    {
+      name: "The Missing Villagers",
+      story: "Search the forest and defeat every enemy.",
+      sky: "#233d42", ground: "#294e35", accent: "#8bb86a",
+      enemies: 4, type: "slime"
+    },
+    {
+      name: "The Frozen Mountains",
+      story: "Cross the frozen mountains and survive.",
+      sky: "#8baebc", ground: "#d2e1e5", accent: "#547c9c",
+      enemies: 5, type: "ice"
+    },
+    {
+      name: "The Forgotten Desert",
+      story: "Follow the tracks through the burning sands.",
+      sky: "#d99a55", ground: "#c58a45", accent: "#f3d18b",
+      enemies: 6, type: "sand"
+    },
+    {
+      name: "The Cage of Shadows",
+      story: "Find the villagers' cages. Something is waiting.",
+      sky: "#30233f", ground: "#33243b", accent: "#8761a0",
+      enemies: 6, type: "shadow"
+    },
+    {
+      name: "The Darkness Below",
+      story: "Fight your way through the underground darkness.",
+      sky: "#151526", ground: "#24243a", accent: "#6666a7",
+      enemies: 7, type: "dark"
+    },
+    {
+      name: "The Black Spirit",
+      story: "The spirit awakens. Survive the takeover.",
+      sky: "#100d19", ground: "#191421", accent: "#a52b43",
+      enemies: 7, type: "spirit"
+    },
+    {
+      name: "The Fallen Kingdom",
+      story: "Master your new power and face the fallen kingdom.",
+      sky: "#38202c", ground: "#35202a", accent: "#c54a57",
+      enemies: 8, type: "knight"
+    },
+    {
+      name: "The Purple King's Domain",
+      story: "Defeat the Purple King and end the darkness.",
+      sky: "#29153d", ground: "#281c35", accent: "#b34bff",
+      enemies: 1, type: "boss"
+    }
+  ];
 
-  const difficultySelect = document.createElement("select");
-  difficultySelect.setAttribute("aria-label", "Difficulty");
-  difficultySelect.style.cssText =
-    "padding:9px;background:#20152b;color:white;" +
-    "border:1px solid #a66bea;font-family:monospace;";
+  const difficulty = {
+    easy:   { enemyHealth: 0.7, damage: 0.6, playerHealth: 150 },
+    medium: { enemyHealth: 1.0, damage: 1.0, playerHealth: 110 },
+    hard:   { enemyHealth: 1.35, damage: 1.5, playerHealth: 100 },
+    extreme:{ enemyHealth: 1.8, damage: 2.1, playerHealth: 90 }
+  };
 
-  ["Easy", "Medium", "Hard", "Extreme"].forEach(name => {
-    const option = document.createElement("option");
-    option.value = name;
-    option.textContent = name + " Mode";
-    difficultySelect.appendChild(option);
-  });
+  // ---------------- GAME STATE ----------------
 
-  ui.appendChild(difficultySelect);
-
-  function makeButton(label, callback) {
-    const button = document.createElement("button");
-    button.textContent = label;
-    button.style.cssText =
-      "padding:9px 13px;background:#251530;color:#fff;" +
-      "border:1px solid #a66bea;cursor:pointer;" +
-      "font:bold 13px monospace;";
-    button.addEventListener("click", callback);
-    ui.appendChild(button);
-    return button;
-  }
-
+  let running = false;
+  let gameOver = false;
+  let victory = false;
+  let chapterCleared = false;
+  let chapter = 0;
   let player;
   let enemies = [];
   let projectiles = [];
   let effects = [];
-  let toxicClouds = [];
-
-  let chapter = 1;
-  let started = false;
-  let gameOver = false;
-  let chapterCleared = false;
-  let gameWon = false;
-
+  let keys = {};
   let lastTime = 0;
-  let time = 0;
+  let elapsed = 0;
+  let screenShake = 0;
   let message = "";
-  let messageTime = 0;
+  let messageTimer = 0;
+  let cutscene = null;
+  let takeoverComplete = false;
+  let boss = null;
+  let difficultySettings = difficulty.medium;
 
-  let attackCooldown = 0;
-  let waterCooldown = 0;
-  let flameCooldown = 0;
-  let divergentCooldown = 0;
-  let hurtCooldown = 0;
+  const W = canvas.width;
+  const H = canvas.height;
 
-  const keys = new Set();
+  const rand = (min, max) => Math.random() * (max - min) + min;
+  const clamp = (v, min, max) => Math.max(min, Math.min(max, v));
 
-  const settings = {
-    Easy:    { hp: 45,  damage: 5,  speed: 35, count: 4 },
-    Medium:  { hp: 70,  damage: 10, speed: 48, count: 5 },
-    Hard:    { hp: 105, damage: 17, speed: 62, count: 7 },
-    Extreme: { hp: 160, damage: 27, speed: 78, count: 9 }
-  };
-
-  const scenes = [
-    {
-      name: "THE FORGOTTEN FOREST",
-      sky: "#101b18", floor: "#17251b",
-      tile: "#14231b", detail: "#315336",
-      accent: "#79a95c", type: "forest"
-    },
-    {
-      name: "THE ABANDONED VILLAGE",
-      sky: "#211b26", floor: "#30252b",
-      tile: "#382a2c", detail: "#725044",
-      accent: "#e0a45c", type: "village"
-    },
-    {
-      name: "THE GRAVEYARD",
-      sky: "#151b31", floor: "#252b3c",
-      tile: "#202638", detail: "#6e7891",
-      accent: "#a5b7e8", type: "graveyard"
-    },
-    {
-      name: "THE ANCIENT DUNGEON",
-      sky: "#17191d", floor: "#303238",
-      tile: "#282a30", detail: "#575b63",
-      accent: "#e6a65d", type: "dungeon"
-    },
-    {
-      name: "THE FROZEN WASTELAND",
-      sky: "#152b38", floor: "#294452",
-      tile: "#24404e", detail: "#6e9dad",
-      accent: "#b9f1ff", type: "ice"
-    },
-    {
-      name: "THE DARK SPIRIT",
-      sky: "#10081d", floor: "#20152d",
-      tile: "#1b1028", detail: "#593578",
-      accent: "#c28aff", type: "spirit"
-    },
-    {
-      name: "THE BURNING FORTRESS",
-      sky: "#2a1412", floor: "#38201b",
-      tile: "#301b18", detail: "#78382a",
-      accent: "#ff8b3d", type: "fire"
-    },
-    {
-      name: "THE PURPLE KING'S THRONE",
-      sky: "#17051d", floor: "#29102f",
-      tile: "#210b28", detail: "#65247d",
-      accent: "#e05cff", type: "final"
-    }
-  ];
-
-  const startButton = makeButton("Start Adventure", () => {
-    if (gameOver || gameWon) {
-      resetGame();
-      startGame();
-    } else if (chapterCleared && chapter < MAX_CHAPTER) {
-      nextChapter();
-    } else if (!started) {
-      startGame();
-    }
-  });
-
-  makeButton("Restart Game", () => {
-    resetGame();
-    startGame();
-  });
-
-  makeButton("⚔ Sword", swordAttack);
-  makeButton("💧 Water Wheel / Black Flash", blackFlashOrWater);
-  makeButton("👊 Divergent Fist", divergentFist);
-  makeButton("🔥 Flame Arrow", flameArrow);
-
-  const hint = document.createElement("div");
-  hint.style.cssText =
-    "width:100%;font-size:12px;color:#c7addb;line-height:1.9;";
-  hint.textContent =
-    "MOVE: WASD / ARROWS • SWORD: SPACE / J / CLICK • " +
-    "M: WATER WHEEL / BLACK FLASH • N: DIVERGENT FIST • K: FLAME ARROW";
-  ui.appendChild(hint);
-
-  // -------------------- CHAPTERS --------------------
-
-  function createChapter() {
-    const mode = settings[difficultySelect.value] || settings.Medium;
-
-    player = {
-      x: W / 2,
-      y: H / 2,
-      r: 12,
-      hp: 100,
-      maxHp: 100,
-      faceX: 1,
-      faceY: 0,
-      speed: 185,
-      flash: 0,
-      walk: 0
+  function newPlayer() {
+    return {
+      x: 120, y: 350, w: 28, h: 40,
+      speed: 190,
+      hp: difficultySettings.playerHealth,
+      maxHp: difficultySettings.playerHealth,
+      facing: 1,
+      attackCooldown: 0,
+      skillCooldown: 0,
+      divergentCooldown: 0,
+      arrowCooldown: 0,
+      invulnerable: 0,
+      moving: false,
+      anim: 0
     };
+  }
 
+  function showMessage(text, seconds = 2.5) {
+    message = text;
+    messageTimer = seconds;
+  }
+
+  function updateLabels() {
+    const data = chapters[chapter];
+    chapterLabel.textContent =
+      `Chapter ${chapter + 1}/8 — ${data.name}`;
+
+    if (chapter < 5) {
+      movesLabel.textContent =
+        "Sword: Space/J/Click | Water Wheel: M | Flame Arrow: K";
+    } else {
+      movesLabel.textContent =
+        "Black Dragon Armor | Black Flash: M | Divergent Fist: N | Flame Arrow: K";
+    }
+
+    if (gameOver) statusLabel.textContent = "You have fallen. Restart to try again.";
+    else if (victory) statusLabel.textContent = "The darkness has been defeated!";
+    else if (cutscene) statusLabel.textContent = "The Black Spirit is taking over...";
+    else if (chapterCleared) statusLabel.textContent =
+      "Chapter cleared! Press Continue to enter the next chapter.";
+    else statusLabel.textContent =
+      `${data.story} Enemies remaining: ${enemies.filter(e => e.hp > 0).length}`;
+  }
+
+  // ---------------- ENEMIES ----------------
+
+  function makeEnemy(type, x, y, hp, size = 28) {
+    return {
+      type, x, y, w: size, h: size,
+      hp, maxHp: hp,
+      speed: rand(28, 54),
+      damage: 8 * difficultySettings.damage,
+      attackTimer: rand(0.4, 1.8),
+      flash: 0,
+      alive: true,
+      phase: rand(0, 6),
+      cooldown: rand(0.5, 2),
+      vx: 0
+    };
+  }
+
+  function spawnChapterEnemies() {
     enemies = [];
     projectiles = [];
     effects = [];
-    toxicClouds = [];
+    boss = null;
 
-    chapterCleared = false;
-    gameOver = false;
-    gameWon = false;
+    const data = chapters[chapter];
 
-    attackCooldown = 0;
-    waterCooldown = 0;
-    flameCooldown = 0;
-    divergentCooldown = 0;
-    hurtCooldown = 0;
-
-    if (chapter === MAX_CHAPTER) {
-      // One powerful boss instead of regular monsters.
-      const bossHp = mode.hp * 18;
-
-      enemies.push({
-        x: W - 155,
-        y: H / 2,
-        r: 34,
-        hp: bossHp,
-        maxHp: bossHp,
-        damage: mode.damage * 1.6,
-        speed: 47 + mode.speed * 0.12,
-        phase: 0,
-        flash: 0,
-        attack: 1.7,
-        knockX: 0,
-        knockY: 0,
-        alive: true,
-        kind: 3,
-        isBoss: true,
-        mistTimer: 2.4,
-        slamTimer: 3.5,
-        chargeTimer: 5,
-        charging: 0
-      });
-
-      message = "THE PURPLE KING HAS AWAKENED!";
-      messageTime = 4;
+    if (data.type === "boss") {
+      boss = makeEnemy("boss", 710, 300,
+        550 * difficultySettings.enemyHealth, 82);
+      boss.w = 82;
+      boss.h = 92;
+      boss.speed = 42;
+      boss.damage = 17 * difficultySettings.damage;
+      enemies.push(boss);
       return;
     }
 
-    const count = mode.count + Math.min(chapter - 1, 6);
+    for (let i = 0; i < data.enemies; i++) {
+      const x = rand(340, 870);
+      const y = rand(290, 430);
+      let hp = rand(30, 45) * difficultySettings.enemyHealth;
+      let size = 28;
 
-    for (let i = 0; i < count; i++) {
-      const angle = Math.random() * Math.PI * 2;
-      const distance = 130 + Math.random() * 190;
+      if (data.type === "knight" || data.type === "spirit") {
+        hp *= 1.35;
+        size = 34;
+      }
 
-      const x = Math.max(
-        35, Math.min(W - 35, player.x + Math.cos(angle) * distance)
-      );
-
-      const y = Math.max(
-        65, Math.min(H - 35, player.y + Math.sin(angle) * distance)
-      );
-
-      const hp = mode.hp + (chapter - 1) * 12;
-
-      enemies.push({
-        x, y,
-        r: 12 + Math.random() * 4,
-        hp,
-        maxHp: hp,
-        damage: mode.damage + Math.floor((chapter - 1) * 1.5),
-        speed: mode.speed + Math.min((chapter - 1) * 2, 20),
-        phase: Math.random() * 10,
-        flash: 0,
-        attack: Math.random(),
-        knockX: 0,
-        knockY: 0,
-        alive: true,
-        kind: i % 3,
-        isBoss: false
-      });
+      enemies.push(makeEnemy(data.type, x, y, hp, size));
     }
-
-    if (chapter === 6) {
-      message = "THE DARK SPIRIT AWAKENS! BLACK FLASH UNLOCKED!";
-    } else {
-      message = "CHAPTER " + chapter + " — DEFEAT EVERY MONSTER!";
-    }
-
-    messageTime = 3.5;
   }
+
+  // ---------------- START / CHAPTER PROGRESSION ----------------
 
   function startGame() {
-    if (gameWon || gameOver) return;
+    if (gameOver || victory) resetGame();
 
-    started = true;
+    running = true;
+    gameOver = false;
+    victory = false;
     chapterCleared = false;
+    cutscene = null;
 
-    const overlay = document.getElementById("messageBox");
-    if (overlay) overlay.style.display = "none";
-
+    startButton.textContent = "Continue to Next Chapter";
     difficultySelect.disabled = true;
-    startButton.textContent = "Adventure In Progress";
-    lastTime = 0;
-    messageTime = 2.5;
 
-    updateStatus();
-  }
+    if (chapter === 5 && !takeoverComplete) {
+      beginTakeoverCutscene();
+    }
 
-  function nextChapter() {
-    if (!chapterCleared || gameOver || gameWon) return;
-    if (chapter >= MAX_CHAPTER) return;
-
-    chapter++;
-    createChapter();
-    startGame();
+    showMessage(chapters[chapter].story, 3);
+    updateLabels();
   }
 
   function resetGame() {
-    chapter = 1;
-    started = false;
+    chapter = 0;
+    running = false;
     gameOver = false;
+    victory = false;
     chapterCleared = false;
-    gameWon = false;
-    time = 0;
-    lastTime = 0;
-
-    keys.clear();
+    takeoverComplete = false;
+    cutscene = null;
+    elapsed = 0;
+    screenShake = 0;
     difficultySelect.disabled = false;
     startButton.textContent = "Start Adventure";
 
-    createChapter();
-    updateStatus();
-    draw();
+    difficultySettings = difficulty[difficultySelect.value] || difficulty.medium;
+    player = newPlayer();
+    spawnChapterEnemies();
+    showMessage("Find the missing villagers.", 3);
+    updateLabels();
   }
 
-  function updateStatus() {
-    if (!player) return;
+  function nextChapter() {
+    if (!chapterCleared || gameOver || victory) return;
 
-    const remaining = enemies.filter(e => e.alive).length;
-    const boss = enemies.find(e => e.alive && e.isBoss);
+    if (chapter >= chapters.length - 1) {
+      victory = true;
+      running = false;
+      showMessage("You defeated the Purple King!", 8);
+      updateLabels();
+      return;
+    }
 
-    status.textContent =
-      "THE DARK WITHIN  |  Chapter " + chapter +
-      "/" + MAX_CHAPTER +
-      "  |  " + difficultySelect.value +
-      "  |  Health: " + Math.ceil(player.hp) + "/" + player.maxHp +
-      (boss
-        ? "  |  PURPLE KING HP: " + Math.ceil(boss.hp) + "/" + boss.maxHp
-        : "  |  Monsters: " + remaining) +
-      (chapterCleared ? "  |  CHAPTER CLEARED!" : "") +
-      (gameOver ? "  |  YOU DIED" : "") +
-      (gameWon ? "  |  GAME COMPLETED!" : "");
+    chapter++;
+    chapterCleared = false;
+    player.x = 100;
+    player.y = 350;
+    player.hp = Math.min(player.maxHp, player.hp + 25);
+    player.invulnerable = 1.5;
 
-    if (gameWon) {
-      startButton.textContent = "Play Again";
-    } else if (gameOver) {
-      startButton.textContent = "Try Again";
-    } else if (chapterCleared && chapter < MAX_CHAPTER) {
-      startButton.textContent = "Continue to Chapter " + (chapter + 1);
-    } else if (chapterCleared && chapter === MAX_CHAPTER) {
-      startButton.textContent = "Victory!";
-    } else if (!started) {
-      startButton.textContent = "Start Adventure";
+    spawnChapterEnemies();
+
+    if (chapter === 5 && !takeoverComplete) {
+      beginTakeoverCutscene();
     } else {
-      startButton.textContent = "Adventure In Progress";
+      showMessage(`Chapter ${chapter + 1}: ${chapters[chapter].name}`, 3);
+    }
+
+    updateLabels();
+  }
+
+  function checkChapterClear() {
+    if (chapterCleared || gameOver || victory) return;
+    if (enemies.some(e => e.hp > 0)) return;
+
+    chapterCleared = true;
+    running = false;
+    showMessage("All enemies defeated! Continue to the next chapter.", 5);
+    startButton.textContent =
+      chapter === chapters.length - 1 ? "Finish Game" : "Continue to Next Chapter";
+    updateLabels();
+  }
+
+  // ---------------- BLACK SPIRIT CUTSCENE ----------------
+
+  function beginTakeoverCutscene() {
+    running = false;
+    cutscene = {
+      time: 0,
+      duration: 8.5,
+      stage: 0,
+      completed: false
+    };
+    showMessage("Something ancient is waking inside you...", 8);
+    screenShake = 4;
+    updateLabels();
+  }
+
+  function completeTakeover() {
+    takeoverComplete = true;
+    cutscene = null;
+    player.hp = player.maxHp;
+    player.invulnerable = 2;
+    running = true;
+    showMessage("BLACK DRAGON ARMOR AWAKENED!", 4);
+    screenShake = 16;
+    addBurst(player.x + 12, player.y + 15, "#ff253f", 45, 170);
+    addBurst(player.x + 12, player.y + 15, "#111018", 55, 120);
+    updateLabels();
+  }
+
+  function updateCutscene(dt) {
+    if (!cutscene) return;
+
+    cutscene.time += dt;
+    const t = cutscene.time;
+
+    if (t < 1.5) cutscene.stage = 0;
+    else if (t < 3.1) cutscene.stage = 1;
+    else if (t < 5.8) cutscene.stage = 2;
+    else if (t < 7.2) cutscene.stage = 3;
+    else cutscene.stage = 4;
+
+    if (t > 2.8 && Math.random() < 0.45) {
+      addBurst(
+        player.x + rand(-30, 30),
+        player.y + rand(-30, 30),
+        Math.random() < 0.5 ? "#17121e" : "#a91c38",
+        2, 55
+      );
+    }
+
+    if (t > 3 && t < 6.8) screenShake = Math.max(screenShake, 1.8);
+
+    if (t >= cutscene.duration && !cutscene.completed) {
+      cutscene.completed = true;
+      completeTakeover();
     }
   }
 
-  // -------------------- EFFECTS AND DAMAGE --------------------
+  // ---------------- VISUAL EFFECTS ----------------
 
-  function addEffect(x, y, color, radius, duration, type = "burst") {
+  function addBurst(x, y, color, count = 18, power = 100) {
+    for (let i = 0; i < count; i++) {
+      const a = rand(0, Math.PI * 2);
+      const speed = rand(power * 0.25, power);
+      effects.push({
+        kind: "particle", x, y,
+        vx: Math.cos(a) * speed,
+        vy: Math.sin(a) * speed,
+        life: rand(0.25, 0.85),
+        maxLife: 0.85,
+        color,
+        size: rand(2, 6)
+      });
+    }
+  }
+
+  function addSlash(x, y, facing, color, count = 4) {
+    for (let i = 0; i < count; i++) {
+      effects.push({
+        kind: "slash",
+        x: x + facing * rand(0, 25),
+        y: y + rand(-20, 20),
+        vx: facing * rand(120, 260),
+        vy: rand(-150, 150),
+        life: rand(0.18, 0.4),
+        maxLife: 0.4,
+        color,
+        size: rand(18, 48)
+      });
+    }
+  }
+
+  function addExplosion(x, y, color, radius, life = 0.5) {
     effects.push({
-      x, y, color, radius,
-      duration,
-      maxDuration: duration,
-      type
+      kind: "explosion", x, y,
+      radius, life, maxLife: life, color
     });
   }
 
-  function damageEnemy(enemy, amount, knock = 90) {
-    if (!enemy.alive) return;
+  function updateEffects(dt) {
+    for (const e of effects) {
+      e.life -= dt;
+      if (e.kind === "particle" || e.kind === "slash") {
+        e.x += e.vx * dt;
+        e.y += e.vy * dt;
+        e.vy += 60 * dt;
+      }
+    }
+    effects = effects.filter(e => e.life > 0);
+    screenShake = Math.max(0, screenShake - dt * 18);
+  }
+
+  function drawEffects() {
+    for (const e of effects) {
+      const alpha = clamp(e.life / e.maxLife, 0, 1);
+      ctx.save();
+      ctx.globalAlpha = alpha;
+
+      if (e.kind === "particle") {
+        ctx.fillStyle = e.color;
+        ctx.fillRect(e.x, e.y, e.size, e.size);
+      } else if (e.kind === "slash") {
+        ctx.strokeStyle = e.color;
+        ctx.lineWidth = Math.max(2, e.size / 8);
+        ctx.beginPath();
+        ctx.moveTo(e.x, e.y);
+        ctx.lineTo(e.x - e.size, e.y - e.size * 0.45);
+        ctx.stroke();
+      } else if (e.kind === "explosion") {
+        const progress = 1 - alpha;
+        ctx.strokeStyle = e.color;
+        ctx.lineWidth = 4 + alpha * 5;
+        ctx.beginPath();
+        ctx.arc(e.x, e.y, e.radius * progress, 0, Math.PI * 2);
+        ctx.stroke();
+
+        ctx.globalAlpha = alpha * 0.28;
+        ctx.fillStyle = e.color;
+        ctx.beginPath();
+        ctx.arc(e.x, e.y, e.radius * progress, 0, Math.PI * 2);
+        ctx.fill();
+      }
+
+      ctx.restore();
+    }
+  }
+
+  // ---------------- PLAYER ATTACKS ----------------
+
+  function damageEnemy(enemy, amount, knockback = 0) {
+    if (!enemy || enemy.hp <= 0) return;
 
     enemy.hp -= amount;
-    enemy.flash = 0.16;
-
-    const dx = enemy.x - player.x;
-    const dy = enemy.y - player.y;
-    const len = Math.hypot(dx, dy) || 1;
-
-    enemy.knockX = dx / len * knock;
-    enemy.knockY = dy / len * knock;
-
-    addEffect(enemy.x, enemy.y, "#f4dcff", 18, 0.2);
+    enemy.flash = 0.15;
+    enemy.vx = knockback;
 
     if (enemy.hp <= 0) {
       enemy.hp = 0;
       enemy.alive = false;
+      addBurst(enemy.x + enemy.w / 2, enemy.y + enemy.h / 2,
+        enemy.type === "boss" ? "#bb55ff" : "#e34b64",
+        enemy.type === "boss" ? 60 : 15,
+        enemy.type === "boss" ? 190 : 100);
+    }
 
-      addEffect(
-        enemy.x, enemy.y,
-        enemy.isBoss ? "#d84cff" : "#a5e86d",
-        enemy.isBoss ? 100 : 30,
-        enemy.isBoss ? 1.5 : 0.55
-      );
-
-      for (let i = 0; i < 10; i++) {
-        const colors = enemy.isBoss
-          ? ["#c43cff", "#f4d7ff", "#7510b5"]
-          : ["#a5e86d", "#e9ffc2", "#548b56"];
-
-        addEffect(
-          enemy.x + (Math.random() - 0.5) * 35,
-          enemy.y + (Math.random() - 0.5) * 35,
-          colors[i % colors.length],
-          3 + Math.random() * 6,
-          0.5,
-          "particle"
-        );
-      }
+    if (enemy.type === "boss" && enemy.hp <= 0) {
+      victory = true;
+      running = false;
+      chapterCleared = true;
+      showMessage("THE PURPLE KING HAS FALLEN!", 8);
     }
 
     checkChapterClear();
+    updateLabels();
   }
-
-  function checkChapterClear() {
-    if (chapterCleared || !enemies.every(e => !e.alive)) return;
-
-    chapterCleared = true;
-    started = false;
-
-    if (chapter === MAX_CHAPTER) {
-      gameWon = true;
-      message = "THE PURPLE KING HAS FALLEN!";
-      startButton.textContent = "Play Again";
-    } else {
-      message = "ALL MONSTERS DEFEATED! CHAPTER CLEARED!";
-      startButton.textContent = "Continue to Chapter " + (chapter + 1);
-    }
-
-    messageTime = 999;
-    addEffect(W / 2, H / 2, "#e9c5ff", 160, 1.5);
-    updateStatus();
-  }
-
-  // -------------------- PLAYER ATTACKS --------------------
 
   function swordAttack() {
-    if (!started || gameOver || chapterCleared || attackCooldown > 0) return;
+    if (!running || cutscene || gameOver || chapterCleared) return;
+    if (player.attackCooldown > 0) return;
 
-    attackCooldown = 0.36;
+    player.attackCooldown = 0.38;
+    const px = player.x + player.w / 2 + player.facing * 22;
+    const py = player.y + player.h / 2;
 
-    addEffect(
-      player.x + player.faceX * 27,
-      player.y + player.faceY * 27,
-      "#f4f2d1", 37, 0.22, "slash"
-    );
+    addSlash(px, py, player.facing, "#e8e8f2", 3);
 
     for (const e of enemies) {
-      if (!e.alive) continue;
+      if (e.hp <= 0) continue;
+      const dx = e.x + e.w / 2 - px;
+      const dy = e.y + e.h / 2 - py;
 
-      const dx = e.x - player.x;
-      const dy = e.y - player.y;
-      const distance = Math.hypot(dx, dy);
-      const dot = (dx * player.faceX + dy * player.faceY) / (distance || 1);
-
-      if (distance <= 66 && dot > -0.15) {
-        damageEnemy(e, e.isBoss ? 24 : 30, 175);
+      if (Math.abs(dx) < 65 && Math.abs(dy) < 48 &&
+          Math.sign(dx || player.facing) === player.facing) {
+        damageEnemy(e, 16, player.facing * 100);
       }
-    }
-  }
-
-  function blackFlashOrWater() {
-    if (chapter < 6) {
-      waterWheel();
-    } else {
-      blackFlash();
     }
   }
 
   function waterWheel() {
-    if (!started || gameOver || chapterCleared || waterCooldown > 0) return;
+    if (!running || cutscene || chapter >= 5 || player.skillCooldown > 0) return;
 
-    waterCooldown = 3;
+    player.skillCooldown = 2.3;
+    const x = player.x + player.w / 2 + player.facing * 28;
+    const y = player.y + player.h / 2;
 
-    addEffect(player.x, player.y, "#48cfff", 105, 0.65, "water");
-    addEffect(player.x, player.y, "#b7f4ff", 70, 0.55, "water");
+    addExplosion(x, y, "#48baff", 88, 0.45);
+    addSlash(x, y, player.facing, "#70e5ff", 14);
+    screenShake = 5;
 
     for (const e of enemies) {
-      if (e.alive && Math.hypot(e.x - player.x, e.y - player.y) < 112) {
-        damageEnemy(e, e.isBoss ? 35 : 42, 230);
+      if (e.hp <= 0) continue;
+      if (Math.abs(e.x - x) < 105 && Math.abs(e.y - y) < 75) {
+        damageEnemy(e, 28, player.facing * 180);
       }
     }
   }
 
+  // BLACK FLASH: black slashes with red energy streaks.
   function blackFlash() {
-    if (!started || gameOver || chapterCleared || waterCooldown > 0) return;
+    if (!running || cutscene || !takeoverComplete ||
+        player.skillCooldown > 0 || gameOver) return;
 
-    waterCooldown = 1.8;
+    player.skillCooldown = 1.25;
+    const x = player.x + player.w / 2 + player.facing * 38;
+    const y = player.y + player.h / 2;
 
-    addEffect(
-      player.x + player.faceX * 35,
-      player.y + player.faceY * 35,
-      "#080808", 95, 0.45, "blackflash"
-    );
+    screenShake = 8;
+    addSlash(x, y, player.facing, "#07070b", 16);
+    addSlash(x, y, player.facing, "#ff173b", 13);
+    addBurst(x, y, "#ff233e", 16, 180);
+    addExplosion(x, y, "#a30c2d", 62, 0.25);
 
-    addEffect(
-      player.x + player.faceX * 35,
-      player.y + player.faceY * 35,
-      "#b77aff", 65, 0.38, "blackflash"
-    );
+    // Dash forward.
+    player.x = clamp(player.x + player.facing * 38, 0, W - player.w);
 
     for (const e of enemies) {
-      if (!e.alive) continue;
+      if (e.hp <= 0) continue;
+      const dx = e.x + e.w / 2 - x;
+      const dy = e.y + e.h / 2 - y;
 
-      const dx = e.x - player.x;
-      const dy = e.y - player.y;
-      const distance = Math.hypot(dx, dy);
-      const dot = (dx * player.faceX + dy * player.faceY) / (distance || 1);
-
-      if (distance < 125 && dot > 0.05) {
-        damageEnemy(e, e.isBoss ? 75 : 65, 300);
-        addEffect(e.x, e.y, "#ffffff", 45, 0.25, "blackflash");
+      if (Math.abs(dx) < 105 && Math.abs(dy) < 68 &&
+          Math.sign(dx || player.facing) === player.facing) {
+        damageEnemy(e, 38, player.facing * 260);
+        addSlash(e.x + e.w / 2, e.y + e.h / 2,
+          player.facing, "#ff263f", 7);
       }
     }
 
-    message = "BLACK FLASH!";
-    messageTime = 0.8;
+    showMessage("BLACK FLASH!", 0.65);
   }
 
+  // DIVERGENT FIST: blue punch, followed by a larger blue explosion.
   function divergentFist() {
-    if (chapter < 6) {
-      message = "DIVERGENT FIST UNLOCKS IN CHAPTER 6!";
-      messageTime = 1.5;
-      return;
-    }
+    if (!running || cutscene || !takeoverComplete ||
+        player.divergentCooldown > 0 || gameOver) return;
 
-    if (!started || gameOver || chapterCleared || divergentCooldown > 0) return;
+    player.divergentCooldown = 3;
+    const x = player.x + player.w / 2 + player.facing * 42;
+    const y = player.y + player.h / 2;
 
-    divergentCooldown = 2.8;
+    screenShake = 5;
+    addBurst(x, y, "#42caff", 24, 130);
+    addExplosion(x, y, "#3bbcff", 42, 0.25);
+    showMessage("DIVERGENT FIST!", 0.8);
 
-    addEffect(
-      player.x + player.faceX * 35,
-      player.y + player.faceY * 35,
-      "#222222", 48, 0.25, "burst"
-    );
-
-    const hitEnemies = [];
-
+    // First impact.
     for (const e of enemies) {
-      if (!e.alive) continue;
-
-      const dx = e.x - player.x;
-      const dy = e.y - player.y;
-      const distance = Math.hypot(dx, dy);
-      const dot = (dx * player.faceX + dy * player.faceY) / (distance || 1);
-
-      if (distance < 90 && dot > -0.1) {
-        damageEnemy(e, e.isBoss ? 22 : 25, 180);
-        hitEnemies.push(e);
+      if (e.hp <= 0) continue;
+      if (Math.abs(e.x + e.w / 2 - x) < 80 &&
+          Math.abs(e.y + e.h / 2 - y) < 55) {
+        damageEnemy(e, 12, player.facing * 140);
       }
     }
 
-    // Second impact lands shortly after the first.
+    // Second impact, delayed to make the explosion feel distinct.
     window.setTimeout(() => {
-      if (!player || gameOver) return;
+      if (gameOver || victory) return;
 
-      for (const e of hitEnemies) {
-        if (!e.alive) continue;
+      addExplosion(x + player.facing * 18, y, "#1788ff", 125, 0.55);
+      addBurst(x + player.facing * 18, y, "#70ddff", 38, 220);
+      addBurst(x + player.facing * 18, y, "#187aff", 28, 160);
 
-        damageEnemy(e, e.isBoss ? 35 : 45, 260);
-        addEffect(e.x, e.y, "#a855f7", 60, 0.4, "burst");
+      for (const e of enemies) {
+        if (e.hp <= 0) continue;
+        if (Math.abs(e.x + e.w / 2 - x) < 145 &&
+            Math.abs(e.y + e.h / 2 - y) < 100) {
+          damageEnemy(e, 28, player.facing * 240);
+        }
       }
-    }, 350);
-
-    message = "DIVERGENT FIST!";
-    messageTime = 0.8;
+      screenShake = 8;
+    }, 190);
   }
 
   function flameArrow() {
-    if (!started || gameOver || chapterCleared || flameCooldown > 0) return;
+    if (!running || cutscene || gameOver || player.arrowCooldown > 0) return;
 
-    flameCooldown = 1.25;
-
+    player.arrowCooldown = 1.15;
     projectiles.push({
-      x: player.x + player.faceX * 18,
-      y: player.y + player.faceY * 18,
-      vx: player.faceX * 390,
-      vy: player.faceY * 390,
+      x: player.x + player.w / 2 + player.facing * 15,
+      y: player.y + 18,
+      vx: player.facing * 360,
+      vy: 0,
       life: 1.6,
-      r: 7
+      damage: 22,
+      color: "#ff7733"
     });
 
-    addEffect(
-      player.x + player.faceX * 20,
-      player.y + player.faceY * 20,
-      "#ff9b36", 18, 0.25
-    );
+    addBurst(player.x + player.w / 2, player.y + 18, "#ff7b35", 8, 60);
   }
 
-  // -------------------- PLAYER DAMAGE --------------------
+  // ---------------- ENEMY AI ----------------
+
+  function enemyAttack(e) {
+    const px = player.x + player.w / 2;
+    const py = player.y + player.h / 2;
+    const ex = e.x + e.w / 2;
+    const ey = e.y + e.h / 2;
+
+    if (e.type === "boss") {
+      const choice = Math.random();
+
+      if (choice < 0.38) {
+        // Purple toxic mist.
+        projectiles.push({
+          x: ex, y: ey,
+          vx: (px - ex) * 0.42,
+          vy: (py - ey) * 0.42,
+          life: 2.2,
+          damage: 15 * difficultySettings.damage,
+          color: "#bd35ff",
+          radius: 22,
+          toxic: true
+        });
+        showMessage("The Purple King releases toxic mist!", 1.2);
+      } else if (choice < 0.7) {
+        // Heavy ground slam.
+        addExplosion(ex, ey, "#c64cff", 150, 0.55);
+        screenShake = 11;
+
+        if (Math.abs(px - ex) < 180 && Math.abs(py - ey) < 115) {
+          hurtPlayer(e.damage * 1.5);
+        }
+      } else {
+        // Fast charge.
+        e.vx = Math.sign(px - ex) * 360;
+        addBurst(ex, ey, "#7d20ba", 18, 120);
+      }
+      return;
+    }
+
+    if (Math.abs(px - ex) < 46 && Math.abs(py - ey) < 45) {
+      hurtPlayer(e.damage);
+      addBurst(px, py, "#e34b64", 5, 55);
+    } else if (e.type === "spirit" && Math.random() < 0.55) {
+      projectiles.push({
+        x: ex, y: ey,
+        vx: Math.sign(px - ex) * 145,
+        vy: Math.sign(py - ey) * 55,
+        life: 2,
+        damage: e.damage,
+        color: "#a94aff",
+        radius: 7
+      });
+    }
+  }
 
   function hurtPlayer(amount) {
-    if (hurtCooldown > 0 || gameOver || chapterCleared) return;
+    if (player.invulnerable > 0 || gameOver || cutscene) return;
 
     player.hp -= amount;
-    player.flash = 0.22;
-    hurtCooldown = 0.55;
-
-    addEffect(player.x, player.y, "#ff5656", 23, 0.3);
+    player.invulnerable = 0.75;
+    screenShake = 4;
 
     if (player.hp <= 0) {
       player.hp = 0;
       gameOver = true;
-      started = false;
-      message = "YOU DIED — RESTART TO TRY AGAIN";
-      messageTime = 999;
-      updateStatus();
+      running = false;
+      showMessage("You have fallen into darkness.", 8);
     }
+
+    updateLabels();
   }
 
-  // -------------------- UPDATE GAME --------------------
-
-  function update(dt) {
-    if (!started || gameOver || chapterCleared) return;
-
-    time += dt;
-
-    attackCooldown = Math.max(0, attackCooldown - dt);
-    waterCooldown = Math.max(0, waterCooldown - dt);
-    flameCooldown = Math.max(0, flameCooldown - dt);
-    divergentCooldown = Math.max(0, divergentCooldown - dt);
-    hurtCooldown = Math.max(0, hurtCooldown - dt);
-    player.flash = Math.max(0, player.flash - dt);
-    player.walk += dt * 11;
-    messageTime = Math.max(0, messageTime - dt);
-
-    let mx = 0;
-    let my = 0;
-
-    if (keys.has("a") || keys.has("arrowleft")) mx--;
-    if (keys.has("d") || keys.has("arrowright")) mx++;
-    if (keys.has("w") || keys.has("arrowup")) my--;
-    if (keys.has("s") || keys.has("arrowdown")) my++;
-
-    const len = Math.hypot(mx, my) || 1;
-
-    if (mx || my) {
-      mx /= len;
-      my /= len;
-
-      player.faceX = mx;
-      player.faceY = my;
-      player.x += mx * player.speed * dt;
-      player.y += my * player.speed * dt;
-    }
-
-    player.x = Math.max(18, Math.min(W - 18, player.x));
-    player.y = Math.max(48, Math.min(H - 18, player.y));
-
-    const mode = settings[difficultySelect.value] || settings.Medium;
-
+  function updateEnemies(dt) {
     for (const e of enemies) {
-      if (!e.alive) continue;
+      if (e.hp <= 0) continue;
 
-      e.phase += dt * 5;
       e.flash = Math.max(0, e.flash - dt);
-      e.attack = Math.max(0, e.attack - dt);
+      e.attackTimer -= dt;
+      e.cooldown -= dt;
 
-      const dx = player.x - e.x;
-      const dy = player.y - e.y;
+      const px = player.x + player.w / 2;
+      const py = player.y + player.h / 2;
+      const ex = e.x + e.w / 2;
+      const ey = e.y + e.h / 2;
+
+      const dx = px - ex;
+      const dy = py - ey;
       const distance = Math.hypot(dx, dy) || 1;
 
-      if (e.isBoss) {
-        updateBoss(e, dt, distance, dx, dy);
-      } else {
-        if (distance > player.r + e.r + 3) {
+      if (e.type === "boss") {
+        e.phase += dt;
+
+        if (e.vx) {
+          e.x += e.vx * dt;
+          e.vx *= Math.pow(0.04, dt);
+          if (Math.abs(e.vx) < 12) e.vx = 0;
+        } else if (distance > 120) {
           e.x += dx / distance * e.speed * dt;
           e.y += dy / distance * e.speed * dt;
         }
 
-        if (Math.hypot(e.knockX, e.knockY) > 2) {
-          e.x += e.knockX * dt;
-          e.y += e.knockY * dt;
-          e.knockX *= Math.pow(0.025, dt);
-          e.knockY *= Math.pow(0.025, dt);
+        e.y += Math.sin(e.phase * 2.2) * 10 * dt;
+
+        if (e.attackTimer <= 0) {
+          enemyAttack(e);
+          e.attackTimer = rand(1.0, 1.9);
+        }
+      } else {
+        if (distance > 34) {
+          e.x += dx / distance * e.speed * dt;
+          e.y += dy / distance * e.speed * dt;
         }
 
-        if (distance < player.r + e.r + 4 && e.attack <= 0) {
-          e.attack = 0.9;
-          hurtPlayer(e.damage);
+        if (e.attackTimer <= 0) {
+          enemyAttack(e);
+          e.attackTimer = rand(0.8, 1.8);
         }
       }
 
-      e.x = Math.max(25, Math.min(W - 25, e.x));
-      e.y = Math.max(55, Math.min(H - 25, e.y));
+      e.x = clamp(e.x, 0, W - e.w);
+      e.y = clamp(e.y, 265, H - e.h);
     }
+  }
 
-    // Toxic mist clouds damage the player while they remain inside.
-    for (const cloud of toxicClouds) {
-      cloud.life -= dt;
-
-      if (cloud.life > 0 &&
-          Math.hypot(player.x - cloud.x, player.y - cloud.y) < cloud.r) {
-        hurtPlayer(cloud.damage * dt);
-      }
-    }
-
-    toxicClouds = toxicClouds.filter(c => c.life > 0);
-
-    // Flame Arrow projectile collision.
+  function updateProjectiles(dt) {
     for (const p of projectiles) {
       p.x += p.vx * dt;
       p.y += p.vy * dt;
       p.life -= dt;
 
-      addEffect(p.x, p.y, "#ff7b24", 5, 0.15, "particle");
-
-      for (const e of enemies) {
-        if (e.alive &&
-            Math.hypot(e.x - p.x, e.y - p.y) < e.r + p.r + 5) {
-          damageEnemy(e, e.isBoss ? 45 : 48, 145);
-          addEffect(p.x, p.y, "#ffb83d", 32, 0.35);
+      if (p.color === "#ff7733") {
+        for (const e of enemies) {
+          if (e.hp <= 0) continue;
+          if (Math.abs(e.x + e.w / 2 - p.x) < e.w / 2 + 10 &&
+              Math.abs(e.y + e.h / 2 - p.y) < e.h / 2 + 10) {
+            damageEnemy(e, p.damage, player.facing * 100);
+            p.life = 0;
+            addBurst(p.x, p.y, "#ff963d", 12, 90);
+            break;
+          }
+        }
+      } else {
+        if (Math.hypot(
+          player.x + player.w / 2 - p.x,
+          player.y + player.h / 2 - p.y
+        ) < (p.radius || 10) + 12) {
+          hurtPlayer(p.damage);
           p.life = 0;
-          break;
         }
       }
     }
 
-    projectiles = projectiles.filter(p =>
-      p.life > 0 &&
-      p.x > -30 && p.x < W + 30 &&
-      p.y > -30 && p.y < H + 30
-    );
-
-    for (const fx of effects) {
-      fx.duration -= dt;
-    }
-
-    effects = effects.filter(fx => fx.duration > 0);
-
-    updateStatus();
+    projectiles = projectiles.filter(p => p.life > 0);
   }
 
-  // -------------------- FINAL BOSS AI --------------------
-
-  function updateBoss(e, dt, distance, dx, dy) {
-    e.mistTimer -= dt;
-    e.slamTimer -= dt;
-    e.chargeTimer -= dt;
-
-    const direction = Math.atan2(dy, dx);
-
-    // Slowly pursue the player.
-    if (distance > 100 && e.charging <= 0) {
-      e.x += dx / distance * e.speed * dt;
-      e.y += dy / distance * e.speed * dt;
-    }
-
-    // Phase two: the boss becomes more aggressive below half health.
-    const phaseTwo = e.hp < e.maxHp * 0.5;
-    const mistInterval = phaseTwo ? 1.7 : 2.8;
-
-    if (e.mistTimer <= 0) {
-      e.mistTimer = mistInterval;
-
-      const spread = phaseTwo ? 115 : 80;
-      const cloudX = Math.max(
-        45, Math.min(W - 45, player.x + (Math.random() - 0.5) * spread)
-      );
-      const cloudY = Math.max(
-        75, Math.min(H - 45, player.y + (Math.random() - 0.5) * spread)
-      );
-
-      toxicClouds.push({
-        x: cloudX,
-        y: cloudY,
-        r: phaseTwo ? 100 : 82,
-        life: phaseTwo ? 3 : 2.4,
-        damage: phaseTwo ? 24 : 18
-      });
-
-      addEffect(cloudX, cloudY, "#a020f0", 105, 1.9, "toxic");
-      addEffect(cloudX, cloudY, "#6f00a8", 75, 1.6, "toxic");
-
-      message = phaseTwo ? "PURPLE KING: TOXIC STORM!" : "TOXIC MIST! MOVE!";
-      messageTime = 1.1;
-    }
-
-    // Ground slam: dangerous if the player is close.
-    if (e.slamTimer <= 0) {
-      e.slamTimer = phaseTwo ? 2.0 : 3.1;
-
-      addEffect(e.x, e.y, "#c000ff", phaseTwo ? 190 : 145, 0.7, "toxic");
-      addEffect(e.x, e.y, "#f3baff", 75, 0.5, "burst");
-
-      if (distance < (phaseTwo ? 175 : 135)) {
-        hurtPlayer(phaseTwo ? 30 : 22);
-      } else {
-        message = "GROUND SLAM!";
-        messageTime = 0.7;
-      }
-    }
-
-    // Fast charge attack.
-    if (e.charging > 0) {
-      e.x += Math.cos(e.chargeAngle) * (phaseTwo ? 260 : 210) * dt;
-      e.y += Math.sin(e.chargeAngle) * (phaseTwo ? 260 : 210) * dt;
-      e.charging -= dt;
-
-      if (Math.hypot(player.x - e.x, player.y - e.y) < player.r + e.r + 8) {
-        hurtPlayer(phaseTwo ? 28 : 20);
-        e.charging = 0;
-      }
-    } else if (e.chargeTimer <= 0) {
-      e.chargeTimer = phaseTwo ? 2.5 : 4.5;
-      e.charging = 0.45;
-      e.chargeAngle = direction;
-
-      message = "PURPLE KING CHARGES!";
-      messageTime = 0.8;
-    }
-
-    // Boss contact also hurts the player.
-    if (distance < player.r + e.r && e.attack <= 0) {
-      e.attack = 0.9;
-      hurtPlayer(phaseTwo ? 25 : 18);
-    }
-
-    if (Math.hypot(e.knockX, e.knockY) > 2) {
-      e.x += e.knockX * dt;
-      e.y += e.knockY * dt;
-      e.knockX *= Math.pow(0.025, dt);
-      e.knockY *= Math.pow(0.025, dt);
-    }
-  }
-
-  // -------------------- BACKGROUNDS --------------------
+  // ---------------- DRAW BACKGROUNDS ----------------
 
   function drawBackground() {
-    const scene = scenes[Math.min(chapter - 1, scenes.length - 1)];
+    const data = chapters[chapter];
 
-    ctx.fillStyle = scene.sky;
+    ctx.fillStyle = data.sky;
     ctx.fillRect(0, 0, W, H);
 
-    // Pixel tiled ground.
-    for (let y = 28; y < H; y += 32) {
-      for (let x = 0; x < W; x += 32) {
-        const n = (x * 13 + y * 7 + chapter * 5) % 11;
+    // Distant mountains or hills.
+    ctx.fillStyle = "rgba(10,10,20,0.22)";
+    for (let i = 0; i < 8; i++) {
+      const x = i * 145 - 30;
+      ctx.beginPath();
+      ctx.moveTo(x, 310);
+      ctx.lineTo(x + 65, 170 + (i % 3) * 25);
+      ctx.lineTo(x + 150, 310);
+      ctx.fill();
+    }
 
-        ctx.fillStyle = n < 4 ? scene.tile : scene.floor;
-        ctx.fillRect(x, y, 31, 31);
+    ctx.fillStyle = data.ground;
+    ctx.fillRect(0, 280, W, H - 280);
 
-        if (n === 2 || n === 7) {
-          ctx.fillStyle = scene.detail;
-          ctx.fillRect(x + 8, y + 12, 4, 3);
-          ctx.fillRect(x + 22, y + 23, 3, 3);
-        }
+    // Ground tiles.
+    for (let x = 0; x < W; x += 32) {
+      ctx.fillStyle = x % 64 === 0
+        ? "rgba(0,0,0,0.10)"
+        : "rgba(255,255,255,0.035)";
+      ctx.fillRect(x, 280 + (x % 3) * 4, 30, 18);
+    }
+
+    if (chapter === 0) {
+      // Forest trees.
+      for (let x = 35; x < W; x += 145) {
+        ctx.fillStyle = "#543c2c";
+        ctx.fillRect(x + 23, 190, 18, 100);
+        ctx.fillStyle = "#244b36";
+        ctx.fillRect(x, 165, 65, 65);
+        ctx.fillStyle = "#356746";
+        ctx.fillRect(x + 10, 145, 45, 45);
+        ctx.fillStyle = "#548753";
+        ctx.fillRect(x + 22, 130, 22, 28);
+      }
+    } else if (chapter === 1) {
+      // Snowy mountains.
+      ctx.fillStyle = "#edf6ff";
+      for (let x = 0; x < W; x += 170) {
+        ctx.beginPath();
+        ctx.moveTo(x, 300);
+        ctx.lineTo(x + 85, 155);
+        ctx.lineTo(x + 170, 300);
+        ctx.fill();
+      }
+    } else if (chapter === 2) {
+      // Desert cacti and dunes.
+      ctx.fillStyle = "#e9b765";
+      ctx.beginPath();
+      ctx.ellipse(250, 315, 260, 55, 0, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.beginPath();
+      ctx.ellipse(750, 320, 300, 65, 0, 0, Math.PI * 2);
+      ctx.fill();
+
+      for (const x of [120, 440, 820]) {
+        ctx.fillStyle = "#497348";
+        ctx.fillRect(x, 225, 15, 70);
+        ctx.fillRect(x - 12, 245, 12, 9);
+        ctx.fillRect(x - 12, 236, 8, 16);
+      }
+    } else if (chapter >= 3) {
+      // Underground ruins.
+      for (let x = 25; x < W; x += 120) {
+        ctx.fillStyle = "rgba(0,0,0,0.32)";
+        ctx.fillRect(x, 180, 30, 115);
+        ctx.fillRect(x - 10, 175, 50, 14);
+        ctx.fillStyle = "rgba(170,90,220,0.16)";
+        ctx.fillRect(x + 7, 205, 5, 55);
       }
     }
 
-    if (scene.type === "forest" || scene.type === "spirit") {
-      for (let i = 0; i < 20; i++) {
-        const x = (i * 173 + 41) % W;
-        const y = 50 + ((i * 89 + 67) % (H - 70));
+    // Chapter 6 and beyond: dark red atmosphere.
+    if (chapter >= 5) {
+      ctx.fillStyle = "rgba(20,0,12,0.25)";
+      ctx.fillRect(0, 0, W, H);
 
-        ctx.fillStyle = scene.detail;
-        ctx.fillRect(x, y, 6, 15);
-        ctx.fillRect(x - 5, y + 4, 5, 5);
-        ctx.fillRect(x + 6, y + 2, 5, 6);
-
-        if (scene.type === "spirit") {
-          ctx.fillStyle = "rgba(170,65,255,0.35)";
-          ctx.fillRect(x - 9, y + 15, 25, 3);
-        }
+      for (let i = 0; i < 14; i++) {
+        const x = (i * 91 + elapsed * (12 + i % 4)) % W;
+        const y = (i * 53 + Math.sin(elapsed + i) * 15) % 290;
+        ctx.fillStyle = i % 2 ? "rgba(255,30,60,0.3)" : "rgba(0,0,0,0.35)";
+        ctx.fillRect(x, y, 3, 3);
       }
     }
-
-    if (scene.type === "village") {
-      for (let i = 0; i < 6; i++) {
-        const x = 35 + i * 165;
-        const y = 72 + (i % 2) * 36;
-
-        ctx.fillStyle = "#211b20";
-        ctx.fillRect(x, y, 72, 62);
-        ctx.fillStyle = "#69413a";
-        ctx.fillRect(x - 8, y - 12, 88, 17);
-        ctx.fillStyle = "#e7a45a";
-        ctx.fillRect(x + 15, y + 18, 9, 13);
-        ctx.fillRect(x + 48, y + 18, 9, 13);
-      }
-    }
-
-    if (scene.type === "graveyard") {
-      for (let i = 0; i < 12; i++) {
-        const x = (i * 79 + 35) % W;
-        const y = 100 + (i * 47) % 350;
-
-        ctx.fillStyle = "#727b91";
-        ctx.fillRect(x, y, 18, 25);
-        ctx.fillRect(x + 5, y - 7, 8, 8);
-      }
-
-      ctx.fillStyle = "#c3d2ef";
-      ctx.fillRect(770, 55, 38, 38);
-      ctx.fillStyle = scene.sky;
-      ctx.fillRect(782, 48, 34, 34);
-    }
-
-    if (scene.type === "dungeon") {
-      for (let y = 35; y < H; y += 48) {
-        for (let x = 0; x < W; x += 96) {
-          ctx.strokeStyle = "#555861";
-          ctx.strokeRect(x, y, 96, 48);
-        }
-      }
-
-      for (const x of [100, 290, 670, 850]) {
-        ctx.fillStyle = "#6c625b";
-        ctx.fillRect(x, 60, 14, 180);
-        ctx.fillStyle = "#ffb14d";
-        ctx.fillRect(x - 4, 95, 22, 8);
-        ctx.fillStyle = "#ff6c31";
-        ctx.fillRect(x + 3, 85, 8, 12);
-      }
-    }
-
-    if (scene.type === "ice") {
-      for (let i = 0; i < 12; i++) {
-        const x = (i * 91 + 18) % W;
-
-        ctx.fillStyle = "#719eaf";
-        ctx.fillRect(x, 45 + (i % 4) * 15, 4, 70 + (i % 3) * 20);
-        ctx.fillStyle = "#c0f4ff";
-        ctx.fillRect(x + 4, 70 + (i % 4) * 15, 3, 42);
-      }
-
-      ctx.fillStyle = "rgba(180,235,255,.16)";
-      ctx.fillRect(0, H - 100, W, 50);
-    }
-
-    if (scene.type === "fire" || scene.type === "final") {
-      for (let i = 0; i < 13; i++) {
-        const x = (i * 83 + 19) % W;
-
-        ctx.fillStyle = scene.detail;
-        ctx.fillRect(x, 35, 24, 150 + (i % 4) * 28);
-
-        ctx.fillStyle = scene.accent;
-        ctx.fillRect(x + 7, 45 + (i % 3) * 20, 4, 15);
-      }
-    }
-
-    if (scene.type === "final") {
-      // Purple throne behind the boss.
-      ctx.fillStyle = "#100811";
-      ctx.fillRect(W / 2 - 70, 75, 140, 170);
-      ctx.fillRect(W / 2 - 95, 125, 190, 115);
-
-      ctx.fillStyle = "#7b244f";
-      ctx.fillRect(W / 2 - 45, 100, 90, 125);
-
-      ctx.fillStyle = "#ff4eeb";
-      ctx.fillRect(W / 2 - 22, 130, 12, 8);
-      ctx.fillRect(W / 2 + 10, 130, 12, 8);
-
-      // Atmospheric purple haze.
-      ctx.fillStyle = "rgba(125,0,180,0.08)";
-      ctx.fillRect(0, 28, W, H - 28);
-    }
-
-    // Chapter name banner.
-    ctx.fillStyle = "rgba(0,0,0,.55)";
-    ctx.fillRect(0, 28, W, 25);
-
-    ctx.fillStyle = scene.accent;
-    ctx.font = "bold 13px monospace";
-    ctx.textAlign = "center";
-    ctx.fillText(
-      "CHAPTER " + chapter + " — " + scene.name,
-      W / 2, 45
-    );
-    ctx.textAlign = "left";
-
-    // Locked gate / exit.
-    ctx.fillStyle = chapterCleared ? "#79e6a1" : scene.detail;
-    ctx.fillRect(W - 45, H / 2 - 32, 27, 64);
-
-    ctx.fillStyle = "#101711";
-    ctx.fillRect(W - 39, H / 2 - 25, 15, 53);
-
-    ctx.fillStyle = chapterCleared ? "#d6ffbd" : scene.accent;
-    ctx.fillRect(W - 34, H / 2 - 19, 5, 4);
-
-    ctx.fillStyle = "#e2f6d8";
-    ctx.font = "11px monospace";
-    ctx.textAlign = "right";
-    ctx.fillText(
-      chapterCleared
-        ? (chapter === MAX_CHAPTER ? "VICTORY" : "EXIT OPEN")
-        : "LOCKED",
-      W - 14, H / 2 + 43
-    );
-    ctx.textAlign = "left";
   }
 
-  // -------------------- DRAW PLAYER --------------------
+  // ---------------- DRAW CHARACTERS ----------------
+
+  function drawHealthBar(x, y, width, hp, maxHp, color = "#ff5267") {
+    ctx.fillStyle = "#17151d";
+    ctx.fillRect(x, y, width, 6);
+    ctx.fillStyle = color;
+    ctx.fillRect(x, y, width * clamp(hp / maxHp, 0, 1), 6);
+    ctx.strokeStyle = "#050508";
+    ctx.strokeRect(x, y, width, 6);
+  }
 
   function drawPlayer() {
-    const moving =
-      keys.has("w") || keys.has("a") ||
-      keys.has("s") || keys.has("d") ||
-      keys.has("arrowup") || keys.has("arrowdown") ||
-      keys.has("arrowleft") || keys.has("arrowright");
+    const p = player;
+    const x = Math.round(p.x);
+    const y = Math.round(p.y);
+    const moving = p.moving;
+    const bob = moving ? Math.sin(p.anim * 13) * 2 : 0;
 
-    const bob = moving ? Math.sin(player.walk) * 2 : 0;
-    const x = Math.round(player.x);
-    const y = Math.round(player.y + bob);
-
-    // Shadow.
-    ctx.fillStyle = "#080c09";
-    ctx.fillRect(x - 11, y + 8, 22, 5);
-
-    // Boots.
-    ctx.fillStyle = "#50382b";
-    ctx.fillRect(x - 9, y + 3, 7, 8);
-    ctx.fillRect(x + 2, y + 3, 7, 8);
-
-    // Body and clothes.
-    ctx.fillStyle = player.flash > 0 ? "#ffffff" : "#315c49";
-    ctx.fillRect(x - 10, y - 9, 20, 17);
-
-    ctx.fillStyle = "#203e31";
-    ctx.fillRect(x - 9, y + 2, 18, 4);
-
-    // Head and hair.
-    ctx.fillStyle = "#e9b78a";
-    ctx.fillRect(x - 8, y - 22, 16, 14);
-
-    ctx.fillStyle = chapter >= 6 ? "#100817" : "#34281f";
-    ctx.fillRect(x - 9, y - 24, 18, 6);
-    ctx.fillRect(x - 9, y - 20, 4, 7);
-
-    // Eyes.
-    ctx.fillStyle = chapter >= 6 ? "#cf73ff" : "#171b17";
-    ctx.fillRect(x + (player.faceX >= 0 ? 3 : -6), y - 17, 3, 3);
-
-    // Sword.
     ctx.save();
-    ctx.translate(x, y - 2);
-    ctx.rotate(Math.atan2(player.faceY, player.faceX));
 
-    ctx.fillStyle = "#d9e9eb";
-    ctx.fillRect(8, -2, 23, 4);
-
-    ctx.fillStyle = "#849a9c";
-    ctx.fillRect(8, -1, 21, 1);
-
-    ctx.fillStyle = "#8c613c";
-    ctx.fillRect(5, -5, 4, 10);
-
-    ctx.fillStyle = "#dfc98a";
-    ctx.fillRect(4, -6, 3, 12);
-
-    ctx.restore();
-
-    // Player health bar.
-    ctx.fillStyle = "#080c09";
-    ctx.fillRect(x - 19, y - 34, 38, 5);
-
-    ctx.fillStyle = "#72df78";
-    ctx.fillRect(
-      x - 18, y - 33,
-      36 * Math.max(0, player.hp) / player.maxHp, 3
-    );
-
-    // Dark Spirit aura after Chapter 6.
-    if (chapter >= 6) {
-      ctx.strokeStyle = "rgba(177,80,255,0.65)";
-      ctx.lineWidth = 2;
-      ctx.strokeRect(x - 15, y - 28, 30, 42);
-
-      if (Math.random() < 0.15) {
-        addEffect(
-          x + (Math.random() - 0.5) * 25,
-          y + (Math.random() - 0.5) * 25,
-          "#a855f7", 5, 0.35, "particle"
-        );
-      }
-    }
-  }
-
-  // -------------------- DRAW ENEMIES --------------------
-
-  function drawEnemy(e) {
-    const x = Math.round(e.x);
-    const y = Math.round(e.y + Math.sin(e.phase) * 2);
-
-    if (e.isBoss) {
-      drawPurpleKing(e, x, y);
-      return;
+    if (p.invulnerable > 0 && Math.floor(elapsed * 16) % 2 === 0) {
+      ctx.globalAlpha = 0.55;
     }
 
-    const color =
-      e.kind === 0 ? "#76b74f" :
-      e.kind === 1 ? "#9a6bb9" : "#b56d43";
+    // Shadow under feet.
+    ctx.fillStyle = "rgba(0,0,0,0.35)";
+    ctx.fillRect(x - 4, y + 36, 36, 8);
 
-    const dark =
-      e.kind === 0 ? "#365d2e" :
-      e.kind === 1 ? "#553969" : "#6b3a29";
+    if (takeoverComplete) {
+      drawBlackDragonArmor(x, y + bob);
+    } else {
+      // Original adventurer.
+      ctx.fillStyle = "#342a42";
+      ctx.fillRect(x + 5, y + 19 + bob, 19, 17);
 
-    // Shadow.
-    ctx.fillStyle = "#0b100c";
-    ctx.fillRect(x - 14, y + 10, 28, 5);
+      ctx.fillStyle = "#51415d";
+      ctx.fillRect(x + 7, y + 20 + bob, 15, 5);
 
-    // Body.
-    ctx.fillStyle = e.flash > 0 ? "#ffffff" : color;
-    ctx.fillRect(x - 12, y - 7, 24, 14);
-    ctx.fillRect(x - 8, y - 12, 16, 5);
-    ctx.fillRect(x - 15, y - 2, 3, 8);
-    ctx.fillRect(x + 12, y - 2, 3, 8);
+      ctx.fillStyle = "#d7ad8c";
+      ctx.fillRect(x + 7, y + 2 + bob, 15, 17);
 
-    // Face.
-    ctx.fillStyle = dark;
-    ctx.fillRect(x - 8, y + 4, 16, 4);
+      ctx.fillStyle = "#3b2926";
+      ctx.fillRect(x + 5, y + bob, 19, 8);
+      ctx.fillRect(x + 5, y + 5 + bob, 4, 9);
 
-    ctx.fillStyle = "#f8f5d7";
-    ctx.fillRect(x - 7, y - 4, 5, 5);
-    ctx.fillRect(x + 2, y - 4, 5, 5);
+      ctx.fillStyle = "#f2f2f2";
+      ctx.fillRect(x + (p.facing > 0 ? 17 : 8), y + 9 + bob, 4, 3);
 
-    ctx.fillStyle = "#171817";
-    ctx.fillRect(x - 5, y - 3, 2, 3);
-    ctx.fillRect(x + 4, y - 3, 2, 3);
+      ctx.fillStyle = "#25202b";
+      ctx.fillRect(x + 6, y + 34 + bob, 7, 7);
+      ctx.fillRect(x + 17, y + 34 + bob, 7, 7);
 
-    // Horns.
-    if (e.kind === 2) {
-      ctx.fillStyle = "#e2c28c";
-      ctx.fillRect(x - 11, y - 15, 4, 7);
-      ctx.fillRect(x + 7, y - 15, 4, 7);
+      ctx.fillStyle = "#6f8a9c";
+      ctx.fillRect(x + (p.facing > 0 ? 24 : -3), y + 21 + bob, 8, 4);
     }
 
-    // Enemy health bar.
-    ctx.fillStyle = "#080c09";
-    ctx.fillRect(x - 17, y - 23, 34, 5);
-
-    ctx.fillStyle = e.hp / e.maxHp < 0.3 ? "#ff4d4d" : "#e8a65a";
-    ctx.fillRect(
-      x - 16, y - 22,
-      32 * Math.max(0, e.hp) / e.maxHp, 3
-    );
-  }
-
-  function drawPurpleKing(e, x, y) {
-    const phaseTwo = e.hp < e.maxHp * 0.5;
-
-    // Glowing aura.
-    ctx.fillStyle = "rgba(150,0,255,0.20)";
-    ctx.beginPath();
-    ctx.arc(x, y, 68 + Math.sin(e.phase * 2) * 5, 0, Math.PI * 2);
-    ctx.fill();
-
-    // Shell.
-    ctx.fillStyle = e.flash > 0 ? "#ffffff" : "#6420a0";
-    ctx.fillRect(x - 34, y - 25, 68, 53);
-
-    ctx.fillStyle = "#9b35ef";
-    ctx.fillRect(x - 27, y - 32, 54, 12);
-    ctx.fillRect(x - 42, y - 12, 12, 27);
-    ctx.fillRect(x + 30, y - 12, 12, 27);
-
-    // Spikes.
-    ctx.fillStyle = "#d9c5ff";
-
-    for (let i = -2; i <= 2; i++) {
-      ctx.fillRect(x + i * 13 - 4, y - 39, 8, 15);
-      ctx.fillRect(x + i * 13 - 4, y + 19, 8, 13);
-    }
-
-    // Head and horns.
-    ctx.fillStyle = "#7b27c7";
-    ctx.fillRect(x - 22, y - 39, 44, 28);
-
-    ctx.fillStyle = "#d9c5ff";
-    ctx.fillRect(x - 22, y - 48, 8, 15);
-    ctx.fillRect(x + 14, y - 48, 8, 15);
-
-    // Glowing eyes.
-    ctx.fillStyle = phaseTwo ? "#ff2929" : "#ff3df2";
-    ctx.fillRect(x - 14, y - 29, 10, 7);
-    ctx.fillRect(x + 5, y - 29, 10, 7);
-
-    // Toxic mouth.
-    ctx.fillStyle = "#aaff55";
-    ctx.fillRect(x - 10, y - 15, 20, 5);
-
-    // Boss health bar above the boss.
-    ctx.fillStyle = "#100817";
-    ctx.fillRect(x - 48, y - 61, 96, 8);
-
-    ctx.fillStyle = phaseTwo ? "#ff3030" : "#b42cff";
-    ctx.fillRect(
-      x - 46, y - 59,
-      92 * Math.max(0, e.hp) / e.maxHp, 4
-    );
-
-    ctx.fillStyle = "#f0caff";
-    ctx.font = "bold 12px monospace";
-    ctx.textAlign = "center";
-    ctx.fillText("THE PURPLE KING", x, y - 70);
-
-    if (phaseTwo) {
-      ctx.fillStyle = "#ff5555";
-      ctx.fillText("ENRAGED!", x, y + 48);
-    }
-
-    ctx.textAlign = "left";
-  }
-
-  // -------------------- DRAW EFFECTS --------------------
-
-  function drawEffects() {
-    for (const fx of effects) {
-      const progress = 1 - fx.duration / fx.maxDuration;
-      const r = fx.radius * (fx.type === "particle" ? 1 : 0.5 + progress);
-
+    // Sword is visible when swinging.
+    if (p.attackCooldown > 0.2) {
       ctx.save();
-      ctx.globalAlpha = Math.max(0, 1 - progress);
-      ctx.strokeStyle = fx.color;
-      ctx.fillStyle = fx.color;
-      ctx.lineWidth = fx.type === "water" ? 4 : 3;
-
-      if (fx.type === "toxic") {
-        ctx.globalAlpha = Math.max(0, 0.30 * (1 - progress));
-        ctx.fillStyle = fx.color;
-
-        ctx.beginPath();
-        ctx.arc(fx.x, fx.y, r, 0, Math.PI * 2);
-        ctx.fill();
-
-        ctx.globalAlpha = Math.max(0, 0.8 * (1 - progress));
-        ctx.strokeStyle = "#d66bff";
-        ctx.lineWidth = 4;
-
-        ctx.beginPath();
-        ctx.arc(
-          fx.x, fx.y, r * 0.75,
-          progress * 5, progress * 5 + Math.PI * 1.5
-        );
-        ctx.stroke();
-      } else if (fx.type === "blackflash") {
-        ctx.globalAlpha = Math.max(0, 1 - progress);
-        ctx.strokeStyle = progress < 0.5 ? "#ffffff" : "#a855f7";
-        ctx.lineWidth = 5;
-
-        ctx.beginPath();
-        ctx.moveTo(fx.x - r, fx.y - r * 0.5);
-        ctx.lineTo(fx.x - r * 0.2, fx.y);
-        ctx.lineTo(fx.x + r * 0.15, fx.y - r * 0.65);
-        ctx.lineTo(fx.x + r, fx.y + r * 0.3);
-        ctx.stroke();
-      } else if (fx.type === "water") {
-        ctx.beginPath();
-        ctx.arc(
-          fx.x, fx.y, r,
-          progress * Math.PI * 2,
-          progress * Math.PI * 2 + Math.PI * 1.45
-        );
-        ctx.stroke();
-
-        ctx.beginPath();
-        ctx.arc(
-          fx.x, fx.y, r * 0.7,
-          -progress * Math.PI * 2,
-          -progress * Math.PI * 2 + Math.PI * 1.35
-        );
-        ctx.stroke();
-      } else if (fx.type === "slash") {
-        ctx.beginPath();
-        ctx.arc(fx.x, fx.y, r, -1.0, 1.0);
-        ctx.stroke();
-      } else if (fx.type === "particle") {
-        ctx.fillRect(fx.x - 2, fx.y - 2, 4, 4);
-      } else {
-        ctx.beginPath();
-        ctx.arc(fx.x, fx.y, r, 0, Math.PI * 2);
-        ctx.stroke();
-      }
-
+      ctx.translate(x + p.w / 2, y + 22 + bob);
+      ctx.scale(p.facing, 1);
+      ctx.rotate(-0.7);
+      ctx.fillStyle = takeoverComplete ? "#ff2948" : "#dfe9f0";
+      ctx.fillRect(7, -23, 5, 29);
+      ctx.fillStyle = "#9b8a70";
+      ctx.fillRect(4, 2, 11, 4);
       ctx.restore();
     }
+
+    ctx.restore();
+  }
+
+  // Pixel-style black dragon armor, drawn directly on the player.
+  function drawBlackDragonArmor(x, y) {
+    const pulse = Math.sin(elapsed * 8) * 0.5 + 0.5;
+
+    // Black aura.
+    ctx.fillStyle = `rgba(8,3,13,${0.22 + pulse * 0.16})`;
+    ctx.fillRect(x - 9, y - 9, 47, 55);
+
+    // Dark cape / wings.
+    ctx.fillStyle = "#100d17";
+    ctx.fillRect(x - 7, y + 10, 8, 26);
+    ctx.fillRect(x + 25, y + 10, 10, 24);
+    ctx.fillRect(x - 11, y + 17, 8, 12);
+    ctx.fillRect(x + 32, y + 17, 7, 11);
+
+    // Legs and boots.
+    ctx.fillStyle = "#111018";
+    ctx.fillRect(x + 4, y + 30, 9, 12);
+    ctx.fillRect(x + 17, y + 30, 9, 12);
+    ctx.fillStyle = "#35303f";
+    ctx.fillRect(x + 3, y + 37, 11, 5);
+    ctx.fillRect(x + 16, y + 37, 11, 5);
+
+    // Armored body.
+    ctx.fillStyle = "#09090e";
+    ctx.fillRect(x + 3, y + 12, 24, 21);
+    ctx.fillStyle = "#24212e";
+    ctx.fillRect(x + 6, y + 14, 18, 14);
+
+    // Dragon scales.
+    ctx.fillStyle = "#454050";
+    for (let row = 0; row < 3; row++) {
+      for (let col = 0; col < 3; col++) {
+        ctx.fillRect(x + 7 + col * 6, y + 15 + row * 5, 4, 3);
+      }
+    }
+
+    // Glowing chest mark.
+    ctx.fillStyle = "#8e142c";
+    ctx.fillRect(x + 12, y + 17, 7, 9);
+    ctx.fillStyle = "#ff2848";
+    ctx.fillRect(x + 14, y + 19, 3, 5);
+
+    // Shoulder plates.
+    ctx.fillStyle = "#0a0910";
+    ctx.fillRect(x - 1, y + 12, 11, 10);
+    ctx.fillRect(x + 22, y + 12, 11, 10);
+    ctx.fillStyle = "#504757";
+    ctx.fillRect(x + 1, y + 13, 7, 4);
+    ctx.fillRect(x + 24, y + 13, 7, 4);
+
+    // Head and horned helmet.
+    ctx.fillStyle = "#15121e";
+    ctx.fillRect(x + 5, y + 1, 20, 17);
+    ctx.fillStyle = "#393241";
+    ctx.fillRect(x + 8, y + 3, 14, 9);
+
+    // Horns.
+    ctx.fillStyle = "#07070b";
+    ctx.fillRect(x + 3, y - 4, 5, 10);
+    ctx.fillRect(x + 23, y - 5, 5, 11);
+    ctx.fillStyle = "#777081";
+    ctx.fillRect(x + 4, y - 4, 3, 5);
+    ctx.fillRect(x + 24, y - 5, 3, 5);
+
+    // Helmet faceplate.
+    ctx.fillStyle = "#08070c";
+    ctx.fillRect(x + 7, y + 7, 16, 8);
+
+    // Glowing red eyes.
+    ctx.fillStyle = "#ff173c";
+    ctx.fillRect(x + (player.facing > 0 ? 16 : 9), y + 8, 5, 3);
+    ctx.fillStyle = "#ff7386";
+    ctx.fillRect(x + (player.facing > 0 ? 17 : 10), y + 8, 2, 1);
+
+    // Forearm armor.
+    ctx.fillStyle = "#17131e";
+    ctx.fillRect(x - 1, y + 21, 8, 12);
+    ctx.fillRect(x + 24, y + 21, 8, 12);
+    ctx.fillStyle = "#a91b37";
+    ctx.fillRect(x + (player.facing > 0 ? 27 : 1), y + 24, 3, 5);
+
+    // Small red embers.
+    if (Math.random() < 0.35) {
+      effects.push({
+        kind: "particle",
+        x: x + rand(0, 28),
+        y: y + rand(0, 38),
+        vx: rand(-12, 12),
+        vy: rand(-35, -8),
+        life: 0.4,
+        maxLife: 0.4,
+        color: "#ed2346",
+        size: 2
+      });
+    }
+  }
+
+  function drawEnemy(e) {
+    if (e.hp <= 0) return;
+
+    const x = Math.round(e.x);
+    const y = Math.round(e.y);
+    const bob = Math.sin(elapsed * 4 + e.phase) * 2;
+
+    ctx.save();
+
+    if (e.flash > 0) ctx.globalAlpha = 0.45;
+
+    if (e.type === "boss") {
+      // Purple King: large, armored, spiky boss.
+      ctx.fillStyle = "rgba(160,35,255,0.16)";
+      ctx.fillRect(x - 18, y - 18, e.w + 36, e.h + 35);
+
+      // Feet.
+      ctx.fillStyle = "#21122f";
+      ctx.fillRect(x + 8, y + e.h - 10, 22, 14);
+      ctx.fillRect(x + 52, y + e.h - 10, 22, 14);
+
+      // Body.
+      ctx.fillStyle = "#4a2076";
+      ctx.fillRect(x + 8, y + 20 + bob, 66, 57);
+      ctx.fillStyle = "#7e36b7";
+      ctx.fillRect(x + 17, y + 25 + bob, 49, 38);
+
+      // Belly.
+      ctx.fillStyle = "#bb82db";
+      ctx.fillRect(x + 28, y + 42 + bob, 26, 22);
+
+      // Spikes.
+      ctx.fillStyle = "#2a123d";
+      ctx.fillRect(x - 3, y + 25, 13, 15);
+      ctx.fillRect(x + 72, y + 26, 13, 15);
+      ctx.fillRect(x + 14, y + 8, 12, 17);
+      ctx.fillRect(x + 32, y + 2, 12, 19);
+      ctx.fillRect(x + 50, y + 8, 12, 17);
+
+      // Head and horns.
+      ctx.fillStyle = "#572184";
+      ctx.fillRect(x + 14, y + 4 + bob, 56, 31);
+      ctx.fillStyle = "#34124d";
+      ctx.fillRect(x + 10, y - 4 + bob, 15, 19);
+      ctx.fillRect(x + 58, y - 4 + bob, 15, 19);
+
+      // Glowing eyes.
+      ctx.fillStyle = "#faff4f";
+      ctx.fillRect(x + 25, y + 15 + bob, 12, 7);
+      ctx.fillRect(x + 49, y + 15 + bob, 12, 7);
+
+      // Mouth.
+      ctx.fillStyle = "#160b20";
+      ctx.fillRect(x + 30, y + 28 + bob, 25, 6);
+      ctx.fillStyle = "#fff";
+      ctx.fillRect(x + 34, y + 28 + bob, 4, 4);
+      ctx.fillRect(x + 47, y + 28 + bob, 4, 4);
+
+      drawHealthBar(x - 5, y - 17, e.w + 10, e.hp, e.maxHp, "#c54bff");
+      ctx.fillStyle = "#f2d6ff";
+      ctx.font = "bold 13px monospace";
+      ctx.fillText("THE PURPLE KING", x - 10, y - 24);
+    } else {
+      let body = "#639b67";
+      let head = "#80c780";
+
+      if (e.type === "ice") { body = "#527eae"; head = "#a9e7ff"; }
+      if (e.type === "sand") { body = "#b57a32"; head = "#edbc64"; }
+      if (e.type === "shadow" || e.type === "dark") { body = "#30263f"; head = "#6e4b91"; }
+      if (e.type === "spirit") { body = "#481b5e"; head = "#b14bdf"; }
+      if (e.type === "knight") { body = "#4b313b"; head = "#a34a5c"; }
+
+      // Body and head.
+      ctx.fillStyle = body;
+      ctx.fillRect(x + 3, y + 11 + bob, e.w - 6, e.h - 10);
+      ctx.fillStyle = head;
+      ctx.fillRect(x + 2, y + 2 + bob, e.w - 4, 16);
+
+      // Eyes.
+      ctx.fillStyle = e.type === "spirit" ? "#ff3a65" : "#f7f5dc";
+      ctx.fillRect(x + 7, y + 8 + bob, 4, 4);
+      ctx.fillRect(x + e.w - 11, y + 8 + bob, 4, 4);
+
+      // Little feet.
+      ctx.fillStyle = "#17131e";
+      ctx.fillRect(x + 5, y + e.h - 4 + bob, 7, 6);
+      ctx.fillRect(x + e.w - 12, y + e.h - 4 + bob, 7, 6);
+
+      if (e.hp < e.maxHp) {
+        drawHealthBar(x, y - 9, e.w, e.hp, e.maxHp);
+      }
+    }
+
+    ctx.restore();
   }
 
   function drawProjectiles() {
     for (const p of projectiles) {
       ctx.save();
-      ctx.translate(p.x, p.y);
-      ctx.rotate(Math.atan2(p.vy, p.vx));
 
-      ctx.fillStyle = "#ff4d20";
-      ctx.fillRect(-17, -4, 24, 8);
-
-      ctx.fillStyle = "#ffae32";
-      ctx.fillRect(-11, -2, 24, 4);
-
-      ctx.fillStyle = "#fff0a0";
-      ctx.fillRect(8, -2, 12, 4);
-
-      ctx.fillStyle = "#fff5cb";
-      ctx.fillRect(17, -5, 6, 10);
+      if (p.color === "#ff7733") {
+        ctx.fillStyle = "#ff7733";
+        ctx.fillRect(p.x - 7, p.y - 3, 15, 6);
+        ctx.fillStyle = "#ffe18b";
+        ctx.fillRect(p.x - 3, p.y - 1, 8, 2);
+      } else if (p.toxic) {
+        ctx.globalAlpha = 0.72;
+        ctx.fillStyle = p.color;
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, p.radius || 22, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.globalAlpha = 0.25;
+        ctx.fillStyle = "#a8ff3d";
+        ctx.beginPath();
+        ctx.arc(p.x + 4, p.y - 3, (p.radius || 22) * 0.55, 0, Math.PI * 2);
+        ctx.fill();
+      } else {
+        ctx.fillStyle = p.color;
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, p.radius || 7, 0, Math.PI * 2);
+        ctx.fill();
+      }
 
       ctx.restore();
     }
   }
 
-  // -------------------- SCREEN OVERLAYS --------------------
+  // ---------------- HUD / OVERLAYS ----------------
 
-  function drawOverlay() {
-    if (!started && !gameOver && !chapterCleared) {
-      ctx.fillStyle = "rgba(0,0,0,.68)";
-      ctx.fillRect(0, 0, W, H);
+  function drawHUD() {
+    // Player health.
+    ctx.fillStyle = "rgba(0,0,0,0.65)";
+    ctx.fillRect(14, 14, 220, 43);
+    ctx.fillStyle = "#fff";
+    ctx.font = "bold 13px monospace";
+    ctx.fillText(takeoverComplete ? "BLACK DRAGON" : "ADVENTURER", 23, 30);
+    drawHealthBar(23, 38, 195, player.hp, player.maxHp,
+      takeoverComplete ? "#e51c43" : "#65d975");
 
+    // Chapter / enemies.
+    ctx.fillStyle = "rgba(0,0,0,0.55)";
+    ctx.fillRect(W - 230, 14, 216, 32);
+    ctx.fillStyle = "#f2f2f7";
+    ctx.font = "12px monospace";
+    ctx.fillText(`CHAPTER ${chapter + 1}/8`, W - 218, 34);
+
+    if (messageTimer > 0 && message) {
+      ctx.save();
+      ctx.globalAlpha = Math.min(1, messageTimer * 2);
+      ctx.fillStyle = "rgba(0,0,0,0.72)";
+      ctx.fillRect(100, H - 62, W - 200, 42);
+      ctx.strokeStyle = takeoverComplete ? "#b52c4a" : "#72727f";
+      ctx.strokeRect(100, H - 62, W - 200, 42);
+      ctx.fillStyle = "#fff";
+      ctx.font = "bold 15px monospace";
       ctx.textAlign = "center";
-      ctx.fillStyle = "#e2c4ff";
-      ctx.font = "bold 31px monospace";
-      ctx.fillText("THE DARK WITHIN", W / 2, H / 2 - 55);
-
-      ctx.font = "16px monospace";
-      ctx.fillStyle = "#ffffff";
-      ctx.fillText(
-        "Choose a difficulty and press Start Adventure",
-        W / 2, H / 2 - 10
-      );
-      ctx.fillText(
-        "Defeat every monster to unlock the exit",
-        W / 2, H / 2 + 20
-      );
-
+      ctx.fillText(message, W / 2, H - 36);
       ctx.textAlign = "left";
+      ctx.restore();
     }
 
-    if (chapterCleared) {
-      ctx.fillStyle = "rgba(0,0,0,.68)";
-      ctx.fillRect(0, 0, W, H);
-
-      ctx.textAlign = "center";
-      ctx.fillStyle = gameWon ? "#e8baff" : "#baffc0";
-      ctx.font = "bold 28px monospace";
-
-      ctx.fillText(
-        gameWon
-          ? "THE PURPLE KING HAS FALLEN!"
-          : "CHAPTER " + chapter + " CLEARED!",
-        W / 2, H / 2 - 20
-      );
-
-      ctx.font = "15px monospace";
-      ctx.fillStyle = "#ffffff";
-
-      ctx.fillText(
-        gameWon
-          ? "You defeated the final boss. Your journey is complete!"
-          : "Every enemy has been defeated.",
-        W / 2, H / 2 + 12
-      );
-
-      ctx.fillText(
-        gameWon
-          ? "Press Play Again to start a new journey."
-          : "Press Continue to begin the next chapter.",
-        W / 2, H / 2 + 40
-      );
-
-      ctx.textAlign = "left";
+    if (chapterCleared && !victory) {
+      drawOverlay("CHAPTER CLEARED", "All enemies defeated. Press Continue above.");
     }
 
     if (gameOver) {
-      ctx.fillStyle = "rgba(30,0,0,.75)";
-      ctx.fillRect(0, 0, W, H);
-
-      ctx.textAlign = "center";
-      ctx.fillStyle = "#ff8585";
-      ctx.font = "bold 34px monospace";
-      ctx.fillText("YOU DIED", W / 2, H / 2);
-
-      ctx.font = "16px monospace";
-      ctx.fillStyle = "#ffffff";
-      ctx.fillText("Press Try Again to restart.", W / 2, H / 2 + 35);
-
-      ctx.textAlign = "left";
+      drawOverlay("YOU HAVE FALLEN", "Press Restart Game to try again.");
     }
 
-    if (messageTime > 0 && started && !chapterCleared && !gameOver) {
-      ctx.textAlign = "center";
-      ctx.font = "bold 17px monospace";
-      ctx.fillStyle = chapter >= 6 ? "#e5c2ff" : "#e5ffce";
-      ctx.fillText(message, W / 2, 70);
-      ctx.textAlign = "left";
+    if (victory) {
+      drawOverlay("THE DARKNESS IS DEFEATED", "You have completed TheDarkWithin!");
     }
   }
 
-  // -------------------- DRAW FRAME --------------------
+  function drawOverlay(title, subtitle) {
+    ctx.fillStyle = "rgba(0,0,0,0.76)";
+    ctx.fillRect(0, 0, W, H);
+    ctx.textAlign = "center";
+    ctx.fillStyle = victory ? "#8dffad" : "#f3f0f7";
+    ctx.font = "bold 29px monospace";
+    ctx.fillText(title, W / 2, H / 2 - 12);
+    ctx.fillStyle = "#d3d0dc";
+    ctx.font = "15px monospace";
+    ctx.fillText(subtitle, W / 2, H / 2 + 25);
+    ctx.textAlign = "left";
+  }
 
-  function draw() {
-    drawBackground();
+  // ---------------- CUTSCENE DRAWING ----------------
 
-    for (const cloud of toxicClouds) {
+  function drawTakeoverCutscene() {
+    if (!cutscene) return;
+
+    const t = cutscene.time;
+    const darkness = clamp(t / 1.8, 0, 0.94);
+
+    ctx.fillStyle = `rgba(0,0,0,${darkness})`;
+    ctx.fillRect(0, 0, W, H);
+
+    // A huge shadow spirit rises behind the player.
+    if (t > 1.2) {
+      const reveal = clamp((t - 1.2) / 1.8, 0, 1);
       ctx.save();
-      ctx.globalAlpha = Math.min(0.36, cloud.life * 0.14);
-      ctx.fillStyle = "#a020f0";
+      ctx.globalAlpha = reveal * 0.92;
+
+      ctx.fillStyle = "#08060d";
       ctx.beginPath();
-      ctx.arc(cloud.x, cloud.y, cloud.r, 0, Math.PI * 2);
+      ctx.ellipse(480, 260, 90 + reveal * 30, 145 + reveal * 20, 0, 0, Math.PI * 2);
       ctx.fill();
+
+      // Spirit horns.
+      ctx.fillStyle = "#1b101f";
+      ctx.fillRect(410, 90, 25, 100);
+      ctx.fillRect(525, 90, 25, 100);
+
+      // Spirit eyes.
+      ctx.fillStyle = "#ff173b";
+      ctx.fillRect(435, 205, 24, 10);
+      ctx.fillRect(495, 205, 24, 10);
+      ctx.fillStyle = "#ff7890";
+      ctx.fillRect(440, 207, 10, 3);
+      ctx.fillRect(500, 207, 10, 3);
+
+      // Black tendrils reaching for the player.
+      ctx.strokeStyle = "#17121e";
+      ctx.lineWidth = 15;
+      for (let i = 0; i < 7; i++) {
+        const startX = 420 + i * 20;
+        ctx.beginPath();
+        ctx.moveTo(startX, 300);
+        ctx.quadraticCurveTo(
+          250 + i * 55,
+          240 + Math.sin(t * 3 + i) * 45,
+          player.x + player.w / 2,
+          player.y + player.h / 2
+        );
+        ctx.stroke();
+      }
+
       ctx.restore();
     }
 
-    for (const e of enemies) {
-      if (e.alive) drawEnemy(e);
+    // Player silhouette gradually changes into armor.
+    if (t > 2.4 && t < 7.3) {
+      ctx.save();
+      ctx.globalAlpha = clamp((t - 2.4) / 2.2, 0, 1);
+      drawBlackDragonArmor(player.x, player.y);
+      ctx.restore();
+    } else if (t <= 2.4) {
+      drawPlayer();
     }
 
-    drawEffects();
-    drawProjectiles();
+    // Screen text by stage.
+    let title = "THE WORLD FALLS SILENT";
+    let subtitle = "Something is watching you...";
 
-    if (player) drawPlayer();
+    if (t >= 1.5 && t < 3.1) {
+      title = "THE BLACK SPIRIT";
+      subtitle = "Your body no longer belongs to you.";
+    } else if (t >= 3.1 && t < 5.8) {
+      title = "THE TAKEOVER";
+      subtitle = "The darkness coils around your soul.";
+    } else if (t >= 5.8 && t < 7.3) {
+      title = "BLACK DRAGON ARMOR";
+      subtitle = "A new power awakens.";
+    } else if (t >= 7.3) {
+      title = "AWAKEN";
+      subtitle = "Black Flash and Divergent Fist unlocked.";
+    }
 
-    drawOverlay();
+    ctx.fillStyle = "rgba(0,0,0,0.42)";
+    ctx.fillRect(90, 28, W - 180, 65);
+    ctx.textAlign = "center";
+    ctx.fillStyle = t > 3 ? "#ff4a62" : "#f0edf7";
+    ctx.font = "bold 23px monospace";
+    ctx.fillText(title, W / 2, 54);
+    ctx.fillStyle = "#e5dfe9";
+    ctx.font = "13px monospace";
+    ctx.fillText(subtitle, W / 2, 77);
+    ctx.textAlign = "left";
 
-    // Ability cooldown labels.
-    ctx.font = "12px monospace";
-
-    ctx.fillStyle = waterCooldown <= 0 ? "#d8a5ff" : "#766580";
-    ctx.fillText(
-      chapter < 6
-        ? (waterCooldown <= 0
-          ? "M: WATER WHEEL READY"
-          : "M: WATER " + waterCooldown.toFixed(1) + "s")
-        : (waterCooldown <= 0
-          ? "M: BLACK FLASH READY"
-          : "M: BLACK FLASH " + waterCooldown.toFixed(1) + "s"),
-      15, H - 28
-    );
-
-    ctx.fillStyle = chapter >= 6
-      ? (divergentCooldown <= 0 ? "#cda4ff" : "#766580")
-      : "#a0a0a0";
-
-    ctx.fillText(
-      chapter >= 6
-        ? (divergentCooldown <= 0
-          ? "N: DIVERGENT FIST READY"
-          : "N: DIVERGENT " + divergentCooldown.toFixed(1) + "s")
-        : "N: UNLOCKS IN CHAPTER 6",
-      15, H - 12
-    );
-
-    ctx.fillStyle = flameCooldown <= 0 ? "#ffb05c" : "#8d7764";
-    ctx.fillText(
-      flameCooldown <= 0
-        ? "K: FLAME ARROW READY"
-        : "K: FLAME " + flameCooldown.toFixed(1) + "s",
-      W - 200, H - 12
-    );
+    // Red flash as the armor locks into place.
+    if (t > 6.9 && t < 7.5) {
+      const alpha = Math.sin((t - 6.9) / 0.6 * Math.PI) * 0.7;
+      ctx.fillStyle = `rgba(255,20,55,${Math.max(0, alpha)})`;
+      ctx.fillRect(0, 0, W, H);
+    }
   }
 
-  // -------------------- INPUT --------------------
+  // ---------------- MAIN UPDATE / RENDER ----------------
 
-  window.addEventListener("keydown", event => {
-    const key = event.key.toLowerCase();
+  function update(dt) {
+    elapsed += dt;
 
-    if (
-      ["arrowup", "arrowdown", "arrowleft", "arrowright", " "]
-        .includes(key)
-    ) {
-      event.preventDefault();
+    if (messageTimer > 0) messageTimer -= dt;
+
+    if (cutscene) {
+      updateCutscene(dt);
+      updateEffects(dt);
+      return;
     }
 
-    keys.add(key);
+    if (!running || gameOver || victory || chapterCleared) {
+      updateEffects(dt);
+      return;
+    }
 
-    if (event.repeat) return;
+    player.attackCooldown = Math.max(0, player.attackCooldown - dt);
+    player.skillCooldown = Math.max(0, player.skillCooldown - dt);
+    player.divergentCooldown = Math.max(0, player.divergentCooldown - dt);
+    player.arrowCooldown = Math.max(0, player.arrowCooldown - dt);
+    player.invulnerable = Math.max(0, player.invulnerable - dt);
 
-    if (key === " " || key === "j") swordAttack();
-    if (key === "m") blackFlashOrWater();
-    if (key === "n") divergentFist();
-    if (key === "k") flameArrow();
-  });
+    let mx = 0;
+    let my = 0;
 
-  window.addEventListener("keyup", event => {
-    keys.delete(event.key.toLowerCase());
-  });
+    if (keys.ArrowLeft || keys.a || keys.A) mx--;
+    if (keys.ArrowRight || keys.d || keys.D) mx++;
+    if (keys.ArrowUp || keys.w || keys.W) my--;
+    if (keys.ArrowDown || keys.s || keys.S) my++;
 
-  window.addEventListener("blur", () => keys.clear());
+    const length = Math.hypot(mx, my) || 1;
+    mx /= length;
+    my /= length;
 
-  canvas.addEventListener("click", () => swordAttack());
+    player.moving = !!(mx || my);
+    player.anim += dt;
 
-  // -------------------- MAIN LOOP --------------------
+    if (mx !== 0) player.facing = Math.sign(mx);
 
-  function loop(timestamp) {
-    if (!lastTime) lastTime = timestamp;
+    player.x += mx * player.speed * dt;
+    player.y += my * player.speed * dt;
+    player.x = clamp(player.x, 5, W - player.w - 5);
+    player.y = clamp(player.y, 270, H - player.h - 5);
 
-    const dt = Math.min((timestamp - lastTime) / 1000, 0.04);
-    lastTime = timestamp;
+    updateEnemies(dt);
+    updateProjectiles(dt);
+    updateEffects(dt);
+    updateLabels();
+  }
+
+  function render() {
+    ctx.save();
+
+    if (screenShake > 0) {
+      ctx.translate(rand(-screenShake, screenShake), rand(-screenShake, screenShake));
+    }
+
+    drawBackground();
+
+    // Draw characters in vertical order for depth.
+    const actors = [
+      ...enemies.filter(e => e.hp > 0).map(e => ({ y: e.y + e.h, type: "enemy", obj: e })),
+      { y: player.y + player.h, type: "player", obj: player }
+    ].sort((a, b) => a.y - b.y);
+
+    for (const a of actors) {
+      if (a.type === "player") drawPlayer();
+      else drawEnemy(a.obj);
+    }
+
+    drawProjectiles();
+    drawEffects();
+    drawHUD();
+
+    if (cutscene) drawTakeoverCutscene();
+
+    ctx.restore();
+  }
+
+  function loop(time) {
+    const dt = Math.min((time - (lastTime || time)) / 1000, 0.04);
+    lastTime = time;
 
     update(dt);
-    draw();
-
+    render();
     requestAnimationFrame(loop);
   }
 
-  // -------------------- START --------------------
+  // ---------------- CONTROLS ----------------
+
+  window.addEventListener("keydown", event => {
+    const key = event.key;
+
+    if ([
+      "ArrowUp", "ArrowDown", "ArrowLeft", "ArrowRight", " "
+    ].includes(key)) {
+      event.preventDefault();
+    }
+
+    keys[key] = true;
+
+    if (event.repeat) return;
+
+    if (key === " " || key === "j" || key === "J") {
+      swordAttack();
+    }
+
+    if (key === "m" || key === "M") {
+      if (takeoverComplete) blackFlash();
+      else waterWheel();
+    }
+
+    if (key === "n" || key === "N") {
+      divergentFist();
+    }
+
+    if (key === "k" || key === "K") {
+      flameArrow();
+    }
+  });
+
+  window.addEventListener("keyup", event => {
+    keys[event.key] = false;
+  });
+
+  canvas.addEventListener("click", () => {
+    swordAttack();
+  });
+
+  startButton.addEventListener("click", () => {
+    if (victory) {
+      resetGame();
+      return;
+    }
+
+    if (chapterCleared) {
+      if (chapter === chapters.length - 1) {
+        victory = true;
+        running = false;
+        showMessage("You defeated the Purple King!", 8);
+        updateLabels();
+      } else {
+        nextChapter();
+        startButton.textContent = "Continue to Next Chapter";
+      }
+      return;
+    }
+
+    if (!running && !cutscene && !gameOver) {
+      startGame();
+    }
+  });
+
+  document.getElementById("dwRestart").addEventListener("click", () => {
+    resetGame();
+    startGame();
+  });
+
+  difficultySelect.addEventListener("change", () => {
+    if (!difficultySelect.disabled) {
+      difficultySettings = difficulty[difficultySelect.value] || difficulty.medium;
+      resetGame();
+    }
+  });
+
+  // ---------------- OPTIONAL EXISTING HTML OVERLAY ----------------
+  // If game.html already has a Start Adventure button, connect it too.
+
+  const existingStart = document.getElementById("startBtn");
+  if (existingStart) {
+    existingStart.addEventListener("click", () => {
+      const box = document.getElementById("messageBox");
+      if (box) box.style.display = "none";
+
+      if (chapterCleared) {
+        nextChapter();
+      } else if (!running && !cutscene && !gameOver) {
+        startGame();
+      }
+    });
+  }
+
+  // ---------------- INITIALIZE ----------------
 
   resetGame();
   requestAnimationFrame(loop);
+
 })();
