@@ -1,1 +1,1044 @@
 
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>TheDarkWithin: The Forgotten King</title>
+
+<style>
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background: #050507;
+  color: white;
+  font-family: Georgia, serif;
+}
+
+#game {
+  position: relative;
+  width: min(1100px, 100%);
+  margin: auto;
+  min-height: 100vh;
+  overflow: hidden;
+  background: #080910;
+}
+
+canvas {
+  display: block;
+  width: 100%;
+  background: #121421;
+  image-rendering: pixelated;
+}
+
+#cinematic {
+  position: absolute;
+  inset: 0;
+  background: #030305;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  padding: 30px;
+  text-align: center;
+  z-index: 10;
+  transition: opacity 1.4s ease;
+}
+
+#cinematic.hidden {
+  opacity: 0;
+  pointer-events: none;
+}
+
+#cinematicTitle {
+  color: #dcc18b;
+  font-size: clamp(25px, 5vw, 54px);
+  letter-spacing: 3px;
+  font-weight: normal;
+  line-height: 1.3;
+  text-shadow: 0 0 30px #ac743a66;
+  animation: fadeIn 2s ease;
+}
+
+#cinematicText {
+  max-width: 630px;
+  font-size: clamp(15px, 2vw, 22px);
+  color: #bdb8bc;
+  line-height: 1.8;
+  margin: 25px 0;
+}
+
+#nextScene, #skipIntro {
+  border: 1px solid #8b7252;
+  background: #191613;
+  color: #ead6ad;
+  padding: 13px 29px;
+  font: 15px Georgia, serif;
+  cursor: pointer;
+  letter-spacing: 2px;
+}
+
+#nextScene:hover,
+#skipIntro:hover {
+  background: #463621;
+}
+
+#skipIntro {
+  position: absolute;
+  top: 18px;
+  right: 18px;
+  padding: 9px 15px;
+  font-size: 12px;
+  z-index: 12;
+}
+
+#chapterCard {
+  position: absolute;
+  inset: 0;
+  background: #050507;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  z-index: 8;
+  text-align: center;
+}
+
+#chapterCard h1 {
+  font-size: clamp(28px, 5vw, 56px);
+  color: #e6c88f;
+  font-weight: normal;
+}
+
+#chapterCard p {
+  color: #999;
+  letter-spacing: 5px;
+}
+
+#dialogueBox {
+  position: absolute;
+  bottom: 65px;
+  left: 5%;
+  width: 90%;
+  min-height: 120px;
+  border: 2px solid #8c744d;
+  background: rgba(7, 8, 14, 0.96);
+  padding: 20px 25px;
+  display: none;
+  z-index: 5;
+}
+
+#speaker {
+  font-weight: bold;
+  color: #e5c584;
+  font-size: 19px;
+  margin-bottom: 10px;
+}
+
+#dialogueText {
+  color: #eee;
+  font-size: 17px;
+  line-height: 1.5;
+}
+
+#dialogueHint {
+  text-align: right;
+  color: #a99e8e;
+  font-size: 12px;
+  margin-top: 12px;
+}
+
+#objective {
+  position: absolute;
+  top: 15px;
+  left: 15px;
+  padding: 11px 15px;
+  background: rgba(0, 0, 0, 0.72);
+  border-left: 3px solid #e5c584;
+  font: 14px Arial, sans-serif;
+  display: none;
+  z-index: 3;
+}
+
+#controls {
+  padding: 13px 15px;
+  background: #101014;
+  color: #b7b5b1;
+  text-align: center;
+  font: 13px Arial, sans-serif;
+  line-height: 1.7;
+}
+
+#interactButton {
+  position: absolute;
+  right: 20px;
+  bottom: 100px;
+  padding: 14px 22px;
+  border: 1px solid #d5b26d;
+  background: #352813;
+  color: #fff2d2;
+  font: bold 14px Arial, sans-serif;
+  cursor: pointer;
+  display: none;
+  z-index: 4;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+</style>
+</head>
+
+<body>
+
+<div id="game">
+
+  <canvas id="canvas" width="960" height="540"></canvas>
+
+  <div id="cinematic">
+    <button id="skipIntro">SKIP INTRO</button>
+
+    <h1 id="cinematicTitle"></h1>
+    <p id="cinematicText"></p>
+
+    <button id="nextScene">
+      CONTINUE
+    </button>
+  </div>
+
+  <div id="chapterCard">
+    <p>CHAPTER I</p>
+    <h1>THE GOLDEN KINGDOM</h1>
+  </div>
+
+  <div id="objective"></div>
+
+  <div id="dialogueBox">
+    <div id="speaker"></div>
+    <div id="dialogueText"></div>
+    <div id="dialogueHint">
+      Press E, Space or click to continue
+    </div>
+  </div>
+
+  <button id="interactButton">
+    E — INTERACT
+  </button>
+
+  <div id="controls">
+    WASD / Arrow Keys — Move
+    | E — Interact / Continue Dialogue
+    | Talk to the highlighted characters
+  </div>
+
+</div>
+
+<script>
+"use strict";
+
+// ==========================================
+// THE FORGOTTEN KING
+// OPENING CINEMATIC + CHAPTER ONE
+// ==========================================
+
+const canvas = document.getElementById("canvas");
+const ctx = canvas.getContext("2d");
+
+ctx.imageSmoothingEnabled = false;
+
+const W = canvas.width;
+const H = canvas.height;
+
+const cinematic = document.getElementById("cinematic");
+const cinematicTitle = document.getElementById("cinematicTitle");
+const cinematicText = document.getElementById("cinematicText");
+const nextSceneButton = document.getElementById("nextScene");
+const skipButton = document.getElementById("skipIntro");
+
+const chapterCard = document.getElementById("chapterCard");
+const objective = document.getElementById("objective");
+
+const dialogueBox = document.getElementById("dialogueBox");
+const speaker = document.getElementById("speaker");
+const dialogueText = document.getElementById("dialogueText");
+const interactButton = document.getElementById("interactButton");
+
+let mode = "intro";
+let introIndex = 0;
+let stage = 0;
+let time = 0;
+let lastFrame = 0;
+
+const keys = {};
+
+const player = {
+  x: 460,
+  y: 430,
+  speed: 180,
+  facing: 1
+};
+
+// ==========================================
+// OPENING CINEMATIC SCRIPT
+// ==========================================
+
+const introScenes = [
+  {
+    title: "HUNDREDS OF YEARS AGO...",
+    text:
+      "Long before the villagers disappeared. " +
+      "Before the darkness swallowed the land."
+  },
+  {
+    title: "A KINGDOM OF LIGHT",
+    text:
+      "There once stood a magnificent kingdom, " +
+      "protected by its loyal knights and a king " +
+      "beloved by all his people."
+  },
+  {
+    title: "BUT PEACE NEVER LASTS FOREVER",
+    text:
+      "Deep beneath the royal castle, miners " +
+      "discovered something that had been buried " +
+      "for thousands of years."
+  },
+  {
+    title: "THE PURPLE CRYSTAL",
+    text:
+      "It pulsed with a strange light. " +
+      "And from within it, something whispered."
+  },
+  {
+    title: "A PROMISE OF POWER",
+    text:
+      "The king believed the crystal could " +
+      "protect his kingdom forever. " +
+      "He could not see the darkness hiding inside."
+  },
+  {
+    title: "EVERY KINGDOM HAS A BEGINNING...",
+    text:
+      "And every darkness has an origin."
+  },
+  {
+    title: "THEDARKWITHIN",
+    text:
+      "DLC I — THE FORGOTTEN KING"
+  }
+];
+
+function showIntroScene() {
+  const scene = introScenes[introIndex];
+
+  cinematicTitle.style.animation = "none";
+  void cinematicTitle.offsetWidth;
+  cinematicTitle.style.animation = "fadeIn 2s ease";
+
+  cinematicTitle.textContent = scene.title;
+  cinematicText.textContent = scene.text;
+
+  nextSceneButton.textContent =
+    introIndex === introScenes.length - 1
+      ? "BEGIN THE STORY"
+      : "CONTINUE";
+}
+
+nextSceneButton.addEventListener("click", () => {
+  introIndex++;
+
+  if (introIndex >= introScenes.length) {
+    startChapter();
+  } else {
+    showIntroScene();
+  }
+});
+
+skipButton.addEventListener("click", startChapter);
+
+// ==========================================
+// CHAPTER TRANSITION
+// ==========================================
+
+function startChapter() {
+  if (mode !== "intro") return;
+
+  mode = "transition";
+
+  cinematic.classList.add("hidden");
+
+  chapterCard.style.display = "flex";
+
+  setTimeout(() => {
+    chapterCard.style.display = "none";
+
+    mode = "playing";
+    stage = 0;
+
+    player.x = 460;
+    player.y = 430;
+
+    updateObjective();
+
+    playDialogue([
+      {
+        name: "Narrator",
+        text:
+          "The Golden Kingdom. Hundreds of years " +
+          "before the events of TheDarkWithin."
+      },
+      {
+        name: "Narrator",
+        text:
+          "You are Sir Aeron, the king's most trusted knight."
+      },
+      {
+        name: "Sir Aeron",
+        text:
+          "Another peaceful morning. " +
+          "I should report to His Majesty."
+      }
+    ]);
+
+  }, 2600);
+}
+
+// ==========================================
+// CHAPTER OBJECTIVES
+// ==========================================
+
+function updateObjective() {
+  objective.style.display = "block";
+
+  const objectives = [
+    "OBJECTIVE: Speak to the Royal Guard",
+    "OBJECTIVE: Speak to the Villager",
+    "OBJECTIVE: Report to the King",
+    "CHAPTER COMPLETE: Await the next chapter"
+  ];
+
+  objective.textContent = objectives[stage];
+}
+
+// ==========================================
+// DIALOGUE SYSTEM
+// ==========================================
+
+let dialogue = [];
+let dialogueIndex = 0;
+let dialogueActive = false;
+let onDialogueFinish = null;
+
+function playDialogue(lines, finished = null) {
+  dialogue = lines;
+  dialogueIndex = 0;
+  dialogueActive = true;
+  onDialogueFinish = finished;
+
+  dialogueBox.style.display = "block";
+  interactButton.style.display = "none";
+
+  showDialogueLine();
+}
+
+function showDialogueLine() {
+  const line = dialogue[dialogueIndex];
+
+  speaker.textContent = line.name;
+  dialogueText.textContent = line.text;
+}
+
+function advanceDialogue() {
+  if (!dialogueActive) return;
+
+  dialogueIndex++;
+
+  if (dialogueIndex < dialogue.length) {
+    showDialogueLine();
+    return;
+  }
+
+  dialogueActive = false;
+  dialogueBox.style.display = "none";
+
+  const finished = onDialogueFinish;
+  onDialogueFinish = null;
+
+  if (finished) finished();
+}
+
+// ==========================================
+// STORY CHARACTERS
+// ==========================================
+
+const characters = [
+  {
+    x: 235,
+    y: 400,
+    name: "Royal Guard",
+    color: "#7b8ea1",
+    stage: 0
+  },
+  {
+    x: 715,
+    y: 415,
+    name: "Villager",
+    color: "#a77357",
+    stage: 1
+  },
+  {
+    x: 485,
+    y: 205,
+    name: "King Aldric",
+    color: "#c2a047",
+    stage: 2
+  }
+];
+
+function nearestCharacter() {
+  if (mode !== "playing" || dialogueActive) {
+    return null;
+  }
+
+  for (const npc of characters) {
+    if (npc.stage !== stage) continue;
+
+    const dist = Math.hypot(
+      npc.x - player.x,
+      npc.y - player.y
+    );
+
+    if (dist < 95) return npc;
+  }
+
+  return null;
+}
+
+function interact() {
+  if (dialogueActive) {
+    advanceDialogue();
+    return;
+  }
+
+  if (mode !== "playing") return;
+
+  const npc = nearestCharacter();
+  if (!npc) return;
+
+  if (stage === 0) {
+    playDialogue([
+      {
+        name: "Royal Guard",
+        text:
+          "Sir Aeron! Good morning. " +
+          "The capital is peaceful today."
+      },
+      {
+        name: "Sir Aeron",
+        text:
+          "Let's hope it stays that way."
+      },
+      {
+        name: "Royal Guard",
+        text:
+          "There is something strange, though. " +
+          "The miners have been working deep " +
+          "beneath the castle."
+      },
+      {
+        name: "Sir Aeron",
+        text:
+          "Mining beneath the castle? " +
+          "Why wasn't I informed?"
+      }
+    ], () => {
+      stage = 1;
+      updateObjective();
+    });
+  }
+
+  else if (stage === 1) {
+    playDialogue([
+      {
+        name: "Villager",
+        text:
+          "Sir Aeron! Thank goodness you're here."
+      },
+      {
+        name: "Sir Aeron",
+        text:
+          "What's troubling you?"
+      },
+      {
+        name: "Villager",
+        text:
+          "My brother works in the royal mines. " +
+          "He says they found a strange purple light."
+      },
+      {
+        name: "Villager",
+        text:
+          "He told me he could hear a voice " +
+          "calling from beneath the ground."
+      },
+      {
+        name: "Sir Aeron",
+        text:
+          "A voice? I need to speak with the king."
+      }
+    ], () => {
+      stage = 2;
+      updateObjective();
+    });
+  }
+
+  else if (stage === 2) {
+    playDialogue([
+      {
+        name: "King Aldric",
+        text:
+          "Aeron! My most loyal knight. " +
+          "Come forward."
+      },
+      {
+        name: "Sir Aeron",
+        text:
+          "Your Majesty. I hear troubling " +
+          "rumors about the mines."
+      },
+      {
+        name: "King Aldric",
+        text:
+          "There is nothing to fear. " +
+          "The miners have discovered something " +
+          "extraordinary."
+      },
+      {
+        name: "Sir Aeron",
+        text:
+          "What exactly have they found?"
+      },
+      {
+        name: "King Aldric",
+        text:
+          "Something that may ensure the safety " +
+          "of our kingdom for eternity."
+      },
+      {
+        name: "Sir Aeron",
+        text:
+          "I do not like the sound of this."
+      },
+      {
+        name: "Royal Messenger",
+        text:
+          "YOUR MAJESTY! An urgent message " +
+          "from the royal excavation!"
+      },
+      {
+        name: "Royal Messenger",
+        text:
+          "The crystal... it has begun to glow. " +
+          "And one of the miners has vanished!"
+      },
+      {
+        name: "King Aldric",
+        text:
+          "...Prepare the guards. " +
+          "We go beneath the castle at once."
+      }
+    ], finishChapter);
+  }
+}
+
+// ==========================================
+// CHAPTER ONE ENDING
+// ==========================================
+
+function finishChapter() {
+  stage = 3;
+  updateObjective();
+  mode = "finished";
+
+  cinematic.classList.remove("hidden");
+
+  cinematicTitle.textContent =
+    "CHAPTER I COMPLETE";
+
+  cinematicText.textContent =
+    "Beneath the peaceful kingdom, " +
+    "an ancient power has awakened. " +
+    "King Aldric has ordered an expedition " +
+    "into the royal mines. " +
+    "To be continued in Chapter II: " +
+    "Beneath the Castle.";
+
+  nextSceneButton.textContent =
+    "REPLAY CHAPTER";
+
+  skipButton.style.display = "none";
+
+  nextSceneButton.onclick = () => {
+    window.location.reload();
+  };
+}
+
+// ==========================================
+// INPUT
+// ==========================================
+
+window.addEventListener("keydown", e => {
+  const key = e.key.toLowerCase();
+
+  if (
+    ["arrowup", "arrowdown", "arrowleft",
+     "arrowright", " "].includes(key)
+  ) {
+    e.preventDefault();
+  }
+
+  keys[key] = true;
+
+  if (
+    !e.repeat &&
+    (key === "e" || key === " ")
+  ) {
+    interact();
+  }
+});
+
+window.addEventListener("keyup", e => {
+  keys[e.key.toLowerCase()] = false;
+});
+
+window.addEventListener("blur", () => {
+  for (const key in keys) keys[key] = false;
+});
+
+interactButton.addEventListener("click", interact);
+dialogueBox.addEventListener("click", advanceDialogue);
+
+// ==========================================
+// PLAYER MOVEMENT
+// ==========================================
+
+function movePlayer(dt) {
+  if (mode !== "playing" || dialogueActive) {
+    return;
+  }
+
+  let dx = 0;
+  let dy = 0;
+
+  if (keys["a"] || keys["arrowleft"]) dx--;
+  if (keys["d"] || keys["arrowright"]) dx++;
+  if (keys["w"] || keys["arrowup"]) dy--;
+  if (keys["s"] || keys["arrowdown"]) dy++;
+
+  const length = Math.hypot(dx, dy);
+
+  if (length > 0) {
+    dx /= length;
+    dy /= length;
+
+    player.x += dx * player.speed * dt;
+    player.y += dy * player.speed * dt;
+
+    if (dx !== 0) {
+      player.facing = dx > 0 ? 1 : -1;
+    }
+  }
+
+  player.x = Math.max(25, Math.min(W - 25, player.x));
+  player.y = Math.max(175, Math.min(H - 30, player.y));
+}
+
+// ==========================================
+// PIXEL ART CASTLE ENVIRONMENT
+// ==========================================
+
+function drawCastle() {
+  // Golden sky.
+  const sky = ctx.createLinearGradient(
+    0, 0, 0, H
+  );
+
+  sky.addColorStop(0, "#9e634f");
+  sky.addColorStop(0.6, "#e9ae69");
+  sky.addColorStop(1, "#705c52");
+
+  ctx.fillStyle = sky;
+  ctx.fillRect(0, 0, W, H);
+
+  // Sun.
+  ctx.fillStyle = "#fbe5a0";
+  ctx.beginPath();
+  ctx.arc(745, 95, 53, 0, Math.PI * 2);
+  ctx.fill();
+
+  // Distant walls.
+  ctx.fillStyle = "#69646c";
+  ctx.fillRect(0, 175, W, 135);
+
+  // Stone details.
+  ctx.strokeStyle = "#484751";
+  ctx.lineWidth = 3;
+
+  for (let y = 190; y < 300; y += 27) {
+    ctx.beginPath();
+    ctx.moveTo(0, y);
+    ctx.lineTo(W, y);
+    ctx.stroke();
+  }
+
+  // Castle towers.
+  for (const x of [145, 710]) {
+    ctx.fillStyle = "#77747b";
+    ctx.fillRect(x, 65, 115, 240);
+
+    ctx.fillStyle = "#55515c";
+
+    for (let i = 0; i < 5; i++) {
+      ctx.fillRect(x + i * 24, 40, 19, 38);
+    }
+
+    ctx.fillStyle = "#3b3142";
+    ctx.fillRect(x + 44, 115, 25, 70);
+
+    ctx.fillStyle = "#c29a4f";
+    ctx.fillRect(x + 15, 205, 20, 65);
+  }
+
+  // Main castle.
+  ctx.fillStyle = "#85808b";
+  ctx.fillRect(325, 85, 310, 240);
+
+  ctx.fillStyle = "#66616e";
+  ctx.fillRect(365, 35, 230, 75);
+
+  // Castle roof.
+  ctx.fillStyle = "#423b4d";
+  ctx.beginPath();
+  ctx.moveTo(340, 42);
+  ctx.lineTo(480, -20);
+  ctx.lineTo(620, 42);
+  ctx.fill();
+
+  // Throne doorway.
+  ctx.fillStyle = "#2c2530";
+  ctx.fillRect(438, 185, 88, 145);
+
+  ctx.fillStyle = "#b08a45";
+  ctx.fillRect(448, 200, 68, 125);
+
+  // Royal banners.
+  for (const x of [355, 590]) {
+    ctx.fillStyle = "#822b35";
+    ctx.fillRect(x, 110, 27, 112);
+
+    ctx.fillStyle = "#dfba66";
+    ctx.fillRect(x + 8, 128, 11, 38);
+  }
+
+  // Courtyard.
+  ctx.fillStyle = "#878071";
+  ctx.fillRect(0, 318, W, H - 318);
+
+  for (let y = 325; y < H; y += 35) {
+    ctx.strokeStyle = "#6f685e";
+    ctx.lineWidth = 2;
+
+    ctx.beginPath();
+    ctx.moveTo(0, y);
+    ctx.lineTo(W, y);
+    ctx.stroke();
+
+    for (let x = (y % 70); x < W; x += 75) {
+      ctx.beginPath();
+      ctx.moveTo(x, y);
+      ctx.lineTo(x, y + 35);
+      ctx.stroke();
+    }
+  }
+
+  // Decorative bushes.
+  for (const x of [55, 120, 815, 890]) {
+    ctx.fillStyle = "#345b3d";
+    ctx.fillRect(x, 350, 38, 26);
+
+    ctx.fillStyle = "#497a48";
+    ctx.fillRect(x + 7, 338, 26, 23);
+  }
+}
+
+// ==========================================
+// CHARACTER DRAWING
+// ==========================================
+
+function drawPerson(x, y, color, crown = false) {
+  const bob = Math.sin(time * 2) * 1.5;
+
+  ctx.save();
+  ctx.translate(Math.round(x), Math.round(y + bob));
+
+  // Shadow.
+  ctx.fillStyle = "#17151a55";
+  ctx.fillRect(-15, 17, 30, 6);
+
+  // Boots.
+  ctx.fillStyle = "#24222d";
+  ctx.fillRect(-12, 8, 9, 17);
+  ctx.fillRect(4, 8, 9, 17);
+
+  // Body.
+  ctx.fillStyle = color;
+  ctx.fillRect(-16, -23, 32, 35);
+
+  // Face.
+  ctx.fillStyle = "#e1aa7d";
+  ctx.fillRect(-12, -43, 24, 22);
+
+  // Hair.
+  ctx.fillStyle = "#493029";
+  ctx.fillRect(-13, -47, 26, 9);
+
+  // Eyes.
+  ctx.fillStyle = "#20171a";
+  ctx.fillRect(-7, -34, 4, 4);
+  ctx.fillRect(5, -34, 4, 4);
+
+  // Crown.
+  if (crown) {
+    ctx.fillStyle = "#e6c25c";
+    ctx.fillRect(-15, -57, 30, 10);
+    ctx.fillRect(-15, -65, 6, 10);
+    ctx.fillRect(-3, -69, 6, 13);
+    ctx.fillRect(9, -65, 6, 10);
+  }
+
+  ctx.restore();
+}
+
+function drawKnight() {
+  drawPerson(
+    player.x,
+    player.y,
+    "#586e87"
+  );
+
+  // Knight's sword.
+  ctx.fillStyle = "#c6d0df";
+  ctx.fillRect(
+    player.x + player.facing * 19,
+    player.y - 23,
+    5,
+    43
+  );
+
+  ctx.fillStyle = "#8b6a3c";
+  ctx.fillRect(
+    player.x + player.facing * 13,
+    player.y + 13,
+    18,
+    5
+  );
+}
+
+function drawCharacters() {
+  for (const npc of characters) {
+    drawPerson(
+      npc.x,
+      npc.y,
+      npc.color,
+      npc.name === "King Aldric"
+    );
+
+    if (npc.stage === stage) {
+      // Story objective marker.
+      const bob = Math.sin(time * 4) * 5;
+
+      ctx.fillStyle = "#ffe08a";
+      ctx.font = "bold 28px Arial";
+      ctx.textAlign = "center";
+
+      ctx.fillText(
+        "!",
+        npc.x,
+        npc.y - 78 + bob
+      );
+
+      ctx.textAlign = "left";
+    }
+
+    ctx.fillStyle = "#fff0c6";
+    ctx.font = "13px Arial";
+    ctx.textAlign = "center";
+
+    ctx.fillText(
+      npc.name,
+      npc.x,
+      npc.y + 43
+    );
+
+    ctx.textAlign = "left";
+  }
+}
+
+// ==========================================
+// DRAW GAME
+// ==========================================
+
+function draw() {
+  drawCastle();
+  drawCharacters();
+  drawKnight();
+
+  if (mode === "playing" && !dialogueActive) {
+    interactButton.style.display =
+      nearestCharacter() ? "block" : "none";
+  } else {
+    interactButton.style.display = "none";
+  }
+}
+
+// ==========================================
+// MAIN GAME LOOP
+// ==========================================
+
+function gameLoop(timestamp) {
+  const dt = Math.min(
+    (timestamp - (lastFrame || timestamp)) / 1000,
+    0.05
+  );
+
+  lastFrame = timestamp;
+  time += dt;
+
+  movePlayer(dt);
+  draw();
+
+  requestAnimationFrame(gameLoop);
+}
+
+// ==========================================
+// START THE INTRODUCTION
+// ==========================================
+
+showIntroScene();
+requestAnimationFrame(gameLoop);
+
+</script>
+
+</body>
+</html>
+
