@@ -88,8 +88,10 @@
 
   const hint = document.createElement("div");
   hint.style.cssText = "width:100%;font-size:12px;text-align:center;color:#a8c8aa;";
-  hint.textContent =
-    "MOVE: WASD / Arrows  •  SWORD: Space / Click  •  WATER WHEEL: M  •  FLAME ARROW: K";
+hint.textContent =
+    "MOVE: WASD / Arrows • SWORD: Space / Click • " +
+    "M: Water Wheel (Ch. 1-5) / Black Flash (Ch. 6+) • " +
+    "N: Divergent Fist (Ch. 6+) • K: Flame Arrow";
   ui.appendChild(hint);
 
   makeButton("⚔ Sword", swordAttack);
