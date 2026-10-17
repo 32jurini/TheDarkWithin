@@ -3,13 +3,8 @@
   "use strict";
 
   // ==========================================
-  // THEDARKWITHIN — GAME ENGINE
-  // ==========================================
-  // Move: WASD / Arrow Keys
-  // Sword: Space / J / Click
-  // M: Water Wheel / Black Flash
-  // N: Divergent Fist
-  // K: Flame Arrow
+  // THEDARKWITHIN — COMPLETE GAME
+  // WITH ORIGINAL 8-BIT MUSIC
   // ==========================================
 
   if (window.__darkWithinRunning) return;
@@ -17,348 +12,265 @@
 
   const $ = id => document.getElementById(id);
 
+  // ==========================================
+  // CREATE GAME SCREEN
+  // ==========================================
+
   $("darkWithinUI")?.remove();
+  $("dwGameFrame")?.remove();
 
-  const canvas =
-    $("darkWithinCanvas") ||
-    document.querySelector("canvas") ||
-    document.createElement("canvas");
-
+  const canvas = document.createElement("canvas");
   canvas.id = "darkWithinCanvas";
   canvas.width = 960;
   canvas.height = 540;
 
   canvas.style.cssText =
-    "display:block;width:min(960px,100%);" +
-    "height:auto;margin:12px auto;" +
-    "border:2px solid #373741;" +
-    "image-rendering:pixelated;background:#111;";
+    "display:block;width:100%;height:auto;" +
+    "image-rendering:pixelated;background:#101018;" +
+    "border:2px solid #343b42;";
 
-  const gameFrame = document.createElement("div");
-  gameFrame.id = "dwGameFrame";
+  const frame = document.createElement("div");
+  frame.id = "dwGameFrame";
 
-  gameFrame.style.cssText =
+  frame.style.cssText =
     "position:relative;width:min(960px,100%);" +
-    "margin:12px auto;";
+    "margin:15px auto;background:#080a0d;";
 
-  if (canvas.isConnected) {
-    canvas.parentNode.insertBefore(gameFrame, canvas);
+  const oldCanvas = $("darkWithinCanvas");
+
+  if (oldCanvas) {
+    oldCanvas.replaceWith(frame);
   } else {
-    document.body.appendChild(gameFrame);
+    document.body.appendChild(frame);
   }
 
-  gameFrame.appendChild(canvas);
-
-  canvas.style.margin = "0";
-  canvas.style.width = "100%";
-
-  document.body.style.background = "#08080d";
-  document.body.style.color = "#eee";
-  document.body.style.fontFamily = "monospace";
+  frame.appendChild(canvas);
 
   const ctx = canvas.getContext("2d");
   ctx.imageSmoothingEnabled = false;
 
+  const W = canvas.width;
+  const H = canvas.height;
+
+  document.body.style.background = "#080a0d";
+  document.body.style.color = "white";
+
   // ==========================================
-  // USER INTERFACE
+  // CONTROL PANEL
   // ==========================================
 
   const ui = document.createElement("div");
   ui.id = "darkWithinUI";
 
   ui.style.cssText =
-    "max-width:960px;box-sizing:border-box;" +
-    "margin:12px auto;padding:14px;" +
-    "background:#111116;" +
-    "border:2px solid #34343d;" +
-    "color:#eee;font:14px monospace;";
+    "max-width:960px;margin:12px auto;" +
+    "padding:16px;background:#11161b;" +
+    "border:2px solid #314039;color:#eee;" +
+    "font:14px monospace;box-sizing:border-box;";
 
   ui.innerHTML = `
-    <div style="
-      font-size:25px;
-      font-weight:bold;
-      margin-bottom:8px;
+    <h2 style="
+      color:#a4ffc0;
+      margin:0 0 10px;
+      letter-spacing:2px;
     ">
       THEDARKWITHIN
-    </div>
+    </h2>
 
-    <div id="dwChapter"
-      style="color:#aaa;margin-bottom:5px">
-    </div>
-
-    <div id="dwStatus"
-      style="margin-bottom:12px">
-    </div>
+    <div id="dwChapter" style="margin-bottom:8px"></div>
+    <div id="dwStatus" style="margin-bottom:12px"></div>
 
     <div style="
       display:flex;
-      flex-wrap:wrap;
-      align-items:center;
       gap:8px;
+      flex-wrap:wrap;
       margin-bottom:12px;
     ">
-
-      <label for="dwDifficulty">
-        Difficulty:
-      </label>
-
-      <select id="dwDifficulty" style="
-        padding:8px;
-        background:#222;
-        color:#fff;
-        border:1px solid #555;
-      ">
+      <select id="dwDifficulty">
         <option value="easy">Easy</option>
         <option value="medium" selected>Medium</option>
         <option value="hard">Hard</option>
         <option value="extreme">Extreme</option>
       </select>
 
-      <button id="dwStart">
-        Start Adventure
-      </button>
-
-      <button id="dwRestart">
-        Restart Game
-      </button>
-
-      <button id="dwFullscreen">
-        ⛶ Full Screen
-      </button>
-
+      <button id="dwStart">Start Adventure</button>
+      <button id="dwRestart">Restart Game</button>
+      <button id="dwFullscreen">⛶ Fullscreen</button>
     </div>
 
     <div style="
       display:flex;
-      flex-wrap:wrap;
       gap:8px;
-      margin-bottom:8px;
+      flex-wrap:wrap;
+      margin-bottom:12px;
     ">
-
-      <button id="dwSword" type="button">
-        SPACE / J — Sword
-      </button>
-
-      <button id="dwSkill" type="button">
-        M — Water Wheel
-      </button>
-
-      <button id="dwDivergent"
-        type="button" disabled>
-        N — Locked
-      </button>
-
-      <button id="dwFlame" type="button">
-        K — Flame Arrow
-      </button>
-
+      <button id="dwSword">SPACE / J — Sword</button>
+      <button id="dwSkill">M — Water Wheel</button>
+      <button id="dwDivergent">N — Locked</button>
+      <button id="dwFlame">K — Flame Arrow</button>
     </div>
 
     <div id="dwCooldowns" style="
+      color:#aeb9b2;
+      margin-bottom:14px;
+      line-height:1.8;
+    "></div>
+
+    <div style="
       display:flex;
-      flex-wrap:wrap;
       gap:12px;
-      margin-bottom:10px;
-      color:#aaa;
+      flex-wrap:wrap;
+      align-items:center;
+      padding:12px;
+      background:#0a1210;
+      border:1px solid #304b3b;
+      margin-bottom:12px;
     ">
+      <button id="dwMusic">♫ Music On</button>
 
-      <span id="dwSwordCD">
-        Sword: Ready
-      </span>
+      <label for="dwVolume">Music Volume</label>
 
-      <span id="dwSkillCD">
-        Water Wheel: Ready
-      </span>
+      <input
+        type="range"
+        id="dwVolume"
+        min="0"
+        max="100"
+        value="35"
+        style="accent-color:#77e99e"
+      >
 
-      <span id="dwDivergentCD">
-        Divergent Fist: Locked
-      </span>
-
-      <span id="dwFlameCD">
-        Flame Arrow: Ready
-      </span>
-
+      <span id="dwVolumeValue">35%</span>
     </div>
 
-    <div style="color:#aaa;line-height:1.8">
-      Move: WASD or arrow keys.
-      Click inside the game to use your sword.
-      Defeat every enemy to unlock the next chapter.
+    <div style="color:#aab5af;line-height:1.8">
+      Move: WASD / Arrow Keys<br>
+      Sword: Space / J / Click<br>
+      Water Wheel or Black Flash: M<br>
+      Divergent Fist: N<br>
+      Flame Arrow: K
     </div>
   `;
 
-  canvas.insertAdjacentElement("beforebegin", ui);
-
-  // ==========================================
-  // CONTINUE BUTTON INSIDE THE GAME
-  // ==========================================
-
-  const chapterButton = document.createElement("button");
-
-  chapterButton.id = "dwInGameContinue";
-  chapterButton.textContent = "Continue to Next Chapter";
-
-  chapterButton.style.cssText =
-    "display:none;" +
-    "position:absolute;" +
-    "left:50%;top:62%;" +
-    "transform:translate(-50%,-50%);" +
-    "z-index:5;" +
-    "padding:13px 18px;" +
-    "background:#17351f;" +
-    "color:#b7ffbf;" +
-    "border:2px solid #63e879;" +
-    "font:bold 15px monospace;" +
-    "cursor:pointer;" +
-    "box-shadow:0 0 18px rgba(65,255,100,.3);";
-
-  gameFrame.appendChild(chapterButton);
+  frame.insertAdjacentElement("beforebegin", ui);
 
   for (const button of ui.querySelectorAll("button")) {
     button.style.cssText =
-      "padding:9px 12px;" +
-      "background:#1b1b22;" +
-      "color:#eee;" +
-      "border:1px solid #555;" +
-      "cursor:pointer;" +
-      "font:inherit;";
+      "padding:10px 13px;background:#1b2721;" +
+      "color:#c5ffd4;border:1px solid #54755d;" +
+      "font:13px monospace;cursor:pointer;";
   }
 
-  const chapterText = $("dwChapter");
-  const statusText = $("dwStatus");
-  const startButton = $("dwStart");
   const difficultySelect = $("dwDifficulty");
-
-  const skillLabel = $("dwSkill");
-  const divergentLabel = $("dwDivergent");
-  const swordLabel = $("dwSword");
-  const flameLabel = $("dwFlame");
-
-  const swordCDLabel = $("dwSwordCD");
-  const skillCDLabel = $("dwSkillCD");
-  const divergentCDLabel = $("dwDivergentCD");
-  const flameCDLabel = $("dwFlameCD");
-
-  const fullscreenButton = $("dwFullscreen");
+  const startButton = $("dwStart");
 
   // ==========================================
-  // THE EIGHT CHAPTERS
+  // IN-GAME CONTINUE BUTTON
+  // ==========================================
+
+  const continueButton = document.createElement("button");
+
+  continueButton.textContent = "Continue to Next Chapter";
+
+  continueButton.style.cssText =
+    "display:none;position:absolute;" +
+    "left:50%;top:65%;" +
+    "transform:translate(-50%,-50%);" +
+    "padding:15px 22px;" +
+    "background:#15592a;color:#d5ffdf;" +
+    "border:2px solid #75ef9b;" +
+    "font:bold 16px monospace;" +
+    "cursor:pointer;z-index:5;";
+
+  frame.appendChild(continueButton);
+
+  // ==========================================
+  // CHAPTER DATA
   // ==========================================
 
   const chapters = [
-
     {
       name: "The Missing Villagers",
-      description: "Search the forest and defeat every enemy.",
-      sky: "#253e43",
-      ground: "#294e35",
-      enemies: 4,
-      type: "slime"
+      story: "The villagers have vanished. Find them!",
+      enemy: "slime",
+      count: 4,
+      sky: "#254940",
+      ground: "#365c39"
     },
-
     {
       name: "The Frozen Mountains",
-      description: "Cross the frozen mountains and survive.",
-      sky: "#91b9ce",
-      ground: "#d1e2e8",
-      enemies: 5,
-      type: "ice"
+      story: "Cross the mountains and survive the cold.",
+      enemy: "ice",
+      count: 5,
+      sky: "#729ebc",
+      ground: "#d4e4ed"
     },
-
     {
       name: "The Forgotten Desert",
-      description: "Follow the tracks through the burning sands.",
-      sky: "#dba05b",
-      ground: "#c58a45",
-      enemies: 6,
-      type: "sand"
+      story: "Follow the trail through the desert.",
+      enemy: "sand",
+      count: 6,
+      sky: "#dba568",
+      ground: "#ba874e"
     },
-
     {
       name: "The Cage of Shadows",
-      description: "Find the villagers' cages. Something is waiting.",
+      story: "Find the villagers trapped in the darkness.",
+      enemy: "shadow",
+      count: 6,
       sky: "#30223e",
-      ground: "#33243b",
-      enemies: 6,
-      type: "shadow"
+      ground: "#38283d"
     },
-
     {
       name: "The Darkness Below",
-      description: "Fight through the underground darkness.",
-      sky: "#151526",
-      ground: "#24243a",
-      enemies: 7,
-      type: "dark"
+      story: "Fight the creatures beneath the world.",
+      enemy: "dark",
+      count: 7,
+      sky: "#171426",
+      ground: "#252339"
     },
-
     {
       name: "The Black Spirit",
-      description: "The Black Spirit awakens within you.",
-      sky: "#100d19",
-      ground: "#191421",
-      enemies: 7,
-      type: "spirit"
+      story: "An ancient spirit awakens within you.",
+      enemy: "spirit",
+      count: 7,
+      sky: "#1a0e1b",
+      ground: "#211523"
     },
-
     {
       name: "The Fallen Kingdom",
-      description: "Master your new power and face the fallen kingdom.",
-      sky: "#38202c",
-      ground: "#35202a",
-      enemies: 8,
-      type: "knight"
+      story: "Approach the Purple King's domain.",
+      enemy: "knight",
+      count: 8,
+      sky: "#462c35",
+      ground: "#32212e"
     },
-
     {
       name: "The Purple King's Domain",
-      description: "Defeat the Purple King and end the darkness.",
-      sky: "#29153d",
-      ground: "#281c35",
-      enemies: 1,
-      type: "boss"
+      story: "Defeat the Purple King and save the villagers.",
+      enemy: "boss",
+      count: 1,
+      sky: "#240f3b",
+      ground: "#291a39"
     }
-
   ];
 
-  // ==========================================
-  // DIFFICULTY SETTINGS
-  // ==========================================
-
-  const difficultySettings = {
-
-    easy: {
-      enemyHp: 0.7,
-      damage: 0.6,
-      playerHp: 150
-    },
-
-    medium: {
-      enemyHp: 1,
-      damage: 1,
-      playerHp: 110
-    },
-
-    hard: {
-      enemyHp: 1.35,
-      damage: 1.5,
-      playerHp: 100
-    },
-
-    extreme: {
-      enemyHp: 1.8,
-      damage: 2.1,
-      playerHp: 90
-    }
-
+  const enemyTypes = {
+    slime:  { hp:35, speed:55, damage:7, color:"#66cc75", r:17 },
+    ice:   { hp:48, speed:65, damage:9, color:"#98e7ff", r:18 },
+    sand:  { hp:58, speed:76, damage:11, color:"#e2ad63", r:18 },
+    shadow:{ hp:72, speed:85, damage:13, color:"#9958d1", r:20 },
+    dark:  { hp:88, speed:95, damage:15, color:"#53386b", r:20 },
+    spirit:{ hp:105,speed:105,damage:17, color:"#dc4772", r:21 },
+    knight:{ hp:145,speed:85, damage:20, color:"#88859c", r:24 },
+    boss:  { hp:1100,speed:65,damage:25,color:"#963be6", r:48 }
   };
 
-  // ==========================================
-  // PART 2 — PLAYER AND ENEMY SYSTEM
-  // ==========================================
-
-  const W = canvas.width;
-  const H = canvas.height;
+  const difficultySettings = {
+    easy:    { health:150, enemyHp:0.7, damage:0.6 },
+    medium:  { health:110, enemyHp:1, damage:1 },
+    hard:    { health:100, enemyHp:1.4, damage:1.5 },
+    extreme: { health:90, enemyHp:1.8, damage:2.1 }
+  };
 
   // ==========================================
   // GAME STATE
@@ -366,407 +278,712 @@
 
   let chapter = 0;
   let started = false;
-  let chapterCleared = false;
+  let cleared = false;
   let gameOver = false;
   let victory = false;
-
   let takeoverComplete = false;
-  let cutscene = null;
-  let spiritDeparture = null;
 
-  let elapsed = 0;
-  let shake = 0;
-  let message = "";
-  let messageTimer = 0;
+  let cutscene = null;
+  let departure = null;
 
   let enemies = [];
   let projectiles = [];
   let effects = [];
 
-  const keys = {};
+  let elapsed = 0;
+  let lastTime = 0;
+  let message = "";
+  let messageTime = 0;
 
-  // ==========================================
-  // PLAYER
-  // ==========================================
+  const keys = {};
 
   const player = {
     x: W / 2,
     y: H / 2,
-
-    radius: 17,
-    speed: 205,
-
+    r: 17,
+    speed: 210,
+    facing: 1,
     hp: 110,
     maxHp: 110,
-
-    facing: 1,
-
+    invincible: 0,
     swordCd: 0,
     skillCd: 0,
     divergentCd: 0,
     flameCd: 0,
-
-    invincible: 0,
-
-    attacking: 0,
-    attackType: "",
-
-    armor: false
+    attacking: 0
   };
 
-  // ==========================================
-  // HELPER FUNCTIONS
-  // ==========================================
+  const rand = (a, b) => a + Math.random() * (b - a);
 
-  function clamp(value, min, max) {
-    return Math.max(min, Math.min(max, value));
-  }
+  const clamp = (n, a, b) =>
+    Math.max(a, Math.min(b, n));
 
-  function rand(min, max) {
-    return Math.random() * (max - min) + min;
-  }
+  const distance = (a, b, c, d) =>
+    Math.hypot(a - c, b - d);
 
-  function distance(x1, y1, x2, y2) {
-    return Math.hypot(x2 - x1, y2 - y1);
-  }
-
-  function say(text, duration = 3) {
+  function say(text, seconds = 3) {
     message = text;
-    messageTimer = duration;
-  }
-
-  function getDifficulty() {
-    return difficultySettings[
-      difficultySelect.value
-    ] || difficultySettings.medium;
-  }
-
-  function currentChapter() {
-    return chapters[chapter];
+    messageTime = seconds;
   }
 
   function canAttack() {
-    return (
-      started &&
-      !chapterCleared &&
-      !gameOver &&
-      !victory &&
-      !cutscene &&
-      !spiritDeparture
-    );
+    return started && !cleared &&
+      !gameOver && !victory &&
+      !cutscene && !departure;
   }
 
   // ==========================================
-  // ENEMY TYPES
+  // ORIGINAL 8-BIT SOUNDTRACK ENGINE
   // ==========================================
 
-  const enemyTypes = {
-    slime: {
-      color: "#65c76b",
-      hp: 35,
-      speed: 53,
-      damage: 7,
-      radius: 17
+  // These melodies are generated directly
+  // by the browser using the Web Audio API.
+  // No MP3 files are required.
+
+  const AudioContextClass =
+    window.AudioContext || window.webkitAudioContext;
+
+  let audioContext = null;
+  let musicGain = null;
+  let musicEnabled = true;
+  let musicVolume = 0.35;
+  let musicTimer = null;
+  let musicStep = 0;
+  let currentTrack = -1;
+
+  // Notes are MIDI numbers.
+  // 0 means a rest.
+
+  const soundtracks = [
+    // Chapter 1 — Mysterious Forest
+    {
+      tempo: 158,
+      wave: "triangle",
+      melody: [64,67,71,67,64,62,60,0,
+               64,67,72,71,67,64,62,0],
+      bass: [48,48,43,43]
     },
 
-    ice: {
-      color: "#8deaff",
-      hp: 48,
-      speed: 65,
-      damage: 9,
-      radius: 17
+    // Chapter 2 — Frozen Mountains
+    {
+      tempo: 190,
+      wave: "sine",
+      melody: [72,71,67,64,67,0,64,62,
+               60,64,67,64,62,0,60,0],
+      bass: [48,43,45,40]
     },
 
-    sand: {
-      color: "#e5ac56",
-      hp: 58,
-      speed: 75,
-      damage: 11,
-      radius: 18
+    // Chapter 3 — Desert
+    {
+      tempo: 155,
+      wave: "square",
+      melody: [64,65,68,65,64,61,60,0,
+               64,68,70,68,65,64,61,0],
+      bass: [45,46,41,44]
     },
 
-    shadow: {
-      color: "#9261d4",
-      hp: 70,
-      speed: 85,
-      damage: 12,
-      radius: 19
+    // Chapter 4 — Cage of Shadows
+    {
+      tempo: 220,
+      wave: "triangle",
+      melody: [60,63,66,0,60,63,67,0,
+               59,62,66,0,58,62,65,0],
+      bass: [36,39,35,34]
     },
 
-    dark: {
-      color: "#38254d",
-      hp: 88,
-      speed: 95,
-      damage: 15,
-      radius: 20
+    // Chapter 5 — Darkness Below
+    {
+      tempo: 205,
+      wave: "sawtooth",
+      melody: [48,0,51,54,48,0,55,54,
+               47,0,50,53,47,0,51,0],
+      bass: [36,34,32,35]
     },
 
-    spirit: {
-      color: "#dd426e",
-      hp: 105,
-      speed: 105,
-      damage: 17,
-      radius: 20
+    // Chapter 6 — Black Spirit
+    {
+      tempo: 140,
+      wave: "square",
+      melody: [60,63,67,72,67,63,60,0,
+               62,65,68,74,68,65,62,0],
+      bass: [36,39,38,41]
     },
 
-    knight: {
-      color: "#777384",
-      hp: 140,
-      speed: 84,
-      damage: 20,
-      radius: 23
+    // Chapter 7 — Fallen Kingdom
+    {
+      tempo: 145,
+      wave: "square",
+      melody: [67,70,72,75,74,70,67,0,
+               65,68,72,77,75,72,68,0],
+      bass: [43,41,39,36]
     },
 
-    boss: {
-      color: "#8e36de",
-      hp: 1200,
-      speed: 77,
-      damage: 26,
-      radius: 48
+    // Chapter 8 — Purple King
+    {
+      tempo: 105,
+      wave: "sawtooth",
+      melody: [48,55,60,63,62,55,51,48,
+               50,57,62,65,63,57,53,50],
+      bass: [36,39,34,38]
     }
-  };
+  ];
 
-  // ==========================================
-  // CREATE ENEMIES
-  // ==========================================
-
-  function createEnemy(type, x, y) {
-    const base = enemyTypes[type];
-    const difficulty = getDifficulty();
-
-    const health = Math.round(
-      base.hp * difficulty.enemyHp
+  function midiFrequency(note) {
+    return 440 * Math.pow(
+      2,
+      (note - 69) / 12
     );
-
-    return {
-      type: type,
-
-      x: x,
-      y: y,
-
-      radius: base.radius,
-      color: base.color,
-
-      hp: health,
-      maxHp: health,
-
-      speed: base.speed,
-
-      damage: Math.round(
-        base.damage * difficulty.damage
-      ),
-
-      attackCd: rand(0.5, 1.5),
-      shootCd: rand(1, 2),
-
-      flash: 0,
-      animation: rand(0, 10),
-
-      dead: false
-    };
   }
 
+  function initializeAudio() {
+    if (!AudioContextClass) return false;
+
+    if (!audioContext) {
+      audioContext = new AudioContextClass();
+
+      musicGain = audioContext.createGain();
+      musicGain.gain.value = musicVolume * 0.17;
+      musicGain.connect(audioContext.destination);
+    }
+
+    if (audioContext.state === "suspended") {
+      audioContext.resume().catch(() => {});
+    }
+
+    return true;
+  }
+
+  function playNote(note, duration, wave, volume = 1) {
+    if (!musicEnabled || !note) return;
+    if (!audioContext || !musicGain) return;
+    if (audioContext.state !== "running") return;
+
+    const oscillator = audioContext.createOscillator();
+    const envelope = audioContext.createGain();
+
+    const now = audioContext.currentTime;
+
+    oscillator.type = wave;
+    oscillator.frequency.value = midiFrequency(note);
+
+    const length = Math.max(0.04, duration);
+
+    envelope.gain.setValueAtTime(0.0001, now);
+
+    envelope.gain.exponentialRampToValueAtTime(
+      Math.max(0.001, volume),
+      now + 0.012
+    );
+
+    envelope.gain.exponentialRampToValueAtTime(
+      0.0001,
+      now + length
+    );
+
+    oscillator.connect(envelope);
+    envelope.connect(musicGain);
+
+    oscillator.start(now);
+    oscillator.stop(now + length + 0.02);
+  }
+
+  function musicTick() {
+    if (!musicEnabled) return;
+
+    const track = soundtracks[currentTrack];
+    if (!track) return;
+
+    const index = musicStep % track.melody.length;
+    const duration = track.tempo / 1000;
+
+    // Lead melody.
+    playNote(
+      track.melody[index],
+      duration * 0.85,
+      track.wave,
+      0.5
+    );
+
+    // Bass notes.
+    if (musicStep % 4 === 0) {
+      const bassIndex =
+        Math.floor(musicStep / 4) % track.bass.length;
+
+      playNote(
+        track.bass[bassIndex],
+        duration * 3.5,
+        "triangle",
+        0.55
+      );
+    }
+
+    // Quiet high arpeggio.
+    if (musicStep % 2 === 0 && index % 4 !== 2) {
+      const chordNote =
+        track.melody[index] || track.bass[0] + 12;
+
+      playNote(
+        chordNote + 12,
+        duration * 0.32,
+        "sine",
+        0.13
+      );
+    }
+
+    musicStep++;
+  }
+
+  function selectMusic(chapterIndex) {
+    if (currentTrack === chapterIndex && musicTimer) {
+      return;
+    }
+
+    stopMusic();
+
+    currentTrack = chapterIndex;
+    musicStep = 0;
+
+    if (!musicEnabled) return;
+    if (!initializeAudio()) return;
+
+    musicTick();
+
+    musicTimer = setInterval(
+      musicTick,
+      soundtracks[chapterIndex].tempo
+    );
+  }
+
+  function stopMusic() {
+    if (musicTimer) {
+      clearInterval(musicTimer);
+      musicTimer = null;
+    }
+  }
+
+  function toggleMusic() {
+    musicEnabled = !musicEnabled;
+
+    $("dwMusic").textContent =
+      musicEnabled ? "♫ Music On" : "♫ Music Off";
+
+    if (musicEnabled) {
+      initializeAudio();
+      selectMusic(chapter);
+    } else {
+      stopMusic();
+    }
+  }
+
+  $("dwMusic").addEventListener("click", toggleMusic);
+
+  $("dwVolume").addEventListener("input", event => {
+    musicVolume = Number(event.target.value) / 100;
+
+    $("dwVolumeValue").textContent =
+      event.target.value + "%";
+
+    if (musicGain) {
+      musicGain.gain.value = musicVolume * 0.17;
+    }
+  });
+
   // ==========================================
-  // SPAWN ENEMIES
+  // ENEMY CREATION
   // ==========================================
 
   function spawnEnemies() {
     enemies = [];
 
-    const info = currentChapter();
+    const info = chapters[chapter];
+    const base = enemyTypes[info.enemy];
+    const difficulty = difficultySettings[
+      difficultySelect.value
+    ];
 
-    for (let i = 0; i < info.enemies; i++) {
+    for (let i = 0; i < info.count; i++) {
       let x;
       let y;
-
       let attempts = 0;
 
       do {
         x = rand(65, W - 65);
-        y = rand(90, H - 65);
-
+        y = rand(100, H - 55);
         attempts++;
       } while (
-        distance(
-          x, y,
-          player.x, player.y
-        ) < 170 &&
+        distance(x, y, player.x, player.y) < 180 &&
         attempts < 100
       );
 
-      enemies.push(
-        createEnemy(info.type, x, y)
-      );
-    }
-  }
-
-  // ==========================================
-  // PARTICLES AND VISUAL EFFECTS
-  // ==========================================
-
-  function particles(
-    x,
-    y,
-    color,
-    count = 10,
-    speed = 100
-  ) {
-    for (let i = 0; i < count; i++) {
-      const angle = rand(
-        0,
-        Math.PI * 2
+      const hp = Math.round(
+        base.hp * difficulty.enemyHp
       );
 
-      const velocity = rand(
-        speed * 0.25,
-        speed
-      );
-
-      const life = rand(0.2, 0.7);
-
-      effects.push({
-        type: "particle",
-
-        x: x,
-        y: y,
-
-        vx: Math.cos(angle) * velocity,
-        vy: Math.sin(angle) * velocity,
-
-        color: color,
-
-        size: rand(2, 6),
-
-        life: life,
-        maxLife: life
+      enemies.push({
+        x, y,
+        type: info.enemy,
+        color: base.color,
+        r: base.r,
+        speed: base.speed,
+        damage: Math.round(
+          base.damage * difficulty.damage
+        ),
+        hp,
+        maxHp: hp,
+        attackCd: rand(0.4, 1.3),
+        shootCd: 1,
+        flash: 0,
+        dead: false,
+        animation: rand(0, 10)
       });
     }
   }
 
-  function explosion(
-    x,
-    y,
-    color,
-    radius = 65,
-    duration = 0.35
-  ) {
-    effects.push({
-      type: "explosion",
+  // ==========================================
+  // SPECIAL EFFECTS
+  // ==========================================
 
-      x: x,
-      y: y,
+  function burst(x, y, color, count = 18) {
+    for (let i = 0; i < count; i++) {
+      const angle = rand(0, Math.PI * 2);
+      const speed = rand(40, 190);
 
-      color: color,
-      radius: radius,
-
-      life: duration,
-      maxLife: duration
-    });
+      effects.push({
+        type: "particle",
+        x, y,
+        vx: Math.cos(angle) * speed,
+        vy: Math.sin(angle) * speed,
+        color,
+        life: rand(0.25, 0.7),
+        maxLife: 0.7
+      });
+    }
   }
 
-  function slashEffect(
-    x,
-    y,
-    color,
-    size = 30,
-    direction = 1
-  ) {
+  function ring(x, y, color, radius, life = 0.4) {
     effects.push({
-      type: "slash",
-
-      x: x,
-      y: y,
-
-      color: color,
-      radius: size,
-      direction: direction,
-
-      life: 0.2,
-      maxLife: 0.2
+      type: "ring",
+      x, y,
+      color,
+      radius,
+      life,
+      maxLife: life
     });
   }
 
   // ==========================================
-  // DAMAGE PLAYER
+  // DAMAGE
   // ==========================================
 
   function damagePlayer(amount) {
-    if (
-      !canAttack() ||
-      player.invincible > 0
-    ) {
-      return;
-    }
+    if (!canAttack()) return;
+    if (player.invincible > 0) return;
 
-    player.hp -= amount;
-    player.invincible = 0.7;
+    player.hp = Math.max(0, player.hp - amount);
+    player.invincible = 0.75;
 
-    shake = 6;
-
-    particles(
-      player.x,
-      player.y,
-      "#ff4055",
-      12,
-      115
-    );
+    burst(player.x, player.y, "#ff4260", 12);
 
     if (player.hp <= 0) {
-      player.hp = 0;
-
       gameOver = true;
       started = false;
+      stopMusic();
 
-      say(
-        "YOU HAVE FALLEN! RESTART TO TRY AGAIN.",
-        6
-      );
+      say("YOU HAVE FALLEN!", 5);
+    }
+  }
 
-      refreshUI();
+  function damageEnemy(enemy, amount, color = "#ffffff") {
+    if (enemy.dead) return;
+
+    enemy.hp -= amount;
+    enemy.flash = 0.15;
+
+    burst(enemy.x, enemy.y, color, 8);
+
+    if (enemy.hp <= 0) {
+      enemy.dead = true;
+      enemy.hp = 0;
+
+      burst(enemy.x, enemy.y, enemy.color, 25);
+      ring(enemy.x, enemy.y, enemy.color, 50);
     }
   }
 
   // ==========================================
-  // DAMAGE ENEMY
+  // SWORD — SPACE / J
   // ==========================================
 
-  function damageEnemy(
-    enemy,
-    amount,
-    color = "#ffffff"
-  ) {
-    if (enemy.dead) return;
+  function swordAttack() {
+    if (!canAttack() || player.swordCd > 0) return;
 
-    enemy.hp -= amount;
-    enemy.flash = 0.16;
+    player.swordCd = 0.38;
+    player.attacking = 0.2;
 
-    particles(
-      enemy.x,
-      enemy.y,
-      color,
-      7,
-      90
+    ring(
+      player.x + player.facing * 30,
+      player.y,
+      "#d9eaff",
+      50,
+      0.2
     );
 
-    if (enemy.hp <= 0) {
-      enemy.hp = 0;
-      enemy.dead = true;
+    for (const enemy of enemies) {
+      if (enemy.dead) continue;
 
-      explosion(
-        enemy.x,
-        enemy.y,
-        enemy.color,
-        enemy.radius * 2
-      );
+      const dx = enemy.x - player.x;
 
-      particles(
-        enemy.x,
-        enemy.y,
-        enemy.color,
-        20,
-        145
-      );
+      if (
+        distance(player.x, player.y, enemy.x, enemy.y)
+          < 85 + enemy.r &&
+        dx * player.facing >= -15
+      ) {
+        damageEnemy(
+          enemy,
+          takeoverComplete ? 40 : 28
+        );
+      }
     }
+
+    checkChapterClear();
+  }
+
+  // ==========================================
+  // WATER WHEEL — M
+  // ==========================================
+
+  function waterWheel() {
+    if (!canAttack() || takeoverComplete) return;
+    if (player.skillCd > 0) return;
+
+    player.skillCd = 2.5;
+
+    effects.push({
+      type: "water",
+      x: player.x,
+      y: player.y,
+      radius: 95,
+      rotation: 0,
+      life: 0.8,
+      maxLife: 0.8
+    });
+
+    burst(player.x, player.y, "#5bd9ff", 45);
+
+    for (const enemy of enemies) {
+      if (enemy.dead) continue;
+
+      if (
+        distance(player.x, player.y, enemy.x, enemy.y)
+          < 110 + enemy.r
+      ) {
+        damageEnemy(enemy, 65, "#77eaff");
+      }
+    }
+
+    say("WATER WHEEL!", 1);
+    checkChapterClear();
+  }
+
+  // ==========================================
+  // BLACK FLASH — M AFTER TAKEOVER
+  // ==========================================
+
+  function blackFlash() {
+    if (!canAttack() || !takeoverComplete) return;
+    if (player.skillCd > 0) return;
+
+    player.skillCd = 1.25;
+
+    ring(player.x, player.y, "#ff1744", 125);
+    ring(player.x, player.y, "#230819", 90);
+
+    burst(player.x, player.y, "#ff1646", 55);
+    burst(player.x, player.y, "#140b20", 25);
+
+    for (const enemy of enemies) {
+      if (enemy.dead) continue;
+
+      if (
+        distance(player.x, player.y, enemy.x, enemy.y)
+          < 140 + enemy.r
+      ) {
+        damageEnemy(enemy, 125, "#ff1744");
+      }
+    }
+
+    say("BLACK FLASH!", 1);
+    checkChapterClear();
+  }
+
+  // ==========================================
+  // DIVERGENT FIST — N
+  // ==========================================
+
+  function divergentFist() {
+    if (!canAttack() || !takeoverComplete) return;
+    if (player.divergentCd > 0) return;
+
+    player.divergentCd = 3;
+
+    const targets = [];
+
+    for (const enemy of enemies) {
+      if (enemy.dead) continue;
+
+      const dx = enemy.x - player.x;
+
+      if (
+        distance(player.x, player.y, enemy.x, enemy.y)
+          < 105 + enemy.r &&
+        dx * player.facing >= -15
+      ) {
+        damageEnemy(enemy, 55, "#c68aff");
+        targets.push(enemy);
+      }
+    }
+
+    effects.push({
+      type: "delayed",
+      x: player.x + player.facing * 40,
+      y: player.y,
+      targets,
+      delay: 0.28,
+      life: 0.4,
+      maxLife: 0.4,
+      activated: false
+    });
+
+    say("DIVERGENT FIST!", 1);
+    checkChapterClear();
+  }
+
+  // ==========================================
+  // FLAME ARROW — K
+  // ==========================================
+
+  function flameArrow() {
+    if (!canAttack() || player.flameCd > 0) return;
+
+    player.flameCd = 1.5;
+
+    projectiles.push({
+      type: "flame",
+      x: player.x + player.facing * 25,
+      y: player.y - 5,
+      vx: player.facing * 490,
+      vy: 0,
+      r: 12,
+      damage: takeoverComplete ? 80 : 50,
+      life: 1.8,
+      enemyOwned: false
+    });
+
+    burst(
+      player.x + player.facing * 20,
+      player.y,
+      "#ff9a32",
+      16
+    );
+
+    say("FLAME ARROW!", 0.8);
+  }
+
+  // ==========================================
+  // CHAPTER PROGRESSION
+  // ==========================================
+
+  function checkChapterClear() {
+    if (!started || cleared || gameOver || departure) {
+      return;
+    }
+
+    if (enemies.some(e => !e.dead)) return;
+
+    started = false;
+
+    if (chapter === 7) {
+      departure = { time: 0, duration: 5 };
+      say("THE PURPLE KING HAS FALLEN!", 5);
+      return;
+    }
+
+    cleared = true;
+    say("CHAPTER CLEARED!", 5);
+  }
+
+  function beginChapter() {
+    initializeAudio();
+
+    if (victory || gameOver) return;
+
+    if (cleared) chapter++;
+
+    if (chapter >= chapters.length) return;
+
+    cleared = false;
+    started = true;
+
+    enemies = [];
+    projectiles = [];
+    effects = [];
+
+    player.x = W / 2;
+    player.y = H / 2;
+    player.invincible = 1;
+
+    player.swordCd = 0;
+    player.skillCd = 0;
+    player.flameCd = 0;
+    player.divergentCd = 0;
+
+    spawnEnemies();
+
+    if (chapter === 5 && !takeoverComplete) {
+      cutscene = { time: 0, duration: 8 };
+    }
+
+    selectMusic(chapter);
+
+    say(
+      "CHAPTER " + (chapter + 1) +
+      ": " + chapters[chapter].name,
+      4
+    );
+  }
+
+  function resetGame() {
+    stopMusic();
+
+    chapter = 0;
+    started = false;
+    cleared = false;
+    gameOver = false;
+    victory = false;
+    takeoverComplete = false;
+
+    cutscene = null;
+    departure = null;
+
+    enemies = [];
+    projectiles = [];
+    effects = [];
+
+    player.x = W / 2;
+    player.y = H / 2;
+
+    player.maxHp =
+      difficultySettings[difficultySelect.value].health;
+
+    player.hp = player.maxHp;
+
+    player.swordCd = 0;
+    player.skillCd = 0;
+    player.divergentCd = 0;
+    player.flameCd = 0;
+    player.invincible = 0;
+
+    say("Welcome to TheDarkWithin!", 5);
   }
 
   // ==========================================
@@ -777,39 +994,14 @@
     let dx = 0;
     let dy = 0;
 
-    if (
-      keys["w"] ||
-      keys["arrowup"]
-    ) {
-      dy -= 1;
-    }
-
-    if (
-      keys["s"] ||
-      keys["arrowdown"]
-    ) {
-      dy += 1;
-    }
-
-    if (
-      keys["a"] ||
-      keys["arrowleft"]
-    ) {
-      dx -= 1;
-    }
-
-    if (
-      keys["d"] ||
-      keys["arrowright"]
-    ) {
-      dx += 1;
-    }
-
-    if (dx === 0 && dy === 0) {
-      return;
-    }
+    if (keys.w || keys.arrowup) dy--;
+    if (keys.s || keys.arrowdown) dy++;
+    if (keys.a || keys.arrowleft) dx--;
+    if (keys.d || keys.arrowright) dx++;
 
     const length = Math.hypot(dx, dy);
+
+    if (!length) return;
 
     dx /= length;
     dy /= length;
@@ -817,578 +1009,17 @@
     player.x += dx * player.speed * dt;
     player.y += dy * player.speed * dt;
 
-    if (dx !== 0) {
-      player.facing = dx > 0 ? 1 : -1;
-    }
+    if (dx !== 0) player.facing = dx > 0 ? 1 : -1;
 
-    player.x = clamp(
-      player.x,
-      25,
-      W - 25
-    );
-
-    player.y = clamp(
-      player.y,
-      65,
-      H - 25
-    );
+    player.x = clamp(player.x, 25, W - 25);
+    player.y = clamp(player.y, 85, H - 30);
   }
 
   // ==========================================
-  // START A CHAPTER
-  // ==========================================
-
-  function beginChapter() {
-    if (victory) return;
-
-    if (chapterCleared) {
-      chapter++;
-
-      if (chapter >= chapters.length) {
-        victory = true;
-        started = false;
-        refreshUI();
-        return;
-      }
-    }
-
-    chapterCleared = false;
-    gameOver = false;
-    started = true;
-
-    player.x = W / 2;
-    player.y = H / 2;
-
-    player.invincible = 1;
-
-    player.swordCd = 0;
-    player.skillCd = 0;
-    player.divergentCd = 0;
-    player.flameCd = 0;
-
-    projectiles = [];
-    effects = [];
-
-    spawnEnemies();
-
-    // The Black Spirit awakens in chapter 6.
-    if (
-      chapter === 5 &&
-      !takeoverComplete
-    ) {
-      cutscene = {
-        time: 0,
-        duration: 8
-      };
-    }
-
-    say(
-      "CHAPTER " +
-      (chapter + 1) +
-      ": " +
-      currentChapter().name,
-      4
-    );
-
-    refreshUI();
-  }
-
-  // ==========================================
-  // CHECK CHAPTER COMPLETION
-  // ==========================================
-
-  function checkChapterClear() {
-    if (
-      !started ||
-      chapterCleared ||
-      gameOver ||
-      victory
-    ) {
-      return;
-    }
-
-    const remaining = enemies.filter(
-      enemy => !enemy.dead
-    );
-
-    if (remaining.length > 0) {
-      return;
-    }
-
-    // Final boss defeat will trigger
-    // the Black Spirit ending in Part 3.
-    if (chapter === chapters.length - 1) {
-      started = false;
-
-      spiritDeparture = {
-        time: 0,
-        duration: 4.5
-      };
-
-      say(
-        "THE PURPLE KING HAS FALLEN!",
-        5
-      );
-
-      refreshUI();
-      return;
-    }
-
-    chapterCleared = true;
-    started = false;
-
-    say(
-      "CHAPTER CLEARED! CONTINUE INSIDE THE GAME.",
-      5
-    );
-
-    refreshUI();
-  }
-
-  // ==========================================
-  // RESET THE ENTIRE GAME
-  // ==========================================
-
-  function resetGame() {
-    chapter = 0;
-
-    started = false;
-    chapterCleared = false;
-    gameOver = false;
-    victory = false;
-
-    takeoverComplete = false;
-    cutscene = null;
-    spiritDeparture = null;
-
-    elapsed = 0;
-    shake = 0;
-
-    enemies = [];
-    projectiles = [];
-    effects = [];
-
-    const difficulty = getDifficulty();
-
-    player.maxHp = difficulty.playerHp;
-    player.hp = player.maxHp;
-
-    player.x = W / 2;
-    player.y = H / 2;
-
-    player.armor = false;
-
-    player.invincible = 0;
-    player.attacking = 0;
-
-    player.swordCd = 0;
-    player.skillCd = 0;
-    player.divergentCd = 0;
-    player.flameCd = 0;
-
-    say(
-      "Welcome to TheDarkWithin. Press Start Adventure!",
-      6
-    );
-
-    refreshUI();
-  }
-
-  // ==========================================
-  // END OF PART 2
-  // ==========================================
-
-  // DO NOT CLOSE THE MAIN (() => { FUNCTION YET.
-  // PART 3 GOES DIRECTLY BELOW THIS LINE.
-
-  // ==========================================
-  // PART 3 — COMBAT AND SPECIAL ABILITIES
-  // ==========================================
-
-  // ==========================================
-  // SWORD ATTACK — SPACE / J
-  // ==========================================
-
-  function swordAttack() {
-    if (!canAttack()) return;
-    if (player.swordCd > 0) return;
-
-    player.swordCd = 0.38;
-    player.attacking = 0.22;
-    player.attackType = "sword";
-
-    const range = 85;
-
-    slashEffect(
-      player.x + player.facing * 30,
-      player.y,
-      "#ffffff",
-      55,
-      player.facing
-    );
-
-    particles(
-      player.x + player.facing * 35,
-      player.y,
-      "#ddeeff",
-      12,
-      145
-    );
-
-    for (const enemy of enemies) {
-      if (enemy.dead) continue;
-
-      const dx = enemy.x - player.x;
-      const dy = enemy.y - player.y;
-
-      const dist = Math.hypot(dx, dy);
-
-      const facingEnemy =
-        dx * player.facing >= -15;
-
-      if (
-        dist < range + enemy.radius &&
-        facingEnemy
-      ) {
-        damageEnemy(
-          enemy,
-          takeoverComplete ? 38 : 28,
-          "#e9faff"
-        );
-
-        enemy.x += player.facing * 18;
-      }
-    }
-
-    checkChapterClear();
-  }
-
-  // ==========================================
-  // WATER WHEEL — M
-  // AVAILABLE BEFORE SPIRIT TAKEOVER
-  // ==========================================
-
-  function waterWheel() {
-    if (!canAttack()) return;
-    if (takeoverComplete) return;
-    if (player.skillCd > 0) return;
-
-    player.skillCd = 2.5;
-    player.attacking = 0.65;
-    player.attackType = "water";
-
-    const x = player.x;
-    const y = player.y;
-
-    // Create a rotating water wheel.
-    effects.push({
-      type: "waterWheel",
-      x: x,
-      y: y,
-      radius: 90,
-      rotation: 0,
-      life: 0.8,
-      maxLife: 0.8,
-      color: "#42cfff"
-    });
-
-    explosion(
-      x,
-      y,
-      "#39baff",
-      90,
-      0.5
-    );
-
-    particles(
-      x,
-      y,
-      "#46caff",
-      32,
-      165
-    );
-
-    particles(
-      x,
-      y,
-      "#d8fbff",
-      18,
-      125
-    );
-
-    for (const enemy of enemies) {
-      if (enemy.dead) continue;
-
-      const dist = distance(
-        x,
-        y,
-        enemy.x,
-        enemy.y
-      );
-
-      if (dist < 110 + enemy.radius) {
-        damageEnemy(
-          enemy,
-          65,
-          "#65eaff"
-        );
-
-        const angle = Math.atan2(
-          enemy.y - y,
-          enemy.x - x
-        );
-
-        enemy.x += Math.cos(angle) * 42;
-        enemy.y += Math.sin(angle) * 42;
-      }
-    }
-
-    shake = 5;
-
-    say("WATER WHEEL!", 1);
-
-    checkChapterClear();
-  }
-
-  // ==========================================
-  // BLACK FLASH — M
-  // UNLOCKED AFTER BLACK SPIRIT TAKEOVER
-  // ==========================================
-
-  function blackFlash() {
-    if (!canAttack()) return;
-    if (!takeoverComplete) return;
-    if (player.skillCd > 0) return;
-
-    player.skillCd = 1.25;
-
-    player.attacking = 0.28;
-    player.attackType = "blackFlash";
-
-    const range = 135;
-
-    // Black and crimson lightning burst.
-    explosion(
-      player.x,
-      player.y,
-      "#240015",
-      120,
-      0.4
-    );
-
-    explosion(
-      player.x,
-      player.y,
-      "#ff1744",
-      78,
-      0.25
-    );
-
-    particles(
-      player.x,
-      player.y,
-      "#ff163b",
-      45,
-      250
-    );
-
-    particles(
-      player.x,
-      player.y,
-      "#100b16",
-      35,
-      195
-    );
-
-    for (let i = 0; i < 9; i++) {
-      effects.push({
-        type: "lightning",
-
-        x: player.x,
-        y: player.y,
-
-        angle: rand(
-          0,
-          Math.PI * 2
-        ),
-
-        radius: rand(65, 135),
-
-        color:
-          i % 2 === 0
-            ? "#fa123b"
-            : "#200817",
-
-        life: 0.24,
-        maxLife: 0.24
-      });
-    }
-
-    for (const enemy of enemies) {
-      if (enemy.dead) continue;
-
-      if (
-        distance(
-          player.x,
-          player.y,
-          enemy.x,
-          enemy.y
-        ) < range + enemy.radius
-      ) {
-        damageEnemy(
-          enemy,
-          125,
-          "#ff1744"
-        );
-      }
-    }
-
-    shake = 13;
-
-    say("BLACK FLASH!", 1);
-
-    checkChapterClear();
-  }
-
-  // ==========================================
-  // DIVERGENT FIST — N
-  // TWO HITS: INITIAL + DELAYED IMPACT
-  // ==========================================
-
-  function divergentFist() {
-    if (!canAttack()) return;
-    if (!takeoverComplete) return;
-    if (player.divergentCd > 0) return;
-
-    player.divergentCd = 3;
-
-    player.attacking = 0.32;
-    player.attackType = "divergent";
-
-    const hitEnemies = [];
-
-    explosion(
-      player.x +
-        player.facing * 36,
-      player.y,
-      "#b26bff",
-      54,
-      0.25
-    );
-
-    slashEffect(
-      player.x +
-        player.facing * 34,
-      player.y,
-      "#b86cff",
-      35,
-      player.facing
-    );
-
-    for (const enemy of enemies) {
-      if (enemy.dead) continue;
-
-      const dx = enemy.x - player.x;
-      const dy = enemy.y - player.y;
-
-      const dist = Math.hypot(dx, dy);
-
-      if (
-        dist < 105 + enemy.radius &&
-        dx * player.facing > -15
-      ) {
-        damageEnemy(
-          enemy,
-          55,
-          "#c97bff"
-        );
-
-        hitEnemies.push(enemy);
-      }
-    }
-
-    // Delayed second impact.
-    effects.push({
-      type: "divergentDelay",
-
-      x: player.x +
-        player.facing * 45,
-
-      y: player.y,
-
-      targets: hitEnemies,
-
-      delay: 0.28,
-      life: 0.4,
-      maxLife: 0.4,
-
-      activated: false
-    });
-
-    say("DIVERGENT FIST!", 1.2);
-
-    checkChapterClear();
-  }
-
-  // ==========================================
-  // FLAME ARROW — K
-  // ==========================================
-
-  function flameArrow() {
-    if (!canAttack()) return;
-    if (player.flameCd > 0) return;
-
-    player.flameCd = 1.5;
-
-    player.attacking = 0.2;
-    player.attackType = "flame";
-
-    const direction = player.facing;
-
-    const x =
-      player.x + direction * 25;
-
-    const y = player.y - 5;
-
-    projectiles.push({
-      type: "flame",
-
-      x: x,
-      y: y,
-
-      vx: direction * 480,
-      vy: 0,
-
-      radius: 12,
-
-      damage:
-        takeoverComplete ? 75 : 48,
-
-      color: "#ff7624",
-
-      life: 1.6,
-
-      enemyOwned: false
-    });
-
-    particles(
-      x,
-      y,
-      "#ff8a24",
-      15,
-      145
-    );
-
-    say("FLAME ARROW!", 0.8);
-  }
-
-  // ==========================================
-  // ENEMY MOVEMENT AND ATTACKS
+  // ENEMY AI
   // ==========================================
 
   function updateEnemies(dt) {
-    if (!started) return;
-
     for (const enemy of enemies) {
       if (enemy.dead) continue;
 
@@ -1411,283 +1042,94 @@
 
       const dx = player.x - enemy.x;
       const dy = player.y - enemy.y;
+      const d = Math.hypot(dx, dy) || 1;
 
-      const dist = Math.hypot(dx, dy);
+      const nx = dx / d;
+      const ny = dy / d;
 
-      const nx =
-        dist > 0 ? dx / dist : 0;
-
-      const ny =
-        dist > 0 ? dy / dist : 0;
-
-      // Boss has ranged attacks.
-      if (enemy.type === "boss") {
-        updateBoss(
-          enemy,
-          dt,
-          nx,
-          ny,
-          dist
-        );
-
-        continue;
+      if (d > enemy.r + player.r + 7) {
+        enemy.x += nx * enemy.speed * dt;
+        enemy.y += ny * enemy.speed * dt;
       }
 
-      // Enemies chase the player.
       if (
-        dist >
-        player.radius +
-          enemy.radius +
-          4
-      ) {
-        enemy.x +=
-          nx * enemy.speed * dt;
-
-        enemy.y +=
-          ny * enemy.speed * dt;
-      }
-
-      // Contact attack.
-      if (
-        dist <
-          player.radius +
-          enemy.radius +
-          8 &&
-        enemy.attackCd <= 0
+        d < enemy.r + player.r + 12 &&
+        enemy.attackCd === 0
       ) {
         damagePlayer(enemy.damage);
-
-        enemy.attackCd = 1.1;
-
-        particles(
-          player.x,
-          player.y,
-          "#ff3d55",
-          8,
-          85
-        );
+        enemy.attackCd = enemy.type === "boss"
+          ? 1.3 : 1.1;
       }
 
-      enemy.x = clamp(
-        enemy.x,
-        enemy.radius,
-        W - enemy.radius
-      );
+      // Purple King toxic projectiles.
+      if (
+        enemy.type === "boss" &&
+        enemy.shootCd === 0
+      ) {
+        projectiles.push({
+          type: "poison",
+          x: enemy.x,
+          y: enemy.y,
+          vx: nx * 270,
+          vy: ny * 270,
+          r: 14,
+          damage: 16,
+          life: 3,
+          enemyOwned: true
+        });
 
-      enemy.y = clamp(
-        enemy.y,
-        65 + enemy.radius,
-        H - enemy.radius
-      );
+        enemy.shootCd = rand(0.9, 1.5);
+      }
+
+      enemy.x = clamp(enemy.x, enemy.r, W - enemy.r);
+      enemy.y = clamp(enemy.y, 85, H - enemy.r);
     }
-
-    checkChapterClear();
   }
 
   // ==========================================
-  // PURPLE KING BOSS AI
-  // ==========================================
-
-  function updateBoss(
-    boss,
-    dt,
-    nx,
-    ny,
-    dist
-  ) {
-    // Chase the player until in range.
-    if (dist > 175) {
-      boss.x +=
-        nx * boss.speed * dt;
-
-      boss.y +=
-        ny * boss.speed * dt;
-    }
-
-    // Very close-range attack.
-    if (
-      dist <
-        boss.radius +
-          player.radius +
-          15 &&
-      boss.attackCd <= 0
-    ) {
-      damagePlayer(
-        boss.damage
-      );
-
-      explosion(
-        boss.x,
-        boss.y,
-        "#a23bff",
-        75,
-        0.35
-      );
-
-      boss.attackCd = 1.4;
-
-      shake = 6;
-    }
-
-    // Purple toxic projectile.
-    if (
-      boss.shootCd <= 0 &&
-      dist < 650
-    ) {
-      shootBossProjectile(
-        boss,
-        nx,
-        ny
-      );
-
-      boss.shootCd =
-        rand(0.8, 1.5);
-    }
-
-    boss.x = clamp(
-      boss.x,
-      boss.radius,
-      W - boss.radius
-    );
-
-    boss.y = clamp(
-      boss.y,
-      65 + boss.radius,
-      H - boss.radius
-    );
-  }
-
-  // ==========================================
-  // PURPLE KING TOXIC PROJECTILE
-  // ==========================================
-
-  function shootBossProjectile(
-    boss,
-    nx,
-    ny
-  ) {
-    const speed = 260;
-
-    projectiles.push({
-      type: "poison",
-
-      x: boss.x,
-      y: boss.y,
-
-      vx: nx * speed,
-      vy: ny * speed,
-
-      radius: 14,
-
-      damage: 15,
-
-      color: "#ae27e8",
-
-      life: 3,
-
-      enemyOwned: true
-    });
-
-    particles(
-      boss.x,
-      boss.y,
-      "#bb43ff",
-      12,
-      125
-    );
-  }
-
-  // ==========================================
-  // UPDATE PROJECTILES
+  // PROJECTILE UPDATE
   // ==========================================
 
   function updateProjectiles(dt) {
-    for (
-      let i = projectiles.length - 1;
-      i >= 0;
-      i--
-    ) {
+    for (let i = projectiles.length - 1; i >= 0; i--) {
       const p = projectiles[i];
 
       p.x += p.vx * dt;
       p.y += p.vy * dt;
-
       p.life -= dt;
 
-      let remove = false;
+      let hit = false;
 
-      // Enemy projectiles hit player.
       if (p.enemyOwned) {
-        const dist = distance(
-          p.x,
-          p.y,
-          player.x,
-          player.y
-        );
-
         if (
-          dist <
-          p.radius + player.radius
+          distance(p.x, p.y, player.x, player.y)
+            < p.r + player.r
         ) {
           damagePlayer(p.damage);
-
-          explosion(
-            p.x,
-            p.y,
-            "#ad2bff",
-            43,
-            0.24
-          );
-
-          remove = true;
+          burst(p.x, p.y, "#a94cff", 15);
+          hit = true;
         }
       } else {
-        // Player projectiles hit enemies.
         for (const enemy of enemies) {
           if (enemy.dead) continue;
 
-          const dist = distance(
-            p.x,
-            p.y,
-            enemy.x,
-            enemy.y
-          );
-
           if (
-            dist <
-            p.radius + enemy.radius
+            distance(p.x, p.y, enemy.x, enemy.y)
+              < p.r + enemy.r
           ) {
-            damageEnemy(
-              enemy,
-              p.damage,
-              "#ffae42"
-            );
-
-            explosion(
-              p.x,
-              p.y,
-              "#ff7926",
-              48,
-              0.3
-            );
-
-            remove = true;
+            damageEnemy(enemy, p.damage, "#ffac4c");
+            burst(p.x, p.y, "#ff7a22", 18);
+            hit = true;
             break;
           }
         }
       }
 
       if (
-        p.life <= 0 ||
-        p.x < -50 ||
-        p.x > W + 50 ||
-        p.y < -50 ||
-        p.y > H + 50
+        hit || p.life <= 0 ||
+        p.x < -50 || p.x > W + 50 ||
+        p.y < -50 || p.y > H + 50
       ) {
-        remove = true;
-      }
-
-      if (remove) {
         projectiles.splice(i, 1);
       }
     }
@@ -1696,10 +1138,142 @@
   }
 
   // ==========================================
-  // HANDLE COOLDOWNS
+  // EFFECT UPDATE
   // ==========================================
 
-  function updateCooldowns(dt) {
+  function updateEffects(dt) {
+    for (let i = effects.length - 1; i >= 0; i--) {
+      const effect = effects[i];
+
+      effect.life -= dt;
+
+      if (effect.type === "particle") {
+        effect.x += effect.vx * dt;
+        effect.y += effect.vy * dt;
+      }
+
+      if (effect.type === "water") {
+        effect.rotation += dt * 12;
+      }
+
+      if (
+        effect.type === "delayed" &&
+        !effect.activated
+      ) {
+        effect.delay -= dt;
+
+        if (effect.delay <= 0) {
+          effect.activated = true;
+
+          ring(
+            effect.x,
+            effect.y,
+            "#cc7dff",
+            75
+          );
+
+          for (const enemy of effect.targets) {
+            if (!enemy.dead) {
+              damageEnemy(enemy, 85, "#cc7dff");
+            }
+          }
+
+          checkChapterClear();
+        }
+      }
+
+      if (effect.life <= 0) {
+        effects.splice(i, 1);
+      }
+    }
+  }
+
+  // ==========================================
+  // CUTSCENE UPDATES
+  // ==========================================
+
+  function updateCutscene(dt) {
+    cutscene.time += dt;
+
+    if (Math.random() < 0.5) {
+      burst(
+        player.x + rand(-20, 20),
+        player.y,
+        "#bc234f",
+        2
+      );
+    }
+
+    if (cutscene.time >= cutscene.duration) {
+      cutscene = null;
+      takeoverComplete = true;
+      player.hp = player.maxHp;
+
+      say(
+        "BLACK SPIRIT AWAKENED! " +
+        "M = BLACK FLASH, N = DIVERGENT FIST",
+        6
+      );
+    }
+  }
+
+  function updateDeparture(dt) {
+    departure.time += dt;
+
+    if (Math.random() < 0.65) {
+      burst(
+        player.x + rand(-30, 30),
+        player.y - departure.time * 35,
+        "#b31b55",
+        2
+      );
+    }
+
+    if (departure.time >= departure.duration) {
+      departure = null;
+      victory = true;
+      takeoverComplete = true;
+
+      stopMusic();
+
+      say(
+        "THE BLACK SPIRIT HAS LEFT. " +
+        "YOUR POWERS REMAIN!",
+        10
+      );
+    }
+  }
+
+  // ==========================================
+  // MAIN UPDATE
+  // ==========================================
+
+  function update(dt) {
+    elapsed += dt;
+    messageTime = Math.max(0, messageTime - dt);
+
+    if (cutscene) {
+      updateCutscene(dt);
+      updateEffects(dt);
+      return;
+    }
+
+    if (departure) {
+      updateDeparture(dt);
+      updateEffects(dt);
+      return;
+    }
+
+    if (!started || gameOver || victory || cleared) {
+      updateEffects(dt);
+      return;
+    }
+
+    player.invincible = Math.max(
+      0,
+      player.invincible - dt
+    );
+
     player.swordCd = Math.max(
       0,
       player.swordCd - dt
@@ -1720,194 +1294,136 @@
       player.flameCd - dt
     );
 
-    player.invincible = Math.max(
-      0,
-      player.invincible - dt
-    );
-
     player.attacking = Math.max(
       0,
       player.attacking - dt
     );
+
+    movePlayer(dt);
+    updateEnemies(dt);
+
+    if (!gameOver) {
+      updateProjectiles(dt);
+    }
+
+    updateEffects(dt);
+    checkChapterClear();
   }
 
   // ==========================================
-  // END OF PART 3
-  // ==========================================
-
-  // DO NOT ADD })(); YET.
-  // PART 4 CONTINUES DIRECTLY BELOW.
-
-  // ==========================================
-  // PART 4 — GRAPHICS AND ANIMATIONS
-  // ==========================================
-
-  // ==========================================
-  // DRAW PIXEL-ART BACKGROUNDS
+  // CHAPTER BACKGROUNDS
   // ==========================================
 
   function drawBackground() {
-    const info = currentChapter();
+    const info = chapters[chapter];
 
     ctx.fillStyle = info.sky;
     ctx.fillRect(0, 0, W, H);
 
-    // Distant hills and scenery.
-    for (let i = 0; i < 12; i++) {
-      const x = i * 100 - 30;
-      const height =
-        80 + Math.sin(i * 2.7) * 40;
+    // Distant scenery.
+    for (let i = 0; i < 11; i++) {
+      const x = i * 100;
+      const height = 75 + (i * 37) % 90;
 
       ctx.fillStyle =
-        chapter === 1
-          ? "#a8c8d9"
-          : chapter === 2
-            ? "#aa7743"
-            : chapter >= 3
-              ? "#211c30"
-              : "#173f35";
+        chapter === 1 ? "#9bc3d8" :
+        chapter === 2 ? "#ac7746" :
+        chapter >= 3 ? "#1a1426" :
+        "#204536";
 
       ctx.beginPath();
-      ctx.moveTo(x, 350);
-      ctx.lineTo(x + 60, 350 - height);
-      ctx.lineTo(x + 130, 350);
+      ctx.moveTo(x - 50, 350);
+      ctx.lineTo(x + 30, 350 - height);
+      ctx.lineTo(x + 115, 350);
       ctx.fill();
     }
 
-    // Ground.
     ctx.fillStyle = info.ground;
-    ctx.fillRect(0, 340, W, 200);
+    ctx.fillRect(0, 350, W, 190);
 
-    // Ground detail.
+    // Pixel ground details.
     for (let i = 0; i < 65; i++) {
-      const x = (i * 137 + 42) % W;
-      const y = 350 + (i * 67) % 180;
+      const x = (i * 137 + 30) % W;
+      const y = 365 + (i * 71) % 165;
 
       ctx.fillStyle =
-        i % 3 === 0
-          ? "rgba(255,255,255,0.12)"
-          : "rgba(0,0,0,0.12)";
+        i % 2 === 0
+          ? "#ffffff18"
+          : "#00000022";
 
       ctx.fillRect(x, y, 9, 4);
     }
 
-    // Forest: trees.
+    // Forest trees.
     if (chapter === 0) {
       for (let i = 0; i < 8; i++) {
-        const x = 35 + i * 128;
-        const y = 305 + (i % 2) * 35;
+        const x = i * 135 + 25;
 
-        ctx.fillStyle = "#65402b";
-        ctx.fillRect(x, y, 16, 65);
+        ctx.fillStyle = "#5b3c2a";
+        ctx.fillRect(x, 290, 18, 70);
 
-        ctx.fillStyle = "#236846";
-        ctx.fillRect(x - 25, y - 43, 66, 53);
+        ctx.fillStyle = "#236c46";
+        ctx.fillRect(x - 28, 245, 75, 52);
 
-        ctx.fillStyle = "#31965a";
-        ctx.fillRect(x - 15, y - 57, 46, 35);
+        ctx.fillStyle = "#319558";
+        ctx.fillRect(x - 16, 226, 51, 35);
       }
     }
 
     // Snowy mountains.
     if (chapter === 1) {
-      for (let i = 0; i < 7; i++) {
-        const x = i * 155;
+      for (let i = 0; i < 6; i++) {
+        const x = i * 185;
 
-        ctx.fillStyle = "#eaf8ff";
+        ctx.fillStyle = "#f4f9ff";
         ctx.beginPath();
-        ctx.moveTo(x, 355);
-        ctx.lineTo(x + 70, 160);
-        ctx.lineTo(x + 145, 355);
-        ctx.fill();
-
-        ctx.fillStyle = "#ffffff";
-        ctx.beginPath();
-        ctx.moveTo(x + 45, 230);
-        ctx.lineTo(x + 70, 160);
-        ctx.lineTo(x + 95, 230);
+        ctx.moveTo(x - 50, 350);
+        ctx.lineTo(x + 75, 145);
+        ctx.lineTo(x + 195, 350);
         ctx.fill();
       }
     }
 
-    // Desert dunes.
-    if (chapter === 2) {
-      ctx.fillStyle = "#d7a760";
-
-      for (let i = 0; i < 5; i++) {
-        ctx.beginPath();
-        ctx.ellipse(
-          i * 230,
-          365,
-          160,
-          45,
-          0,
-          0,
-          Math.PI * 2
-        );
-        ctx.fill();
-      }
-    }
-
-    // Underground stalactites.
+    // Underground spikes.
     if (chapter === 4 || chapter === 5) {
-      ctx.fillStyle = "#171221";
+      ctx.fillStyle = "#100d19";
 
-      for (let i = 0; i < 20; i++) {
-        const x = i * 52;
+      for (let i = 0; i < 18; i++) {
+        const x = i * 58;
 
         ctx.beginPath();
         ctx.moveTo(x, 0);
-        ctx.lineTo(x + 26, 80 + (i % 4) * 25);
-        ctx.lineTo(x + 52, 0);
+        ctx.lineTo(x + 27, 65 + (i % 4) * 20);
+        ctx.lineTo(x + 58, 0);
         ctx.fill();
       }
     }
 
-    // Final boss arena.
+    // Purple King arena.
     if (chapter === 7) {
-      ctx.strokeStyle = "#69319f";
+      ctx.strokeStyle = "#873cb2";
       ctx.lineWidth = 5;
 
       ctx.beginPath();
       ctx.ellipse(
         W / 2,
-        H / 2 + 95,
-        275,
-        115,
-        0,
-        0,
-        Math.PI * 2
+        H / 2 + 100,
+        280,
+        110,
+        0, 0, Math.PI * 2
       );
       ctx.stroke();
-
-      ctx.strokeStyle = "#a448e8";
-      ctx.lineWidth = 2;
-
-      ctx.beginPath();
-      ctx.ellipse(
-        W / 2,
-        H / 2 + 95,
-        225,
-        85,
-        0,
-        0,
-        Math.PI * 2
-      );
-      ctx.stroke();
-    }
-
-    // Dark overlay for later chapters.
-    if (chapter >= 3 && chapter <= 6) {
-      ctx.fillStyle = "rgba(0,0,0,0.16)";
-      ctx.fillRect(0, 0, W, H);
     }
   }
 
   // ==========================================
-  // DRAW THE PLAYER
+  // DRAW PLAYER
   // ==========================================
 
   function drawPlayer() {
+    const x = Math.round(player.x);
+    const y = Math.round(player.y);
+
     if (
       player.invincible > 0 &&
       Math.floor(elapsed * 15) % 2 === 0
@@ -1915,155 +1431,82 @@
       return;
     }
 
-    const x = Math.round(player.x);
-    const y = Math.round(player.y);
-
-    const moving =
-      keys["w"] ||
-      keys["a"] ||
-      keys["s"] ||
-      keys["d"] ||
-      keys["arrowup"] ||
-      keys["arrowdown"] ||
-      keys["arrowleft"] ||
-      keys["arrowright"];
-
-    const bob = moving
-      ? Math.sin(elapsed * 13) * 3
-      : Math.sin(elapsed * 3) * 1.5;
+    const bob = Math.sin(elapsed * 5) * 2;
 
     ctx.save();
     ctx.translate(x, y + bob);
 
-    // Shadow.
-    ctx.fillStyle = "rgba(0,0,0,0.4)";
-    ctx.beginPath();
-    ctx.ellipse(
-      0, 21, 20, 7, 0,
-      0, Math.PI * 2
-    );
-    ctx.fill();
+    ctx.fillStyle = "#0006";
+    ctx.fillRect(-19, 20, 38, 8);
 
-    // Legs.
-    ctx.fillStyle = "#242432";
-    ctx.fillRect(-13, 8, 10, 20);
-    ctx.fillRect(4, 8, 10, 20);
+    // Boots.
+    ctx.fillStyle = "#292331";
+    ctx.fillRect(-13, 8, 11, 21);
+    ctx.fillRect(4, 8, 11, 21);
 
-    // Body.
+    // Armor.
     ctx.fillStyle =
-      takeoverComplete
-        ? "#130f1b"
-        : "#326bba";
+      takeoverComplete ? "#110e19" : "#3869a1";
 
-    ctx.fillRect(-16, -18, 32, 32);
+    ctx.fillRect(-17, -20, 34, 36);
 
     // Head.
     ctx.fillStyle =
-      takeoverComplete
-        ? "#1b1724"
-        : "#e5ad83";
+      takeoverComplete ? "#21192a" : "#e0ab83";
 
-    ctx.fillRect(-13, -37, 26, 23);
+    ctx.fillRect(-13, -43, 26, 25);
 
-    // Hair / helmet.
-    ctx.fillStyle =
-      takeoverComplete
-        ? "#08070c"
-        : "#4d2f25";
-
-    ctx.fillRect(-15, -41, 30, 11);
+    ctx.fillStyle = "#30232a";
+    ctx.fillRect(-15, -47, 30, 10);
 
     // Eyes.
     ctx.fillStyle =
-      takeoverComplete
-        ? "#ff244c"
-        : "#20202a";
+      takeoverComplete ? "#ff204c" : "#15151d";
 
     ctx.fillRect(
-      player.facing === 1 ? 4 : -8,
-      -27,
-      5,
-      4
+      player.facing === 1 ? 5 : -9,
+      -33,
+      6,
+      5
     );
 
-    // Black dragon armor.
     if (takeoverComplete) {
-      ctx.fillStyle = "#08070d";
-
-      // Shoulder armor.
-      ctx.fillRect(-25, -19, 14, 17);
-      ctx.fillRect(11, -19, 14, 17);
-
-      // Chest armor.
-      ctx.fillRect(-14, -10, 28, 18);
-
-      ctx.fillStyle = "#a91b3a";
-      ctx.fillRect(-4, -8, 8, 15);
-
       // Dragon horns.
-      ctx.fillStyle = "#08070d";
+      ctx.fillStyle = "#09080d";
 
       ctx.beginPath();
-      ctx.moveTo(-13, -36);
-      ctx.lineTo(-20, -57);
-      ctx.lineTo(-4, -39);
+      ctx.moveTo(-13, -40);
+      ctx.lineTo(-22, -62);
+      ctx.lineTo(-2, -42);
       ctx.fill();
 
       ctx.beginPath();
-      ctx.moveTo(13, -36);
-      ctx.lineTo(20, -57);
-      ctx.lineTo(4, -39);
+      ctx.moveTo(13, -40);
+      ctx.lineTo(22, -62);
+      ctx.lineTo(2, -42);
       ctx.fill();
 
-      // Dark aura.
-      ctx.strokeStyle =
-        "rgba(222,38,75,0.55)";
-
-      ctx.lineWidth = 2;
-
-      ctx.beginPath();
-      ctx.arc(
-        0,
-        -8,
-        29 + Math.sin(elapsed * 7) * 3,
-        0,
-        Math.PI * 2
-      );
-      ctx.stroke();
+      // Crimson chest gem.
+      ctx.fillStyle = "#bf2346";
+      ctx.fillRect(-5, -10, 10, 17);
     }
 
     // Sword.
-    if (
-      player.attacking > 0 &&
-      player.attackType === "sword"
-    ) {
-      ctx.strokeStyle = "#e5f5ff";
-      ctx.lineWidth = 7;
+    ctx.fillStyle = "#dcefff";
+    ctx.fillRect(
+      player.facing * 23,
+      -25,
+      6,
+      47
+    );
 
-      ctx.beginPath();
-      ctx.moveTo(
-        player.facing * 15,
-        -10
-      );
-      ctx.lineTo(
-        player.facing * 61,
-        -36
-      );
-      ctx.stroke();
-
-      ctx.strokeStyle = "#8ec8e7";
-      ctx.lineWidth = 3;
-
-      ctx.beginPath();
-      ctx.arc(
-        player.facing * 22,
-        -10,
-        48,
-        -1.2,
-        0.9
-      );
-      ctx.stroke();
-    }
+    ctx.fillStyle = "#94714f";
+    ctx.fillRect(
+      player.facing * 16,
+      14,
+      18,
+      5
+    );
 
     ctx.restore();
   }
@@ -2076,213 +1519,105 @@
     for (const enemy of enemies) {
       if (enemy.dead) continue;
 
-      const x = Math.round(enemy.x);
-      const y = Math.round(enemy.y);
-
-      const bob =
-        Math.sin(enemy.animation) * 4;
+      const bob = Math.sin(enemy.animation) * 3;
 
       ctx.save();
-      ctx.translate(x, y + bob);
+      ctx.translate(enemy.x, enemy.y + bob);
 
-      // Shadow.
-      ctx.fillStyle =
-        "rgba(0,0,0,0.35)";
+      const r = enemy.r;
 
+      ctx.fillStyle = "#0005";
       ctx.beginPath();
-      ctx.ellipse(
-        0,
-        enemy.radius + 8,
-        enemy.radius,
-        7,
-        0,
-        0,
-        Math.PI * 2
-      );
+      ctx.ellipse(0, r + 7, r, 7, 0, 0, Math.PI * 2);
       ctx.fill();
 
-      const r = enemy.radius;
-
       if (enemy.type === "boss") {
-        drawPurpleKing(enemy);
-      } else {
-        // Monster body.
+        // Purple King's cloak.
+        ctx.fillStyle = "#240e36";
+        ctx.fillRect(-42, -22, 84, 90);
+
+        // Body.
         ctx.fillStyle =
-          enemy.flash > 0
-            ? "#ffffff"
-            : enemy.color;
+          enemy.flash > 0 ? "#fff" : "#742caf";
+
+        ctx.fillRect(-35, -43, 70, 80);
+
+        // Head.
+        ctx.fillStyle = "#461565";
+        ctx.fillRect(-28, -80, 56, 40);
+
+        // Crown.
+        ctx.fillStyle = "#e4bd70";
+        ctx.beginPath();
+        ctx.moveTo(-32, -76);
+        ctx.lineTo(-28, -108);
+        ctx.lineTo(-9, -87);
+        ctx.lineTo(0, -117);
+        ctx.lineTo(11, -87);
+        ctx.lineTo(29, -108);
+        ctx.lineTo(33, -76);
+        ctx.fill();
+
+        // Glowing eyes.
+        ctx.fillStyle = "#ff2e94";
+        ctx.fillRect(-18, -63, 12, 7);
+        ctx.fillRect(7, -63, 12, 7);
+
+        ctx.fillStyle = "#da4dff";
+        ctx.fillRect(-8, -15, 16, 23);
+      } else {
+        ctx.fillStyle =
+          enemy.flash > 0 ? "#fff" : enemy.color;
 
         ctx.beginPath();
         ctx.ellipse(
-          0,
-          0,
-          r,
-          r * 1.1,
-          0,
-          0,
-          Math.PI * 2
+          0, 0, r, r * 1.1,
+          0, 0, Math.PI * 2
         );
         ctx.fill();
 
-        // Monster horns.
-        ctx.fillStyle =
-          enemy.flash > 0
-            ? "#ffffff"
-            : "#202030";
+        // Horns.
+        ctx.fillStyle = "#1d1826";
 
         ctx.beginPath();
         ctx.moveTo(-r + 3, -r / 2);
-        ctx.lineTo(-r - 7, -r - 13);
-        ctx.lineTo(-3, -r + 3);
+        ctx.lineTo(-r - 8, -r - 13);
+        ctx.lineTo(-3, -r + 2);
         ctx.fill();
 
         ctx.beginPath();
         ctx.moveTo(r - 3, -r / 2);
-        ctx.lineTo(r + 7, -r - 13);
-        ctx.lineTo(3, -r + 3);
+        ctx.lineTo(r + 8, -r - 13);
+        ctx.lineTo(3, -r + 2);
         ctx.fill();
 
         // Eyes.
         ctx.fillStyle =
-          chapter >= 3
-            ? "#ff365d"
-            : "#111111";
+          chapter >= 3 ? "#ff315d" : "#111";
 
-        ctx.fillRect(
-          -10,
-          -5,
-          6,
-          6
-        );
-
-        ctx.fillRect(
-          5,
-          -5,
-          6,
-          6
-        );
-
-        // Mouth.
-        ctx.fillStyle = "#17101b";
-        ctx.fillRect(-5, 7, 11, 4);
+        ctx.fillRect(-10, -5, 6, 6);
+        ctx.fillRect(5, -5, 6, 6);
       }
 
-      // Enemy health bar.
-      const barWidth =
-        enemy.type === "boss"
-          ? 105
-          : 42;
+      // Health bar.
+      const width = enemy.type === "boss" ? 110 : 45;
+      const barY = enemy.type === "boss" ? -135 : -r - 29;
 
-      const barY = -r - 33;
-
-      ctx.fillStyle = "#19191e";
-
-      ctx.fillRect(
-        -barWidth / 2,
-        barY,
-        barWidth,
-        7
-      );
+      ctx.fillStyle = "#15151a";
+      ctx.fillRect(-width / 2, barY, width, 8);
 
       ctx.fillStyle =
-        enemy.type === "boss"
-          ? "#b13aff"
-          : "#e64b5c";
+        enemy.type === "boss" ? "#b24cff" : "#e64357";
 
       ctx.fillRect(
-        -barWidth / 2,
+        -width / 2,
         barY,
-        barWidth *
-          clamp(
-            enemy.hp / enemy.maxHp,
-            0,
-            1
-          ),
-        7
+        width * (enemy.hp / enemy.maxHp),
+        8
       );
 
       ctx.restore();
     }
-  }
-
-  // ==========================================
-  // DRAW THE PURPLE KING
-  // ==========================================
-
-  function drawPurpleKing(boss) {
-    const pulse =
-      Math.sin(elapsed * 5) * 4;
-
-    // Purple aura.
-    ctx.strokeStyle =
-      "rgba(179,52,255,0.45)";
-
-    ctx.lineWidth = 6;
-
-    ctx.beginPath();
-    ctx.arc(
-      0,
-      0,
-      61 + pulse,
-      0,
-      Math.PI * 2
-    );
-    ctx.stroke();
-
-    // Cloak.
-    ctx.fillStyle = "#291037";
-
-    ctx.beginPath();
-    ctx.moveTo(-40, -16);
-    ctx.lineTo(-53, 65);
-    ctx.lineTo(53, 65);
-    ctx.lineTo(40, -16);
-    ctx.fill();
-
-    // Body armor.
-    ctx.fillStyle =
-      boss.flash > 0
-        ? "#ffffff"
-        : "#60209f";
-
-    ctx.fillRect(-36, -30, 72, 76);
-
-    // Head.
-    ctx.fillStyle = "#3c155c";
-    ctx.fillRect(-29, -65, 58, 39);
-
-    // Crown.
-    ctx.fillStyle = "#d39aff";
-
-    ctx.beginPath();
-    ctx.moveTo(-35, -64);
-    ctx.lineTo(-30, -94);
-    ctx.lineTo(-13, -72);
-    ctx.lineTo(0, -108);
-    ctx.lineTo(13, -72);
-    ctx.lineTo(30, -94);
-    ctx.lineTo(35, -64);
-    ctx.fill();
-
-    // Glowing eyes.
-    ctx.fillStyle = "#ff2f8a";
-    ctx.fillRect(-18, -50, 12, 8);
-    ctx.fillRect(7, -50, 12, 8);
-
-    // Chest gem.
-    ctx.fillStyle = "#dd43ff";
-
-    ctx.beginPath();
-    ctx.moveTo(0, -14);
-    ctx.lineTo(13, 2);
-    ctx.lineTo(0, 20);
-    ctx.lineTo(-13, 2);
-    ctx.fill();
-
-    // Arms.
-    ctx.fillStyle = "#411669";
-    ctx.fillRect(-48, -20, 15, 58);
-    ctx.fillRect(33, -20, 15, 58);
   }
 
   // ==========================================
@@ -2291,181 +1626,30 @@
 
   function drawProjectiles() {
     for (const p of projectiles) {
-      ctx.save();
+      ctx.fillStyle =
+        p.type === "flame" ? "#ff8025" : "#a72bdb";
 
-      if (p.type === "flame") {
-        // Flame trail.
-        ctx.fillStyle =
-          "rgba(255,120,20,0.35)";
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+      ctx.fill();
 
-        ctx.beginPath();
-        ctx.ellipse(
-          p.x - Math.sign(p.vx) * 16,
-          p.y,
-          23,
-          9,
-          0,
-          0,
-          Math.PI * 2
-        );
-        ctx.fill();
+      ctx.fillStyle =
+        p.type === "flame" ? "#ffe17a" : "#f3a0ff";
 
-        ctx.fillStyle = "#ff5c18";
-
-        ctx.beginPath();
-        ctx.arc(
-          p.x,
-          p.y,
-          p.radius,
-          0,
-          Math.PI * 2
-        );
-        ctx.fill();
-
-        ctx.fillStyle = "#ffeb6d";
-
-        ctx.beginPath();
-        ctx.arc(
-          p.x,
-          p.y,
-          5,
-          0,
-          Math.PI * 2
-        );
-        ctx.fill();
-      } else if (p.type === "poison") {
-        ctx.fillStyle =
-          "rgba(177,40,255,0.25)";
-
-        ctx.beginPath();
-        ctx.arc(
-          p.x,
-          p.y,
-          p.radius + 10,
-          0,
-          Math.PI * 2
-        );
-        ctx.fill();
-
-        ctx.fillStyle = "#9925dd";
-
-        ctx.beginPath();
-        ctx.arc(
-          p.x,
-          p.y,
-          p.radius,
-          0,
-          Math.PI * 2
-        );
-        ctx.fill();
-
-        ctx.fillStyle = "#ed9dff";
-
-        ctx.beginPath();
-        ctx.arc(
-          p.x - 4,
-          p.y - 4,
-          5,
-          0,
-          Math.PI * 2
-        );
-        ctx.fill();
-      }
-
-      ctx.restore();
+      ctx.beginPath();
+      ctx.arc(p.x - 3, p.y - 3, 5, 0, Math.PI * 2);
+      ctx.fill();
     }
   }
 
   // ==========================================
-  // UPDATE VISUAL EFFECTS
-  // ==========================================
-
-  function updateEffects(dt) {
-    for (
-      let i = effects.length - 1;
-      i >= 0;
-      i--
-    ) {
-      const e = effects[i];
-
-      e.life -= dt;
-
-      if (e.type === "particle") {
-        e.x += e.vx * dt;
-        e.y += e.vy * dt;
-
-        e.vx *= Math.max(
-          0,
-          1 - dt * 2
-        );
-
-        e.vy *= Math.max(
-          0,
-          1 - dt * 2
-        );
-      }
-
-      // Spin the Water Wheel.
-      if (e.type === "waterWheel") {
-        e.rotation += dt * 12;
-      }
-
-      // Divergent Fist's delayed hit.
-      if (
-        e.type === "divergentDelay" &&
-        !e.activated
-      ) {
-        e.delay -= dt;
-
-        if (e.delay <= 0) {
-          e.activated = true;
-
-          explosion(
-            e.x,
-            e.y,
-            "#d78cff",
-            75,
-            0.3
-          );
-
-          particles(
-            e.x,
-            e.y,
-            "#b84bff",
-            25,
-            180
-          );
-
-          for (const enemy of e.targets) {
-            if (!enemy.dead) {
-              damageEnemy(
-                enemy,
-                85,
-                "#e19aff"
-              );
-            }
-          }
-
-          shake = 8;
-
-          checkChapterClear();
-        }
-      }
-
-      if (e.life <= 0) {
-        effects.splice(i, 1);
-      }
-    }
-  }
-
-  // ==========================================
-  // DRAW ALL VISUAL EFFECTS
+  // DRAW EFFECTS
   // ==========================================
 
   function drawEffects() {
-    for (const e of effects) {
+    for (const effect of effects) {
       const alpha = clamp(
-        e.life / e.maxLife,
+        effect.life / effect.maxLife,
         0,
         1
       );
@@ -2473,195 +1657,69 @@
       ctx.save();
       ctx.globalAlpha = alpha;
 
-      if (e.type === "particle") {
-        ctx.fillStyle = e.color;
-
-        ctx.fillRect(
-          e.x,
-          e.y,
-          e.size,
-          e.size
-        );
+      if (effect.type === "particle") {
+        ctx.fillStyle = effect.color;
+        ctx.fillRect(effect.x, effect.y, 5, 5);
       }
 
-      if (e.type === "explosion") {
-        ctx.strokeStyle = e.color;
-        ctx.lineWidth = 8 * alpha;
+      if (effect.type === "ring") {
+        ctx.strokeStyle = effect.color;
+        ctx.lineWidth = 8;
 
         ctx.beginPath();
-
         ctx.arc(
-          e.x,
-          e.y,
-          e.radius * (1 - alpha * 0.5),
+          effect.x,
+          effect.y,
+          effect.radius * (1 - alpha * 0.45),
           0,
           Math.PI * 2
         );
-
         ctx.stroke();
       }
 
-      if (e.type === "slash") {
-        ctx.translate(e.x, e.y);
+      if (effect.type === "water") {
+        ctx.translate(effect.x, effect.y);
+        ctx.rotate(effect.rotation);
 
-        ctx.scale(
-          e.direction,
-          1
-        );
-
-        ctx.strokeStyle = e.color;
-        ctx.lineWidth = 7 * alpha;
-
-        ctx.beginPath();
-
-        ctx.arc(
-          0,
-          0,
-          e.radius,
-          -1.1,
-          1.1
-        );
-
-        ctx.stroke();
-      }
-
-      // ======================================
-      // ANIMATED WATER WHEEL
-      // ======================================
-
-      if (e.type === "waterWheel") {
-        ctx.translate(e.x, e.y);
-        ctx.rotate(e.rotation);
-
-        const radius =
-          e.radius *
-          (0.7 + (1 - alpha) * 0.3);
-
-        // Outer blue water ring.
-        ctx.strokeStyle = "#36bfff";
+        ctx.strokeStyle = "#37baff";
         ctx.lineWidth = 11;
         ctx.lineCap = "round";
 
         ctx.beginPath();
-
-        ctx.arc(
-          0,
-          0,
-          radius,
-          -0.4,
-          Math.PI * 1.5
-        );
-
+        ctx.arc(0, 0, 87, -0.5, Math.PI * 1.5);
         ctx.stroke();
 
-        // Inner white water ring.
-        ctx.strokeStyle = "#c8f8ff";
+        ctx.strokeStyle = "#c5faff";
         ctx.lineWidth = 5;
 
         ctx.beginPath();
-
-        ctx.arc(
-          0,
-          0,
-          radius * 0.78,
-          0.4,
-          Math.PI * 1.9
-        );
-
+        ctx.arc(0, 0, 65, 0.4, Math.PI * 1.9);
         ctx.stroke();
 
-        // Eight flowing water streams.
-        for (let j = 0; j < 8; j++) {
-          const a =
-            j * Math.PI / 4;
+        // Eight spinning water streams.
+        for (let i = 0; i < 8; i++) {
+          const a = i * Math.PI / 4;
 
           ctx.strokeStyle =
-            j % 2 === 0
-              ? "#62e5ff"
-              : "#148bc8";
+            i % 2 ? "#127fc7" : "#77eaff";
 
           ctx.lineWidth = 5;
 
           ctx.beginPath();
-
           ctx.moveTo(
-            Math.cos(a) * radius * 0.3,
-            Math.sin(a) * radius * 0.3
+            Math.cos(a) * 35,
+            Math.sin(a) * 35
           );
 
           ctx.quadraticCurveTo(
-            Math.cos(a + 0.3) *
-              radius * 0.75,
-
-            Math.sin(a + 0.3) *
-              radius * 0.75,
-
-            Math.cos(a + 0.55) *
-              radius,
-
-            Math.sin(a + 0.55) *
-              radius
+            Math.cos(a + 0.3) * 65,
+            Math.sin(a + 0.3) * 65,
+            Math.cos(a + 0.6) * 92,
+            Math.sin(a + 0.6) * 92
           );
 
           ctx.stroke();
         }
-
-        // Flying water droplets.
-        ctx.fillStyle = "#d8fbff";
-
-        for (let j = 0; j < 12; j++) {
-          const a =
-            j * Math.PI / 6;
-
-          ctx.fillRect(
-            Math.cos(a) *
-              (radius + 5),
-
-            Math.sin(a) *
-              (radius + 5),
-
-            5,
-            8
-          );
-        }
-      }
-
-      // ======================================
-      // BLACK FLASH LIGHTNING
-      // ======================================
-
-      if (e.type === "lightning") {
-        ctx.strokeStyle = e.color;
-        ctx.lineWidth = 5 * alpha;
-
-        const dx =
-          Math.cos(e.angle);
-
-        const dy =
-          Math.sin(e.angle);
-
-        ctx.beginPath();
-        ctx.moveTo(e.x, e.y);
-
-        ctx.lineTo(
-          e.x + dx * e.radius * 0.4,
-          e.y + dy * e.radius * 0.4
-        );
-
-        ctx.lineTo(
-          e.x + dx * e.radius * 0.65 -
-            dy * 18,
-
-          e.y + dy * e.radius * 0.65 +
-            dx * 18
-        );
-
-        ctx.lineTo(
-          e.x + dx * e.radius,
-          e.y + dy * e.radius
-        );
-
-        ctx.stroke();
       }
 
       ctx.restore();
@@ -2669,377 +1727,172 @@
   }
 
   // ==========================================
-  // BLACK SPIRIT TAKEOVER CUTSCENE
+  // CUTSCENE DRAWING
   // ==========================================
 
-  function updateCutscene(dt) {
-    if (!cutscene) return;
+  function drawCutsceneOverlay() {
+    if (!cutscene && !departure) return;
 
-    cutscene.time += dt;
-
-    const t = cutscene.time;
-
-    // Rising dark energy.
-    if (Math.random() < 0.8) {
-      particles(
-        player.x + rand(-35, 35),
-        player.y + rand(-10, 40),
-        Math.random() < 0.5
-          ? "#100a17"
-          : "#ff2858",
-        2,
-        85
-      );
-    }
-
-    if (t >= cutscene.duration) {
-      cutscene = null;
-
-      takeoverComplete = true;
-      player.armor = true;
-
-      player.hp = player.maxHp;
-
-      say(
-        "BLACK SPIRIT AWAKENED! " +
-        "M = BLACK FLASH, " +
-        "N = DIVERGENT FIST!",
-        6
-      );
-
-      refreshUI();
-    }
-  }
-
-  function drawCutscene() {
-    drawBackground();
-    drawEnemies();
-    drawPlayer();
-
-    ctx.fillStyle =
-      "rgba(0,0,0,0.68)";
-
+    ctx.fillStyle = "#000a";
     ctx.fillRect(0, 0, W, H);
-
-    const progress = clamp(
-      cutscene.time /
-        cutscene.duration,
-      0,
-      1
-    );
-
-    const radius =
-      20 + progress * 170;
-
-    // Black energy sphere.
-    ctx.fillStyle =
-      "rgba(17,8,26,0.9)";
-
-    ctx.beginPath();
-
-    ctx.arc(
-      player.x,
-      player.y - 12,
-      radius,
-      0,
-      Math.PI * 2
-    );
-
-    ctx.fill();
-
-    // Crimson energy ring.
-    ctx.strokeStyle = "#e1214d";
-    ctx.lineWidth = 6;
-
-    ctx.beginPath();
-
-    ctx.arc(
-      player.x,
-      player.y - 12,
-      radius + 12,
-      0,
-      Math.PI * 2
-    );
-
-    ctx.stroke();
-
-    // Glowing eyes.
-    ctx.fillStyle = "#ff224f";
-
-    ctx.fillRect(
-      player.x - 24,
-      player.y - 30,
-      16,
-      8
-    );
-
-    ctx.fillRect(
-      player.x + 9,
-      player.y - 30,
-      16,
-      8
-    );
 
     ctx.textAlign = "center";
 
-    ctx.fillStyle = "#ff3861";
-    ctx.font = "bold 30px monospace";
+    if (cutscene) {
+      const size = 45 + cutscene.time * 12;
 
-    ctx.fillText(
-      "THE BLACK SPIRIT",
-      W / 2,
-      85
-    );
+      ctx.strokeStyle = "#d32856";
+      ctx.lineWidth = 8;
 
-    ctx.fillStyle = "#eeeeee";
-    ctx.font = "18px monospace";
+      ctx.beginPath();
+      ctx.arc(
+        player.x,
+        player.y,
+        size,
+        0,
+        Math.PI * 2
+      );
+      ctx.stroke();
 
-    ctx.fillText(
-      progress < 0.5
-        ? "Something is taking control..."
-        : "Your power is awakening...",
-      W / 2,
-      120
-    );
+      ctx.fillStyle = "#ff3e68";
+      ctx.font = "bold 28px monospace";
+      ctx.fillText(
+        "THE BLACK SPIRIT AWAKENS",
+        W / 2,
+        95
+      );
+
+      ctx.fillStyle = "#eee";
+      ctx.font = "17px monospace";
+      ctx.fillText(
+        "Something is taking control...",
+        W / 2,
+        125
+      );
+    }
+
+    if (departure) {
+      const rise = departure.time * 50;
+      const opacity = clamp(
+        1 - departure.time / departure.duration,
+        0,
+        1
+      );
+
+      ctx.globalAlpha = opacity;
+
+      ctx.fillStyle = "#150c20";
+
+      ctx.beginPath();
+      ctx.ellipse(
+        player.x,
+        player.y - rise,
+        40,
+        58,
+        0, 0, Math.PI * 2
+      );
+      ctx.fill();
+
+      ctx.fillStyle = "#ff2856";
+      ctx.fillRect(player.x - 19, player.y - rise - 15, 11, 6);
+      ctx.fillRect(player.x + 8, player.y - rise - 15, 11, 6);
+
+      ctx.globalAlpha = 1;
+
+      ctx.fillStyle = "#ff5b82";
+      ctx.font = "bold 28px monospace";
+      ctx.fillText(
+        "THE BLACK SPIRIT DEPARTS",
+        W / 2,
+        90
+      );
+
+      ctx.fillStyle = "#fff";
+      ctx.font = "17px monospace";
+      ctx.fillText(
+        "Your powers will remain.",
+        W / 2,
+        122
+      );
+    }
 
     ctx.textAlign = "left";
   }
 
   // ==========================================
-  // BLACK SPIRIT DEPARTURE CUTSCENE
-  // ==========================================
-
-  function updateSpiritDeparture(dt) {
-    if (!spiritDeparture) return;
-
-    spiritDeparture.time += dt;
-
-    if (Math.random() < 0.7) {
-      particles(
-        player.x + rand(-25, 25),
-        player.y + rand(-10, 35),
-        "#96254e",
-        2,
-        100
-      );
-    }
-
-    if (
-      spiritDeparture.time >=
-      spiritDeparture.duration
-    ) {
-      spiritDeparture = null;
-
-      victory = true;
-      started = false;
-
-      // Powers stay unlocked!
-      takeoverComplete = true;
-      player.armor = true;
-
-      say(
-        "THE BLACK SPIRIT HAS LEFT. " +
-        "YOUR POWERS REMAIN!",
-        8
-      );
-
-      refreshUI();
-    }
-  }
-
-  function drawSpiritDeparture() {
-    drawBackground();
-    drawPlayer();
-    drawEffects();
-
-    const t = spiritDeparture.time;
-
-    const fade = clamp(
-      1 -
-        t /
-        spiritDeparture.duration,
-      0,
-      1
-    );
-
-    const rise = t * 55;
-
-    ctx.fillStyle =
-      "rgba(0,0,0,0.45)";
-
-    ctx.fillRect(0, 0, W, H);
-
-    // Spirit rises out of the player.
-    ctx.save();
-
-    ctx.globalAlpha = fade;
-
-    ctx.fillStyle = "#100b18";
-
-    ctx.beginPath();
-
-    ctx.ellipse(
-      player.x + 14,
-      player.y - rise,
-      35 + t * 9,
-      52 + t * 6,
-      0,
-      0,
-      Math.PI * 2
-    );
-
-    ctx.fill();
-
-    // Spirit eyes.
-    ctx.fillStyle = "#ff1948";
-
-    ctx.fillRect(
-      player.x + 2,
-      player.y - rise - 12,
-      9,
-      5
-    );
-
-    ctx.fillRect(
-      player.x + 21,
-      player.y - rise - 12,
-      9,
-      5
-    );
-
-    ctx.restore();
-
-    ctx.textAlign = "center";
-
-    ctx.fillStyle = "#ff527b";
-    ctx.font = "bold 26px monospace";
-
-    ctx.fillText(
-      "THE BLACK SPIRIT DEPARTS",
-      W / 2,
-      76
-    );
-
-    ctx.fillStyle = "#eeeeee";
-    ctx.font = "16px monospace";
-
-    ctx.fillText(
-      "You are free. Your powers remain.",
-      W / 2,
-      108
-    );
-
-    ctx.textAlign = "left";
-  }
-
-  // ==========================================
-  // DRAW HUD
+  // GAME HUD
   // ==========================================
 
   function drawHUD() {
-    // HUD background.
-    ctx.fillStyle =
-      "rgba(5,5,12,0.82)";
+    ctx.fillStyle = "#05070ddd";
+    ctx.fillRect(0, 0, W, 62);
 
-    ctx.fillRect(0, 0, W, 56);
-
-    // Chapter text.
-    ctx.fillStyle = "#ffffff";
+    ctx.fillStyle = "#fff";
     ctx.font = "bold 16px monospace";
 
     ctx.fillText(
-      "CHAPTER " +
-        (chapter + 1) +
-        " — " +
-        currentChapter().name,
+      "CHAPTER " + (chapter + 1) +
+      " — " + chapters[chapter].name,
       15,
-      22
+      23
     );
 
-    // Health bar.
-    ctx.fillStyle = "#401c27";
-    ctx.fillRect(15, 32, 205, 13);
+    ctx.fillStyle = "#4c2130";
+    ctx.fillRect(15, 36, 210, 14);
 
-    ctx.fillStyle = "#ec3856";
-
+    ctx.fillStyle = "#ed3c5f";
     ctx.fillRect(
       15,
-      32,
-      205 *
-        (player.hp / player.maxHp),
-      13
+      36,
+      210 * (player.hp / player.maxHp),
+      14
     );
 
-    ctx.strokeStyle = "#ffffff";
-    ctx.lineWidth = 1;
+    ctx.strokeStyle = "#eee";
+    ctx.strokeRect(15, 36, 210, 14);
 
-    ctx.strokeRect(
-      15,
-      32,
-      205,
-      13
-    );
-
-    ctx.fillStyle = "#ffffff";
+    ctx.fillStyle = "#fff";
     ctx.font = "12px monospace";
 
     ctx.fillText(
-      Math.ceil(player.hp) +
-        " / " +
-        player.maxHp,
-      80,
-      43
+      Math.ceil(player.hp) + "/" + player.maxHp,
+      83,
+      47
     );
 
-    // Remaining enemy count.
-    const remaining = enemies.filter(
-      enemy => !enemy.dead
-    ).length;
+    const remaining =
+      enemies.filter(e => !e.dead).length;
 
-    ctx.font = "bold 14px monospace";
-
+    ctx.font = "bold 15px monospace";
     ctx.fillText(
       "ENEMIES: " + remaining,
-      W - 155,
-      25
+      W - 160,
+      26
     );
 
-    // Message at bottom.
-    if (messageTimer > 0) {
+    if (messageTime > 0) {
+      ctx.fillStyle = "#000c";
+      ctx.fillRect(105, H - 75, W - 210, 48);
+
       ctx.textAlign = "center";
-
-      ctx.fillStyle =
-        "rgba(0,0,0,0.75)";
-
-      ctx.fillRect(
-        120,
-        H - 70,
-        W - 240,
-        45
-      );
-
-      ctx.fillStyle = "#ffffff";
+      ctx.fillStyle = "#fff";
       ctx.font = "bold 15px monospace";
 
       ctx.fillText(
         message,
         W / 2,
-        H - 42
+        H - 45
       );
 
       ctx.textAlign = "left";
     }
 
-    // Chapter cleared overlay.
-    if (chapterCleared && !victory) {
-      ctx.fillStyle =
-        "rgba(0,0,0,0.55)";
-
+    if (cleared) {
+      ctx.fillStyle = "#0009";
       ctx.fillRect(0, 0, W, H);
 
       ctx.textAlign = "center";
-
-      ctx.fillStyle = "#6eff91";
+      ctx.fillStyle = "#82ffa3";
       ctx.font = "bold 36px monospace";
 
       ctx.fillText(
@@ -3048,768 +1901,329 @@
         190
       );
 
-      ctx.fillStyle = "#eeeeee";
+      ctx.fillStyle = "#fff";
       ctx.font = "17px monospace";
 
       ctx.fillText(
         "All enemies defeated!",
         W / 2,
-        230
-      );
-
-      ctx.fillText(
-        "Continue using the button inside the game.",
-        W / 2,
-        260
+        235
       );
 
       ctx.textAlign = "left";
     }
 
-    // Game over overlay.
-    if (gameOver) {
-      ctx.fillStyle =
-        "rgba(0,0,0,0.75)";
-
+    if (gameOver || victory) {
+      ctx.fillStyle = "#000d";
       ctx.fillRect(0, 0, W, H);
 
       ctx.textAlign = "center";
 
-      ctx.fillStyle = "#ff3c56";
-      ctx.font = "bold 44px monospace";
-
-      ctx.fillText(
-        "GAME OVER",
-        W / 2,
-        H / 2
-      );
-
-      ctx.fillStyle = "#eeeeee";
-      ctx.font = "18px monospace";
-
-      ctx.fillText(
-        "Press Restart Game to try again.",
-        W / 2,
-        H / 2 + 42
-      );
-
-      ctx.textAlign = "left";
-    }
-
-    // Victory overlay.
-    if (victory) {
       ctx.fillStyle =
-        "rgba(0,0,0,0.82)";
+        victory ? "#a8ffbd" : "#ff4a67";
 
-      ctx.fillRect(0, 0, W, H);
-
-      ctx.textAlign = "center";
-
-      ctx.fillStyle = "#adffbd";
-      ctx.font = "bold 40px monospace";
+      ctx.font = "bold 38px monospace";
 
       ctx.fillText(
-        "YOU SAVED THE VILLAGERS!",
+        victory ? "YOU SAVED THE VILLAGERS!" : "GAME OVER",
         W / 2,
-        H / 2 - 55
+        H / 2 - 30
       );
 
-      ctx.fillStyle = "#ffffff";
-      ctx.font = "18px monospace";
+      ctx.fillStyle = "#eee";
+      ctx.font = "17px monospace";
 
       ctx.fillText(
-        "The Purple King has fallen.",
+        victory
+          ? "The Purple King has fallen."
+          : "Press Restart Game to try again.",
         W / 2,
-        H / 2
+        H / 2 + 15
       );
 
-      ctx.fillText(
-        "The Black Spirit is gone.",
-        W / 2,
-        H / 2 + 32
-      );
-
-      ctx.fillStyle = "#ff5f88";
-
-      ctx.fillText(
-        "But its powers remain within you.",
-        W / 2,
-        H / 2 + 65
-      );
+      if (victory) {
+        ctx.fillText(
+          "The Black Spirit is gone, but your powers remain.",
+          W / 2,
+          H / 2 + 50
+        );
+      }
 
       ctx.textAlign = "left";
     }
   }
 
   // ==========================================
-  // END OF PART 4
+  // INTERFACE UPDATES
   // ==========================================
 
-  // DON'T CLOSE THE MAIN FUNCTION YET.
-  // PART 5 GOES DIRECTLY UNDER THIS.
-
-  // ==========================================
-  // PART 5 — GAME CONTROLS AND MAIN LOOP
-  // ==========================================
-
-  // ==========================================
-  // UPDATE THE GAME INTERFACE
-  // ==========================================
+  function cooldown(value) {
+    return value > 0
+      ? value.toFixed(1) + "s"
+      : "Ready";
+  }
 
   function refreshUI() {
-    const info = currentChapter();
+    $("dwChapter").textContent =
+      "Chapter " + (chapter + 1) +
+      " of 8 — " + chapters[chapter].name;
 
-    chapterText.textContent =
-      "Chapter " +
-      (chapter + 1) +
-      " of " +
-      chapters.length +
-      " — " +
-      info.name;
+    const remaining = enemies.filter(e => !e.dead).length;
 
-    // Display the correct game status.
-    if (victory) {
-      statusText.textContent =
-        "VICTORY! The Purple King has fallen. " +
-        "The Black Spirit has departed, " +
-        "but your powers remain.";
+    $("dwStatus").textContent =
+      victory ? "VICTORY! You completed TheDarkWithin." :
+      gameOver ? "Game Over! Press Restart." :
+      departure ? "The Black Spirit is leaving..." :
+      cutscene ? "The Black Spirit is awakening..." :
+      cleared ? "Chapter Cleared! Continue inside the game." :
+      started ? chapters[chapter].story +
+        " Enemies remaining: " + remaining :
+      "Press Start Adventure to begin.";
 
-    } else if (gameOver) {
-      statusText.textContent =
-        "Game Over! Press Restart Game.";
-
-    } else if (spiritDeparture) {
-      statusText.textContent =
-        "The Black Spirit is leaving your body...";
-
-    } else if (cutscene) {
-      statusText.textContent =
-        "The Black Spirit is taking over!";
-
-    } else if (chapterCleared) {
-      statusText.textContent =
-        "Chapter cleared! Use the green " +
-        "Continue button inside the game.";
-
-    } else if (started) {
-      const remaining = enemies.filter(
-        enemy => !enemy.dead
-      ).length;
-
-      statusText.textContent =
-        info.description +
-        " Enemies remaining: " +
-        remaining;
-
-    } else {
-      statusText.textContent =
-        "Press Start Adventure to begin!";
-    }
-
-    // ========================================
-    // NEXT CHAPTER BUTTON INSIDE CANVAS
-    // ========================================
-
-    chapterButton.style.display =
-      chapterCleared &&
-      !victory &&
-      !gameOver
-        ? "block"
-        : "none";
-
-    chapterButton.textContent =
-      chapter === chapters.length - 1
-        ? "Finish Game"
-        : "Continue to Next Chapter";
-
-    // ========================================
-    // START BUTTON
-    // ========================================
-
-    if (victory) {
-      startButton.textContent =
-        "Game Completed";
-
-      startButton.disabled = true;
-
-    } else if (gameOver) {
-      startButton.textContent =
-        "Restart Required";
-
-      startButton.disabled = true;
-
-    } else if (chapterCleared) {
-      startButton.textContent =
-        "Chapter Cleared";
-
-      startButton.disabled = true;
-
-    } else if (started) {
-      startButton.textContent =
-        "Adventure Running";
-
-      startButton.disabled = true;
-
-    } else {
-      startButton.textContent =
-        "Start Adventure";
-
-      startButton.disabled = false;
-    }
-
-    // ========================================
-    // SKILL BUTTON NAMES
-    // ========================================
-
-    if (takeoverComplete) {
-      skillLabel.textContent =
-        "M — Black Flash";
-
-      divergentLabel.textContent =
-        "N — Divergent Fist";
-
-    } else {
-      skillLabel.textContent =
-        "M — Water Wheel";
-
-      divergentLabel.textContent =
-        "N — Locked";
-    }
-
-    // ========================================
-    // COOLDOWN TEXT
-    // ========================================
-
-    function cooldownText(value) {
-      return value > 0
-        ? value.toFixed(1) + "s"
-        : "Ready";
-    }
-
-    swordCDLabel.textContent =
-      "Sword: " +
-      cooldownText(player.swordCd);
-
-    skillCDLabel.textContent =
-      (takeoverComplete
-        ? "Black Flash: "
-        : "Water Wheel: ") +
-      cooldownText(player.skillCd);
-
-    divergentCDLabel.textContent =
+    $("dwSkill").textContent =
       takeoverComplete
-        ? "Divergent Fist: " +
-          cooldownText(player.divergentCd)
-        : "Divergent Fist: Locked";
+        ? "M — Black Flash"
+        : "M — Water Wheel";
 
-    flameCDLabel.textContent =
-      "Flame Arrow: " +
-      cooldownText(player.flameCd);
+    $("dwDivergent").textContent =
+      takeoverComplete
+        ? "N — Divergent Fist"
+        : "N — Locked";
 
-    // ========================================
-    // ENABLE AND DISABLE ATTACK BUTTONS
-    // ========================================
+    $("dwCooldowns").textContent =
+      "Sword: " + cooldown(player.swordCd) +
+      " | " +
+      (takeoverComplete ? "Black Flash" : "Water Wheel") +
+      ": " + cooldown(player.skillCd) +
+      " | Divergent Fist: " +
+      (takeoverComplete
+        ? cooldown(player.divergentCd)
+        : "Locked") +
+      " | Flame Arrow: " + cooldown(player.flameCd);
 
-    swordLabel.disabled =
-      !canAttack() ||
-      player.swordCd > 0;
+    const active = canAttack();
 
-    skillLabel.disabled =
-      !canAttack() ||
-      player.skillCd > 0;
+    $("dwSword").disabled =
+      !active || player.swordCd > 0;
 
-    divergentLabel.disabled =
-      !canAttack() ||
-      !takeoverComplete ||
+    $("dwSkill").disabled =
+      !active || player.skillCd > 0;
+
+    $("dwDivergent").disabled =
+      !active || !takeoverComplete ||
       player.divergentCd > 0;
 
-    flameLabel.disabled =
-      !canAttack() ||
-      player.flameCd > 0;
+    $("dwFlame").disabled =
+      !active || player.flameCd > 0;
+
+    continueButton.style.display =
+      cleared ? "block" : "none";
+
+    startButton.disabled =
+      started || cleared || gameOver || victory;
+
+    startButton.textContent =
+      started ? "Adventure Running" :
+      cleared ? "Chapter Cleared" :
+      victory ? "Game Complete" :
+      gameOver ? "Restart Required" :
+      "Start Adventure";
   }
 
   // ==========================================
-  // START ADVENTURE BUTTON
+  // BUTTON CONTROLS
   // ==========================================
 
-  startButton.addEventListener(
-    "click",
-    () => {
-      if (
-        !started &&
-        !chapterCleared &&
-        !gameOver &&
-        !victory
-      ) {
-        beginChapter();
-      }
+  startButton.addEventListener("click", () => {
+    if (!started && !cleared && !gameOver && !victory) {
+      beginChapter();
     }
-  );
+  });
 
-  // ==========================================
-  // RESTART BUTTON
-  // ==========================================
-
-  $("dwRestart").addEventListener(
-    "click",
-    () => {
-      resetGame();
+  continueButton.addEventListener("click", () => {
+    if (cleared && !gameOver && !victory) {
+      beginChapter();
     }
-  );
+  });
 
-  // ==========================================
-  // DIFFICULTY SELECTOR
-  // ==========================================
+  $("dwRestart").addEventListener("click", resetGame);
 
   difficultySelect.addEventListener(
     "change",
-    () => {
-      resetGame();
-
-      say(
-        "Difficulty changed to " +
-        difficultySelect.value.toUpperCase() +
-        "!",
-        3
-      );
-    }
+    resetGame
   );
 
+  $("dwSword").addEventListener("click", swordAttack);
+
+  $("dwSkill").addEventListener("click", () => {
+    takeoverComplete ? blackFlash() : waterWheel();
+  });
+
+  $("dwDivergent").addEventListener(
+    "click",
+    divergentFist
+  );
+
+  $("dwFlame").addEventListener(
+    "click",
+    flameArrow
+  );
+
+  canvas.addEventListener("click", swordAttack);
+
   // ==========================================
-  // CONTINUE TO NEXT CHAPTER
+  // FULLSCREEN
   // ==========================================
 
-  chapterButton.addEventListener(
+  $("dwFullscreen").addEventListener(
     "click",
-    () => {
-      if (
-        chapterCleared &&
-        !gameOver &&
-        !victory
-      ) {
-        beginChapter();
+    async () => {
+      try {
+        if (!document.fullscreenElement) {
+          await frame.requestFullscreen();
+        } else {
+          await document.exitFullscreen();
+        }
+      } catch (error) {
+        say("Fullscreen unavailable.", 3);
       }
     }
   );
 
-  // ==========================================
-  // CLICKABLE ATTACK BUTTONS
-  // ==========================================
+  document.addEventListener("fullscreenchange", () => {
+    if (document.fullscreenElement === frame) {
+      frame.style.width = "100vw";
+      frame.style.height = "100vh";
+      frame.style.display = "flex";
+      frame.style.alignItems = "center";
+      frame.style.justifyContent = "center";
+      frame.style.background = "#080a0d";
 
-  swordLabel.addEventListener(
-    "click",
-    () => {
-      swordAttack();
-    }
-  );
+      canvas.style.maxHeight = "100vh";
+      canvas.style.objectFit = "contain";
+    } else {
+      frame.style.width = "min(960px,100%)";
+      frame.style.height = "auto";
+      frame.style.display = "block";
 
-  skillLabel.addEventListener(
-    "click",
-    () => {
-      if (takeoverComplete) {
-        blackFlash();
-      } else {
-        waterWheel();
-      }
+      canvas.style.maxHeight = "";
+      canvas.style.objectFit = "";
     }
-  );
-
-  divergentLabel.addEventListener(
-    "click",
-    () => {
-      divergentFist();
-    }
-  );
-
-  flameLabel.addEventListener(
-    "click",
-    () => {
-      flameArrow();
-    }
-  );
-
-  // Clicking the game swings the sword.
-  canvas.addEventListener(
-    "click",
-    () => {
-      swordAttack();
-    }
-  );
+  });
 
   // ==========================================
   // KEYBOARD CONTROLS
   // ==========================================
 
-  window.addEventListener(
-    "keydown",
-    event => {
-      const key =
-        event.key.toLowerCase();
+  window.addEventListener("keydown", event => {
+    const key = event.key.toLowerCase();
 
-      // Do not use game controls while
-      // typing inside another input.
-      const element = event.target;
-
-      if (
-        element instanceof HTMLElement &&
-        (
-          element.isContentEditable ||
-          ["INPUT", "TEXTAREA", "SELECT"]
-            .includes(element.tagName)
-        )
-      ) {
-        return;
-      }
-
-      // Prevent the webpage scrolling
-      // when using movement or Space.
-      if (
-        [
-          "arrowup",
-          "arrowdown",
-          "arrowleft",
-          "arrowright",
-          " "
-        ].includes(key)
-      ) {
-        event.preventDefault();
-      }
-
-      keys[key] = true;
-
-      // Don't repeatedly trigger attacks
-      // when a key is held down.
-      if (event.repeat) return;
-
-      // Sword — Space or J.
-      if (
-        key === " " ||
-        key === "j"
-      ) {
-        swordAttack();
-      }
-
-      // M — Water Wheel / Black Flash.
-      if (key === "m") {
-        if (takeoverComplete) {
-          blackFlash();
-        } else {
-          waterWheel();
-        }
-      }
-
-      // N — Divergent Fist.
-      if (key === "n") {
-        divergentFist();
-      }
-
-      // K — Flame Arrow.
-      if (key === "k") {
-        flameArrow();
-      }
-    }
-  );
-
-  window.addEventListener(
-    "keyup",
-    event => {
-      const key =
-        event.key.toLowerCase();
-
-      keys[key] = false;
-    }
-  );
-
-  // Prevent movement getting stuck
-  // after switching browser tabs.
-  window.addEventListener(
-    "blur",
-    () => {
-      for (const key in keys) {
-        keys[key] = false;
-      }
-    }
-  );
-
-  // ==========================================
-  // FULLSCREEN BUTTON
-  // ==========================================
-
-  fullscreenButton.addEventListener(
-    "click",
-    async () => {
-      try {
-        if (!document.fullscreenElement) {
-          await gameFrame.requestFullscreen();
-
-        } else {
-          await document.exitFullscreen();
-        }
-
-      } catch (error) {
-        say(
-          "Fullscreen is not supported here.",
-          3
-        );
-      }
-    }
-  );
-
-  // Fullscreen appearance.
-  document.addEventListener(
-    "fullscreenchange",
-    () => {
-      if (document.fullscreenElement === gameFrame) {
-        gameFrame.style.width = "100vw";
-        gameFrame.style.height = "100vh";
-
-        gameFrame.style.margin = "0";
-        gameFrame.style.padding = "0";
-
-        gameFrame.style.background = "#08080d";
-
-        gameFrame.style.display = "flex";
-        gameFrame.style.flexDirection = "column";
-
-        gameFrame.style.alignItems = "center";
-        gameFrame.style.justifyContent = "center";
-
-        gameFrame.style.overflow = "auto";
-
-        ui.style.width = "100%";
-        ui.style.margin = "0";
-
-        canvas.style.width = "100%";
-        canvas.style.maxHeight = "85vh";
-
-        canvas.style.objectFit = "contain";
-
-        fullscreenButton.textContent =
-          "⛶ Exit Full Screen";
-
-      } else {
-        gameFrame.style.width =
-          "min(960px,100%)";
-
-        gameFrame.style.height = "auto";
-        gameFrame.style.margin = "12px auto";
-        gameFrame.style.padding = "0";
-
-        gameFrame.style.display = "block";
-        gameFrame.style.overflow = "visible";
-
-        canvas.style.width = "100%";
-        canvas.style.maxHeight = "";
-        canvas.style.objectFit = "";
-
-        ui.style.width = "";
-        ui.style.margin = "";
-
-        fullscreenButton.textContent =
-          "⛶ Full Screen";
-      }
-    }
-  );
-
-  // ==========================================
-  // GAME UPDATE
-  // ==========================================
-
-  function update(dt) {
-    elapsed += dt;
-
-    // Update screen shake.
-    shake = Math.max(
-      0,
-      shake - dt * 20
-    );
-
-    // Update message timer.
-    messageTimer = Math.max(
-      0,
-      messageTimer - dt
-    );
-
-    // ========================================
-    // BLACK SPIRIT TAKEOVER
-    // ========================================
-
-    if (cutscene) {
-      updateCutscene(dt);
-      updateEffects(dt);
-      refreshUI();
-      return;
-    }
-
-    // ========================================
-    // BLACK SPIRIT DEPARTURE
-    // ========================================
-
-    if (spiritDeparture) {
-      updateSpiritDeparture(dt);
-      updateEffects(dt);
-      refreshUI();
-      return;
-    }
-
-    // ========================================
-    // GAME PAUSED OR FINISHED
-    // ========================================
+    const target = event.target;
 
     if (
-      !started ||
-      gameOver ||
-      victory ||
-      chapterCleared
+      target instanceof HTMLElement &&
+      (
+        target.isContentEditable ||
+        ["INPUT", "TEXTAREA", "SELECT"].includes(
+          target.tagName
+        )
+      )
     ) {
-      updateEffects(dt);
-      refreshUI();
       return;
     }
 
-    // ========================================
-    // ACTIVE GAMEPLAY
-    // ========================================
+    if (
+      [
+        "arrowup",
+        "arrowdown",
+        "arrowleft",
+        "arrowright",
+        " "
+      ].includes(key)
+    ) {
+      event.preventDefault();
+    }
 
-    updateCooldowns(dt);
+    keys[key] = true;
 
-    movePlayer(dt);
+    if (event.repeat) return;
 
-    updateEnemies(dt);
+    if (key === " " || key === "j") {
+      swordAttack();
+    }
 
-    updateProjectiles(dt);
+    if (key === "m") {
+      takeoverComplete ? blackFlash() : waterWheel();
+    }
 
-    updateEffects(dt);
+    if (key === "n") divergentFist();
+    if (key === "k") flameArrow();
+  });
 
-    checkChapterClear();
+  window.addEventListener("keyup", event => {
+    keys[event.key.toLowerCase()] = false;
+  });
 
-    // Update all cooldown labels.
-    refreshUI();
-  }
+  window.addEventListener("blur", () => {
+    for (const key in keys) {
+      keys[key] = false;
+    }
+  });
 
   // ==========================================
-  // DRAW THE GAME
+  // DRAW COMPLETE GAME
   // ==========================================
 
   function draw() {
     ctx.clearRect(0, 0, W, H);
 
-    ctx.save();
-
-    // Screen shake after powerful attacks.
-    if (shake > 0) {
-      ctx.translate(
-        rand(-shake, shake),
-        rand(-shake, shake)
-      );
-    }
-
-    // ========================================
-    // BLACK SPIRIT TAKEOVER SCENE
-    // ========================================
-
-    if (cutscene) {
-      drawCutscene();
-
-      drawEffects();
-
-      drawHUD();
-
-      ctx.restore();
-      return;
-    }
-
-    // ========================================
-    // BLACK SPIRIT DEPARTURE SCENE
-    // ========================================
-
-    if (spiritDeparture) {
-      drawSpiritDeparture();
-
-      drawHUD();
-
-      ctx.restore();
-      return;
-    }
-
-    // ========================================
-    // NORMAL GAME DRAWING
-    // ========================================
-
     drawBackground();
-
     drawEnemies();
-
     drawPlayer();
-
     drawProjectiles();
-
     drawEffects();
-
+    drawCutsceneOverlay();
     drawHUD();
-
-    ctx.restore();
   }
 
   // ==========================================
-  // MAIN ANIMATION LOOP
+  // MAIN GAME LOOP
   // ==========================================
 
-  let lastTime = 0;
-
   function gameLoop(timestamp) {
-    if (!lastTime) {
-      lastTime = timestamp;
-    }
+    if (!lastTime) lastTime = timestamp;
 
-    // Convert milliseconds to seconds.
-    let dt =
-      (timestamp - lastTime) / 1000;
+    const dt = Math.min(
+      (timestamp - lastTime) / 1000,
+      0.05
+    );
 
     lastTime = timestamp;
 
-    // Prevent giant jumps when returning
-    // from another browser tab.
-    dt = Math.min(dt, 0.05);
-
     update(dt);
-
+    refreshUI();
     draw();
 
     requestAnimationFrame(gameLoop);
   }
 
   // ==========================================
-  // HIDE OLD WELCOME OVERLAY IF PRESENT
+  // STARTUP
   // ==========================================
 
-  const oldMessageBox =
-    document.getElementById("messageBox");
+  // Hide old welcome popup if one exists.
+  const oldMessage = $("messageBox");
 
-  if (oldMessageBox) {
-    oldMessageBox.style.display = "none";
+  if (oldMessage) {
+    oldMessage.style.display = "none";
   }
-
-  // ==========================================
-  // INITIALIZE THE GAME
-  // ==========================================
 
   resetGame();
 
   requestAnimationFrame(gameLoop);
 
   console.log(
-    "TheDarkWithin game engine loaded!"
+    "TheDarkWithin loaded with 8-bit music!"
   );
-
-  console.log(
-    "8 Chapters | Sword | Water Wheel | " +
-    "Black Flash | Divergent Fist | " +
-    "Flame Arrow | Purple King"
-  );
-
-  // ==========================================
-  // END OF THEDARKWITHIN
-  // ==========================================
 
 })();
