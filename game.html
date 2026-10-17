@@ -1,58 +1,229 @@
 
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Play TheDarkWithin</title>
-  <link rel="stylesheet" href="style.css">
+
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+  >
+
+  <title>TheDarkWithin — Play Game</title>
+
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    html {
+      min-height: 100%;
+      background: #080a0d;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background:
+        radial-gradient(
+          circle at 50% 0%,
+          #173429 0%,
+          #080a0d 55%
+        );
+      color: #ffffff;
+      font-family: Arial, sans-serif;
+    }
+
+    /* TOP BAR */
+
+    .game-header {
+      width: 100%;
+      min-height: 75px;
+      padding: 15px 25px;
+
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 15px;
+
+      background: rgba(5, 10, 8, 0.95);
+      border-bottom: 2px solid #285f3c;
+    }
+
+    .game-logo {
+      color: #ffffff;
+      font-size: 24px;
+      font-weight: 900;
+      letter-spacing: 2px;
+    }
+
+    .game-logo span {
+      color: #76f2a1;
+    }
+
+    .home-button {
+      padding: 11px 18px;
+
+      background: #173e28;
+      color: #b3ffca;
+
+      text-decoration: none;
+      font-weight: bold;
+      font-size: 14px;
+
+      border: 1px solid #68d68d;
+      border-radius: 6px;
+
+      transition: 0.2s;
+    }
+
+    .home-button:hover {
+      background: #276b42;
+      color: white;
+    }
+
+    /* INTRODUCTION */
+
+    .game-intro {
+      text-align: center;
+      padding: 28px 15px 8px;
+    }
+
+    .game-intro h1 {
+      font-size: clamp(26px, 5vw, 42px);
+      margin: 0 0 10px;
+      color: #c0ffd2;
+    }
+
+    .game-intro p {
+      color: #a9bcb0;
+      font-size: 14px;
+      line-height: 1.7;
+      max-width: 650px;
+      margin: auto;
+    }
+
+    /* GAME CONTAINER */
+
+    #gameContainer {
+      width: min(1000px, 100%);
+      margin: 20px auto 35px;
+      padding: 0 12px;
+    }
+
+    /* Existing game.js creates
+       the actual canvas and controls. */
+
+    #dwGameFrame {
+      max-width: 100%;
+    }
+
+    #darkWithinCanvas {
+      display: block;
+      width: 100%;
+      height: auto;
+      image-rendering: pixelated;
+    }
+
+    #darkWithinUI {
+      max-width: 100%;
+      border-radius: 10px;
+    }
+
+    /* BOTTOM FOOTER */
+
+    .game-footer {
+      text-align: center;
+      padding: 25px 15px;
+      margin-top: 25px;
+
+      border-top: 1px solid #234632;
+
+      color: #738879;
+      font-size: 12px;
+      letter-spacing: 1px;
+    }
+
+    @media (max-width: 600px) {
+      .game-header {
+        justify-content: center;
+        text-align: center;
+      }
+
+      .game-logo {
+        font-size: 20px;
+      }
+
+      #gameContainer {
+        padding: 0 6px;
+      }
+    }
+  </style>
 </head>
-<body class="game-body">
+
+<body>
+
+  <!-- MAIN HEADER -->
+
   <header class="game-header">
-    <a class="brand" href="index.html">🌳 TheDarkWithin</a>
-    <a class="tab" href="index.html">Exit to Menu</a>
-  </header>
 
-  <main class="game-wrap">
-    <section class="game-hud">
-      <div>
-        <strong id="chapterTitle">Chapter 1: The Missing</strong>
-        <p id="chapterText">Explore the forest and find the trail.</p>
-      </div>
-      <div class="stats">
-        <span>❤ <b id="health">5</b></span>
-        <span>☠ <b id="kills">0</b>/5</span>
-      </div>
-    </section>
-
-    <canvas id="gameCanvas" width="960" height="540" tabindex="0">
-      Your browser does not support the game canvas.
-    </canvas>
-
-    <div class="game-below">
-      <p><kbd>WASD</kbd> / <kbd>ARROWS</kbd> Move</p>
-      <p><kbd>SPACE</kbd> Punch</p>
-      <button id="restartBtn" class="small-button">Restart Chapter</button>
+    <div class="game-logo">
+      THE<span>DARK</span>WITHIN
     </div>
 
-    <section id="messageBox" class="message-box">
-      <h2 id="messageTitle">Welcome to TheDarkWithin</h2>
-      <p id="messageText">Find the missing villagers. Move with WASD or arrow keys, and press Space to punch nearby monsters.</p>
-      <button id="startBtn" class="play-button compact">Start Adventure</button>
-    </section>
+    <a
+      href="index.html"
+      class="home-button"
+    >
+      ← Back to Main Menu
+    </a>
 
-    <section id="chapterModal" class="modal hidden">
-      <div class="modal-card">
-        <p class="eyebrow">CHAPTER COMPLETE</p>
-        <h2 id="modalTitle">A new path opens</h2>
-        <p id="modalText"></p>
-        <button id="nextBtn" class="play-button compact">Continue →</button>
-        <a id="menuLink" class="text-link hidden" href="index.html">Return to Main Menu</a>
-      </div>
-    </section>
+  </header>
+
+  <!-- GAME TITLE -->
+
+  <section class="game-intro">
+
+    <h1>
+      Enter TheDarkWithin
+    </h1>
+
+    <p>
+      Eight chapters. One dark adventure.
+      Rescue the missing villagers,
+      master powerful abilities,
+      and face the Purple King.
+    </p>
+
+  </section>
+
+  <!-- GAME INSERTION AREA -->
+
+  <main id="gameContainer">
+
+    <!--
+      Your game.js creates its own game
+      canvas, difficulty selector,
+      attacks, music controls,
+      fullscreen button and HUD.
+
+      Do not add another canvas here.
+    -->
+
   </main>
 
+  <!-- FOOTER -->
+
+  <footer class="game-footer">
+    THEDARKWITHIN
+    — A DARK FANTASY ADVENTURE
+  </footer>
+
+  <!-- LOAD THE MAIN GAME -->
+
   <script src="game.js"></script>
+
 </body>
 </html>
-
