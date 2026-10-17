@@ -1316,6 +1316,1014 @@ function loop(timestamp) {
 cinematic(openingScenes, () => startChapter(0));
 requestAnimationFrame(loop);
 
+  // ==========================================
+  // CHAPTER III — THE KING'S SECRET
+  // ==========================================
+
+  // Add Chapter 3 to the existing story.
+
+  chapterNames.push("The King's Secret");
+
+  objectives.push([
+    "Question the Royal Steward",
+    "Speak with the Royal Physician",
+    "Investigate the King's Records",
+    "Question Captain Rowan",
+    "Investigate the Sealed Chamber",
+    "Confront King Aldric"
+  ]);
+
+  // ==========================================
+  // CHAPTER THREE CHARACTERS
+  // ==========================================
+
+  const chapterThreeNPCs = [
+    {
+      x: 190,
+      y: 415,
+      name: "Royal Steward",
+      color: "#97735b"
+    },
+    {
+      x: 740,
+      y: 420,
+      name: "Royal Physician",
+      color: "#c5c5cb"
+    },
+    {
+      x: 465,
+      y: 320,
+      name: "King's Records",
+      object: "records"
+    },
+    {
+      x: 310,
+      y: 335,
+      name: "Captain Rowan",
+      color: "#65778d"
+    },
+    {
+      x: 655,
+      y: 285,
+      name: "Sealed Chamber",
+      object: "door"
+    },
+    {
+      x: 480,
+      y: 215,
+      name: "King Aldric",
+      color: "#d3aa55",
+      king: true
+    }
+  ];
+
+  // ==========================================
+  // CONNECT CHAPTER 2 TO CHAPTER 3
+  // ==========================================
+
+  // Chapter 2 normally ends on a replay screen.
+  // Change that ending to launch Chapter 3.
+
+  showChapterTwoComplete = function() {
+    cinematic([
+      {
+        label: "THREE DAYS LATER",
+        title: "THE KING HAS CHANGED",
+        text:
+          "Three days have passed since the expedition.\n" +
+          "King Aldric has not left his chambers.\n" +
+          "The castle no longer feels safe."
+      },
+      {
+        label: "CHAPTER III",
+        title: "THE KING'S SECRET",
+        text:
+          "Strange noises echo through the castle.\n" +
+          "Servants have begun disappearing.\n" +
+          "Sir Aeron must uncover the truth."
+      }
+    ], () => {
+      startChapter(2);
+    });
+  };
+
+  // ==========================================
+  // CHAPTER 3 INTRODUCTION
+  // ==========================================
+
+  const oldStartChapter = startChapter;
+
+  startChapter = function(number) {
+    oldStartChapter(number);
+
+    if (number !== 2) return;
+
+    player.x = 480;
+    player.y = 450;
+
+    talk([
+      [
+        "Narrator",
+        "Three days after the discovery " +
+        "of the purple crystal..."
+      ],
+      [
+        "Narrator",
+        "The Golden Kingdom is changing."
+      ],
+      [
+        "Narrator",
+        "The king has locked himself " +
+        "inside his private chambers."
+      ],
+      [
+        "Sir Aeron",
+        "His Majesty has not spoken " +
+        "to me since our return."
+      ],
+      [
+        "Sir Aeron",
+        "The servants are afraid. " +
+        "The guards refuse to answer my questions."
+      ],
+      [
+        "Sir Aeron",
+        "Something happened in those mines."
+      ],
+      [
+        "Sir Aeron",
+        "I must discover what the king is hiding."
+      ]
+    ]);
+  };
+
+  // ==========================================
+  // CHAPTER 3 — STORY EVENTS
+  // ==========================================
+
+  function chapterThreeInteract() {
+
+    // --------------------------------------
+    // STAGE 1 — ROYAL STEWARD
+    // --------------------------------------
+
+    if (stage === 0) {
+      talk([
+        [
+          "Sir Aeron",
+          "Steward! Have you seen His Majesty?"
+        ],
+        [
+          "Royal Steward",
+          "Sir Aeron... I am glad you are here."
+        ],
+        [
+          "Royal Steward",
+          "The king has barely slept " +
+          "since returning from the mines."
+        ],
+        [
+          "Sir Aeron",
+          "What has he been doing?"
+        ],
+        [
+          "Royal Steward",
+          "He speaks to himself at night."
+        ],
+        [
+          "Royal Steward",
+          "Except... I do not think " +
+          "he is speaking to himself."
+        ],
+        [
+          "Sir Aeron",
+          "What do you mean?"
+        ],
+        [
+          "Royal Steward",
+          "I heard another voice " +
+          "behind his chamber door."
+        ],
+        [
+          "Royal Steward",
+          "Something deep and terrible."
+        ],
+        [
+          "Royal Steward",
+          "And yesterday, his eyes... " +
+          "they were glowing purple."
+        ],
+        [
+          "Sir Aeron",
+          "I need to speak with the physician."
+        ]
+      ], advanceStage);
+
+      return;
+    }
+
+    // --------------------------------------
+    // STAGE 2 — ROYAL PHYSICIAN
+    // --------------------------------------
+
+    if (stage === 1) {
+      talk([
+        [
+          "Royal Physician",
+          "Sir Aeron. I was hoping " +
+          "you would come."
+        ],
+        [
+          "Sir Aeron",
+          "Tell me about the king's condition."
+        ],
+        [
+          "Royal Physician",
+          "I examined him this morning."
+        ],
+        [
+          "Royal Physician",
+          "His heartbeat is strangely slow."
+        ],
+        [
+          "Royal Physician",
+          "His body temperature is falling."
+        ],
+        [
+          "Sir Aeron",
+          "Is he ill?"
+        ],
+        [
+          "Royal Physician",
+          "That is what frightens me."
+        ],
+        [
+          "Royal Physician",
+          "I have never seen anything " +
+          "like this in my life."
+        ],
+        [
+          "Royal Physician",
+          "Something beneath his skin " +
+          "appears to be moving."
+        ],
+        [
+          "Sir Aeron",
+          "Moving?"
+        ],
+        [
+          "Royal Physician",
+          "Like shadows beneath water."
+        ],
+        [
+          "Royal Physician",
+          "And there is another problem."
+        ],
+        [
+          "Royal Physician",
+          "The king ordered every record " +
+          "about the crystal destroyed."
+        ],
+        [
+          "Sir Aeron",
+          "Every record?"
+        ],
+        [
+          "Royal Physician",
+          "Yes. But I saved one journal."
+        ],
+        [
+          "Royal Physician",
+          "It is on the table " +
+          "in the old records hall."
+        ]
+      ], () => {
+        advanceStage();
+
+        cinematic([
+          {
+            label: "THE ROYAL CASTLE",
+            title: "AN UNNATURAL SICKNESS",
+            text:
+              "For the first time, Sir Aeron begins " +
+              "to fear his own king.\n" +
+              "Whatever happened in the mines " +
+              "has followed them home."
+          },
+          {
+            label: "A HIDDEN TRUTH",
+            title: "THE FORBIDDEN RECORDS",
+            text:
+              "The royal physician has hidden " +
+              "a journal describing the crystal.\n" +
+              "Aeron must read it before " +
+              "the king discovers it."
+          }
+        ], () => {
+          updateHUD();
+        });
+      });
+
+      return;
+    }
+
+    // --------------------------------------
+    // STAGE 3 — SECRET JOURNAL
+    // --------------------------------------
+
+    if (stage === 2) {
+      talk([
+        [
+          "Sir Aeron",
+          "This must be the journal."
+        ],
+        [
+          "Royal Research Journal",
+          "Day One: The crystal appears " +
+          "to contain immense energy."
+        ],
+        [
+          "Royal Research Journal",
+          "Day Two: Workers report " +
+          "hearing unfamiliar voices."
+        ],
+        [
+          "Royal Research Journal",
+          "Day Three: The crystal reacts " +
+          "strongly to the king's presence."
+        ],
+        [
+          "Royal Research Journal",
+          "Day Four: His Majesty insists " +
+          "that the crystal speaks the truth."
+        ],
+        [
+          "Royal Research Journal",
+          "Day Five: An unidentified " +
+          "shadow emerged from its surface."
+        ],
+        [
+          "Royal Research Journal",
+          "It called itself a spirit."
+        ],
+        [
+          "Royal Research Journal",
+          "It promised the king " +
+          "power beyond death."
+        ],
+        [
+          "Sir Aeron",
+          "A spirit..."
+        ],
+        [
+          "Sir Aeron",
+          "That voice in the mine..."
+        ],
+        [
+          "Sir Aeron",
+          "What have you done, Aldric?"
+        ]
+      ], () => {
+        advanceStage();
+
+        cinematic([
+          {
+            label: "A SECRET DISCOVERED",
+            title: "THE BLACK SPIRIT",
+            text:
+              "The mysterious voice has a name.\n" +
+              "Something ancient resides " +
+              "within the purple crystal."
+          },
+          {
+            label: "FROM THE JOURNAL",
+            title: "\"A KING WITHOUT DEATH\"",
+            text:
+              "The final page contains " +
+              "a disturbing sentence:\n" +
+              "\"The spirit does not wish " +
+              "to save the kingdom.\"\n" +
+              "\"It wishes to rule it.\""
+          }
+        ], () => {
+          updateHUD();
+        });
+      });
+
+      return;
+    }
+
+    // --------------------------------------
+    // STAGE 4 — CAPTAIN ROWAN
+    // --------------------------------------
+
+    if (stage === 3) {
+      talk([
+        [
+          "Sir Aeron",
+          "Captain Rowan! " +
+          "I need to speak with you."
+        ],
+        [
+          "Captain Rowan",
+          "Aeron. I was about to find you."
+        ],
+        [
+          "Sir Aeron",
+          "What happened to the guards " +
+          "assigned to the king?"
+        ],
+        [
+          "Captain Rowan",
+          "Three disappeared last night."
+        ],
+        [
+          "Sir Aeron",
+          "Disappeared?"
+        ],
+        [
+          "Captain Rowan",
+          "Their armor was found " +
+          "outside the sealed chamber."
+        ],
+        [
+          "Captain Rowan",
+          "But there was no sign of them."
+        ],
+        [
+          "Sir Aeron",
+          "What is behind that door?"
+        ],
+        [
+          "Captain Rowan",
+          "The king ordered it locked."
+        ],
+        [
+          "Captain Rowan",
+          "He said no one should enter."
+        ],
+        [
+          "Sir Aeron",
+          "Even you?"
+        ],
+        [
+          "Captain Rowan",
+          "Especially me."
+        ],
+        [
+          "Captain Rowan",
+          "Aeron... I have served " +
+          "this kingdom for thirty years."
+        ],
+        [
+          "Captain Rowan",
+          "I have never been afraid " +
+          "of my king until now."
+        ],
+        [
+          "Sir Aeron",
+          "Then we find out what is inside."
+        ]
+      ], advanceStage);
+
+      return;
+    }
+
+    // --------------------------------------
+    // STAGE 5 — SEALED CHAMBER
+    // --------------------------------------
+
+    if (stage === 4) {
+      cinematic([
+        {
+          label: "THE RESTRICTED WING",
+          title: "THE SEALED CHAMBER",
+          text:
+            "Sir Aeron forces open " +
+            "the forbidden chamber.\n" +
+            "The air inside is freezing."
+        },
+        {
+          label: "AN UNHOLY DISCOVERY",
+          title: "THE KING'S EXPERIMENTS",
+          text:
+            "Broken armor lies across the floor.\n" +
+            "Purple crystals grow from the walls.\n" +
+            "Strange symbols cover the stone."
+        },
+        {
+          label: "A VOICE IN THE DARK",
+          title: "\"YOU SHOULD NOT BE HERE.\"",
+          text:
+            "A shadow moves across the ceiling.\n" +
+            "Two crimson eyes appear.\n" +
+            "Then the chamber becomes silent."
+        }
+      ], () => {
+        talk([
+          [
+            "Sir Aeron",
+            "By the heavens..."
+          ],
+          [
+            "Sir Aeron",
+            "These experiments... " +
+            "the missing guards..."
+          ],
+          [
+            "Sir Aeron",
+            "The king has been using " +
+            "his own soldiers."
+          ],
+          [
+            "Unknown Voice",
+            "They were weak."
+          ],
+          [
+            "Sir Aeron",
+            "SHOW YOURSELF!"
+          ],
+          [
+            "Unknown Voice",
+            "Your king will become " +
+            "something magnificent."
+          ],
+          [
+            "Unknown Voice",
+            "And you will kneel before him."
+          ],
+          [
+            "Sir Aeron",
+            "I will never kneel " +
+            "to whatever you are."
+          ],
+          [
+            "Unknown Voice",
+            "Then you will break."
+          ]
+        ], advanceStage);
+      });
+
+      return;
+    }
+
+    // --------------------------------------
+    // STAGE 6 — CONFRONT THE KING
+    // --------------------------------------
+
+    if (stage === 5) {
+      talk([
+        [
+          "King Aldric",
+          "Aeron. I knew you would come."
+        ],
+        [
+          "Sir Aeron",
+          "Your Majesty, I found the chamber."
+        ],
+        [
+          "King Aldric",
+          "Then you understand."
+        ],
+        [
+          "Sir Aeron",
+          "I understand that our people " +
+          "are disappearing!"
+        ],
+        [
+          "Sir Aeron",
+          "Our guards are being experimented on!"
+        ],
+        [
+          "Sir Aeron",
+          "And you have allowed " +
+          "some creature into this castle!"
+        ],
+        [
+          "King Aldric",
+          "You speak of things " +
+          "you cannot comprehend."
+        ],
+        [
+          "Sir Aeron",
+          "I am trying to save you, Aldric."
+        ],
+        [
+          "King Aldric",
+          "Do not call me that."
+        ],
+        [
+          "Sir Aeron",
+          "We have been friends " +
+          "since we were children."
+        ],
+        [
+          "Sir Aeron",
+          "I swore to protect you."
+        ],
+        [
+          "King Aldric",
+          "And I swore to protect " +
+          "this entire kingdom!"
+        ],
+        [
+          "King Aldric",
+          "The crystal has shown me " +
+          "what is coming."
+        ],
+        [
+          "King Aldric",
+          "War. Famine. Death."
+        ],
+        [
+          "King Aldric",
+          "But with its power, " +
+          "I can prevent all of it."
+        ],
+        [
+          "Sir Aeron",
+          "At what cost?"
+        ],
+        [
+          "King Aldric",
+          "...Whatever it takes."
+        ],
+        [
+          "Sir Aeron",
+          "Your eyes... they're glowing."
+        ],
+        [
+          "King Aldric",
+          "Leave my throne room, Aeron."
+        ],
+        [
+          "Sir Aeron",
+          "Your Majesty—"
+        ],
+        [
+          "King Aldric",
+          "THAT IS AN ORDER!"
+        ]
+      ], chapterThreeEnding);
+
+      return;
+    }
+  }
+
+  // ==========================================
+  // CHAPTER 3 ENDING CUTSCENE
+  // ==========================================
+
+  function chapterThreeEnding() {
+    cinematic([
+      {
+        label: "THE ROYAL THRONE ROOM",
+        title: "A FRIENDSHIP BREAKS",
+        text:
+          "Sir Aeron leaves the throne room.\n" +
+          "For the first time in his life,\n" +
+          "he no longer recognizes his king."
+      },
+      {
+        label: "BEHIND CLOSED DOORS",
+        title: "THE KING IS NOT ALONE",
+        text:
+          "Aldric turns toward the darkness.\n" +
+          "A shadow rises behind his throne."
+      },
+      {
+        label: "THE BLACK SPIRIT",
+        title: "\"HE KNOWS TOO MUCH.\"",
+        text:
+          "\"Your knight has seen " +
+          "what must remain hidden.\"\n" +
+          "\"He will try to stop us.\""
+      },
+      {
+        label: "KING ALDRIC",
+        title: "\"AERON IS MY FRIEND.\"",
+        text:
+          "For a moment, the king's voice softens.\n" +
+          "\"He has stood beside me for years.\""
+      },
+      {
+        label: "THE BLACK SPIRIT",
+        title: "\"THEN TEST HIS LOYALTY.\"",
+        text:
+          "\"A true servant obeys his king.\"\n" +
+          "\"Even when the order is terrible.\""
+      },
+      {
+        label: "THE NEXT MORNING",
+        title: "THE CORRUPTION SPREADS",
+        text:
+          "The royal guards assemble " +
+          "inside the courtyard.\n" +
+          "A strange purple light " +
+          "begins spreading beneath their armor."
+      },
+      {
+        label: "CHAPTER III COMPLETE",
+        title: "THE KING'S SECRET",
+        text:
+          "Sir Aeron has discovered " +
+          "the truth about the crystal.\n" +
+          "But King Aldric's transformation " +
+          "has only just begun."
+      },
+      {
+        label: "COMING NEXT",
+        title: "CHAPTER IV: THE CORRUPTED GUARD",
+        text:
+          "The king gives his soldiers " +
+          "a terrible command.\n" +
+          "And the first battle for " +
+          "the Golden Kingdom begins."
+      }
+    ], function() {
+      mode = "complete";
+
+      $("screen").classList.add("show");
+      $("hud").style.display = "none";
+
+      $("sceneLabel").textContent =
+        "THE FORGOTTEN KING";
+
+      $("sceneTitle").textContent =
+        "CHAPTER III COMPLETE";
+
+      $("sceneText").textContent =
+        "You have completed the first " +
+        "three chapters!\n" +
+        "Chapter IV: The Corrupted Guard " +
+        "is coming next.";
+
+      $("sceneNext").textContent =
+        "REPLAY STORY";
+
+      $("skip").style.display = "none";
+
+      $("sceneNext").onclick = function() {
+        location.reload();
+      };
+    });
+  }
+
+  // ==========================================
+  // CONNECT NEW STORY INTERACTIONS
+  // ==========================================
+
+  const originalInteract = interact;
+
+  interact = function() {
+    if (chapter !== 2) {
+      originalInteract();
+      return;
+    }
+
+    if (dialogueActive) {
+      advanceDialogue();
+      return;
+    }
+
+    if (mode !== "playing") return;
+    if (!nearTarget()) return;
+
+    chapterThreeInteract();
+  };
+
+  const originalActiveTarget = activeTarget;
+
+  activeTarget = function() {
+    if (chapter === 2) {
+      return chapterThreeNPCs[stage] || null;
+    }
+
+    return originalActiveTarget();
+  };
+
+  // ==========================================
+  // NEW CASTLE INTERIOR BACKGROUND
+  // ==========================================
+
+  function drawSecretCastle() {
+    // Stone walls.
+    ctx.fillStyle = "#1b1722";
+    ctx.fillRect(0, 0, W, H);
+
+    // Purple shadows.
+    const glow = ctx.createRadialGradient(
+      480, 180, 20,
+      480, 260, 650
+    );
+
+    glow.addColorStop(0, "#483051");
+    glow.addColorStop(1, "#100d17");
+
+    ctx.fillStyle = glow;
+    ctx.fillRect(0, 0, W, H);
+
+    // Wall bricks.
+    for (let y = 65; y < 350; y += 45) {
+      for (let x = 0; x < W; x += 100) {
+        ctx.strokeStyle = "#41394a";
+        ctx.lineWidth = 2;
+
+        ctx.strokeRect(
+          x + ((y / 45) % 2) * 35,
+          y,
+          99,
+          44
+        );
+      }
+    }
+
+    // Flooring.
+    ctx.fillStyle = "#38303d";
+    ctx.fillRect(0, 340, W, 200);
+
+    for (let y = 355; y < H; y += 35) {
+      ctx.strokeStyle = "#514659";
+      ctx.lineWidth = 2;
+
+      ctx.beginPath();
+      ctx.moveTo(0, y);
+      ctx.lineTo(W, y);
+      ctx.stroke();
+    }
+
+    // Royal carpet.
+    ctx.fillStyle = "#642c42";
+    ctx.fillRect(410, 260, 140, 280);
+
+    ctx.strokeStyle = "#c19b59";
+    ctx.lineWidth = 5;
+    ctx.strokeRect(410, 260, 140, 280);
+
+    // Throne platform.
+    ctx.fillStyle = "#555064";
+    ctx.fillRect(395, 240, 170, 35);
+
+    // Throne.
+    ctx.fillStyle = "#b18b48";
+    ctx.fillRect(444, 135, 75, 100);
+
+    ctx.fillStyle = "#5e243e";
+    ctx.fillRect(453, 150, 57, 77);
+
+    // Hanging royal banners.
+    for (const x of [130, 770]) {
+      ctx.fillStyle = "#702b3d";
+      ctx.fillRect(x, 65, 55, 160);
+
+      ctx.fillStyle = "#d9b56a";
+      ctx.fillRect(x + 22, 90, 12, 80);
+    }
+
+    // Glowing torches.
+    for (const x of [90, 865]) {
+      ctx.fillStyle = "#796047";
+      ctx.fillRect(x, 195, 9, 47);
+
+      ctx.fillStyle = "#ec9c48";
+      ctx.beginPath();
+      ctx.arc(
+        x + 4,
+        180,
+        14 + Math.sin(time * 8) * 3,
+        0,
+        Math.PI * 2
+      );
+      ctx.fill();
+    }
+
+    // King's forbidden chamber.
+    ctx.fillStyle = "#120e19";
+    ctx.fillRect(610, 160, 90, 140);
+
+    ctx.strokeStyle = "#7e438a";
+    ctx.lineWidth = 5;
+    ctx.strokeRect(610, 160, 90, 140);
+
+    ctx.fillStyle = "#b34ee3";
+    ctx.fillRect(678, 224, 8, 8);
+
+    // Research table.
+    ctx.fillStyle = "#59402e";
+    ctx.fillRect(425, 310, 80, 15);
+    ctx.fillRect(435, 325, 9, 35);
+    ctx.fillRect(485, 325, 9, 35);
+
+    // Secret journal.
+    ctx.fillStyle = "#c3ae83";
+    ctx.fillRect(450, 300, 38, 11);
+
+    ctx.strokeStyle = "#69472e";
+    ctx.lineWidth = 2;
+    ctx.strokeRect(450, 300, 38, 11);
+
+    // A faint purple mist.
+    ctx.fillStyle =
+      "rgba(136,49,174,0.12)";
+
+    for (let i = 0; i < 9; i++) {
+      const x =
+        (i * 127 + time * 12) % W;
+
+      const y =
+        300 + Math.sin(time + i) * 18;
+
+      ctx.beginPath();
+      ctx.ellipse(
+        x,
+        y,
+        60,
+        15,
+        0,
+        0,
+        Math.PI * 2
+      );
+      ctx.fill();
+    }
+  }
+
+  // ==========================================
+  // DRAW CHAPTER 3 CHARACTERS
+  // ==========================================
+
+  function drawChapterThreeNPCs() {
+    const drawn = new Set();
+
+    for (const npc of chapterThreeNPCs) {
+      // Avoid drawing King Aldric twice.
+      const key = npc.x + "," + npc.y;
+
+      if (drawn.has(key)) continue;
+      drawn.add(key);
+
+      if (npc.object === "records") {
+        // The book is already on the table.
+      } else if (npc.object === "door") {
+        // The chamber is already in the background.
+      } else {
+        drawPerson(
+          npc.x,
+          npc.y,
+          npc.color,
+          npc.king
+        );
+      }
+    }
+
+    if (
+      mode === "playing" &&
+      !dialogueActive
+    ) {
+      const npc = activeTarget();
+
+      if (npc) {
+        ctx.fillStyle = "#ffe19e";
+        ctx.font = "bold 28px Arial";
+        ctx.textAlign = "center";
+
+        ctx.fillText(
+          "!",
+          npc.x,
+          npc.y - 75 +
+            Math.sin(time * 4) * 5
+        );
+
+        ctx.textAlign = "left";
+      }
+    }
+  }
+
+  // ==========================================
+  // USE NEW GRAPHICS FOR CHAPTER 3
+  // ==========================================
+
+  const originalDraw = draw;
+
+  draw = function() {
+    if (chapter !== 2) {
+      originalDraw();
+      return;
+    }
+
+    drawSecretCastle();
+
+    drawChapterThreeNPCs();
+
+    drawPlayer();
+
+    $("interact").style.display =
+      nearTarget() ? "block" : "none";
+  };
+
+  // ==========================================
+  // END OF CHAPTER THREE
+  // ==========================================
+
 </script>
 </body>
 </html>
