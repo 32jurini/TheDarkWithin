@@ -3,198 +3,176 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="viewport" content="width=device-width,initial-scale=1">
 <title>TheDarkWithin: The Forgotten King</title>
 
 <style>
-* {
-  box-sizing: border-box;
-}
+* { box-sizing: border-box; }
 
 body {
   margin: 0;
-  background: #050507;
-  color: white;
+  background: #050508;
+  color: #f4ead8;
   font-family: Georgia, serif;
 }
 
 #game {
   position: relative;
-  width: min(1100px, 100%);
+  max-width: 1100px;
   margin: auto;
-  min-height: 100vh;
+  background: #08080e;
   overflow: hidden;
-  background: #080910;
 }
 
 canvas {
   display: block;
   width: 100%;
-  background: #121421;
   image-rendering: pixelated;
 }
 
-#cinematic {
+#screen {
   position: absolute;
   inset: 0;
-  background: #030305;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-direction: column;
-  padding: 30px;
-  text-align: center;
+  background: rgba(3,3,8,.97);
   z-index: 10;
-  transition: opacity 1.4s ease;
-}
-
-#cinematic.hidden {
-  opacity: 0;
-  pointer-events: none;
-}
-
-#cinematicTitle {
-  color: #dcc18b;
-  font-size: clamp(25px, 5vw, 54px);
-  letter-spacing: 3px;
-  font-weight: normal;
-  line-height: 1.3;
-  text-shadow: 0 0 30px #ac743a66;
-  animation: fadeIn 2s ease;
-}
-
-#cinematicText {
-  max-width: 630px;
-  font-size: clamp(15px, 2vw, 22px);
-  color: #bdb8bc;
-  line-height: 1.8;
-  margin: 25px 0;
-}
-
-#nextScene, #skipIntro {
-  border: 1px solid #8b7252;
-  background: #191613;
-  color: #ead6ad;
-  padding: 13px 29px;
-  font: 15px Georgia, serif;
-  cursor: pointer;
-  letter-spacing: 2px;
-}
-
-#nextScene:hover,
-#skipIntro:hover {
-  background: #463621;
-}
-
-#skipIntro {
-  position: absolute;
-  top: 18px;
-  right: 18px;
-  padding: 9px 15px;
-  font-size: 12px;
-  z-index: 12;
-}
-
-#chapterCard {
-  position: absolute;
-  inset: 0;
-  background: #050507;
   display: none;
-  align-items: center;
-  justify-content: center;
   flex-direction: column;
-  z-index: 8;
+  justify-content: center;
+  align-items: center;
   text-align: center;
+  padding: 45px 25px;
 }
 
-#chapterCard h1 {
-  font-size: clamp(28px, 5vw, 56px);
-  color: #e6c88f;
-  font-weight: normal;
-}
+#screen.show { display: flex; }
 
-#chapterCard p {
-  color: #999;
+#sceneLabel {
+  font: bold 12px Arial;
+  color: #ac8b58;
   letter-spacing: 5px;
+  margin-bottom: 24px;
 }
 
-#dialogueBox {
+#sceneTitle {
+  color: #e4c489;
+  font-size: clamp(29px,5vw,54px);
+  line-height: 1.2;
+  font-weight: normal;
+  max-width: 850px;
+  text-shadow: 0 0 35px #d69a4a55;
+}
+
+#sceneText {
+  color: #d0c6bd;
+  font-size: clamp(16px,2.2vw,21px);
+  line-height: 1.8;
+  max-width: 720px;
+  white-space: pre-line;
+}
+
+button {
+  font-family: inherit;
+  cursor: pointer;
+}
+
+.goldButton {
+  padding: 14px 30px;
+  background: #282014;
+  border: 1px solid #b99b60;
+  color: #f5dca6;
+  letter-spacing: 2px;
+  margin-top: 25px;
+}
+
+.goldButton:hover {
+  background: #564025;
+}
+
+#skip {
   position: absolute;
-  bottom: 65px;
-  left: 5%;
-  width: 90%;
-  min-height: 120px;
-  border: 2px solid #8c744d;
-  background: rgba(7, 8, 14, 0.96);
-  padding: 20px 25px;
-  display: none;
-  z-index: 5;
+  top: 15px;
+  right: 15px;
+  border: 1px solid #73634e;
+  color: #d9c098;
+  background: #141116;
+  padding: 10px 14px;
+  z-index: 11;
 }
 
-#speaker {
-  font-weight: bold;
-  color: #e5c584;
-  font-size: 19px;
-  margin-bottom: 10px;
-}
-
-#dialogueText {
-  color: #eee;
-  font-size: 17px;
-  line-height: 1.5;
-}
-
-#dialogueHint {
-  text-align: right;
-  color: #a99e8e;
-  font-size: 12px;
-  margin-top: 12px;
-}
-
-#objective {
+#hud {
   position: absolute;
   top: 15px;
   left: 15px;
-  padding: 11px 15px;
-  background: rgba(0, 0, 0, 0.72);
-  border-left: 3px solid #e5c584;
-  font: 14px Arial, sans-serif;
+  padding: 12px 15px;
+  background: #08080cdd;
+  border-left: 3px solid #cba65b;
+  font: 13px Arial;
+  max-width: 65%;
   display: none;
-  z-index: 3;
+}
+
+#chapterName {
+  color: #ead19b;
+  font-weight: bold;
+  margin-bottom: 8px;
+}
+
+#dialogue {
+  position: absolute;
+  left: 5%;
+  bottom: 69px;
+  width: 90%;
+  min-height: 130px;
+  background: #090a11f5;
+  border: 2px solid #a98956;
+  padding: 20px;
+  display: none;
+  cursor: pointer;
+}
+
+#speaker {
+  color: #e7c783;
+  font-size: 20px;
+  margin-bottom: 12px;
+  font-weight: bold;
+}
+
+#speech {
+  color: #eee7df;
+  line-height: 1.6;
+  font-size: 17px;
+}
+
+#dialogueHint {
+  color: #aaa19b;
+  text-align: right;
+  font: 12px Arial;
+  margin-top: 12px;
+}
+
+#interact {
+  position: absolute;
+  right: 22px;
+  bottom: 100px;
+  display: none;
+  background: #3c2e19;
+  color: #f8e8be;
+  border: 1px solid #d2a960;
+  padding: 13px 20px;
 }
 
 #controls {
-  padding: 13px 15px;
-  background: #101014;
-  color: #b7b5b1;
+  background: #101016;
+  color: #ada6a0;
+  padding: 15px;
+  font: 13px Arial;
   text-align: center;
-  font: 13px Arial, sans-serif;
-  line-height: 1.7;
 }
 
-#interactButton {
-  position: absolute;
-  right: 20px;
-  bottom: 100px;
-  padding: 14px 22px;
-  border: 1px solid #d5b26d;
-  background: #352813;
-  color: #fff2d2;
-  font: bold 14px Arial, sans-serif;
-  cursor: pointer;
-  display: none;
-  z-index: 4;
-}
-
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-    transform: translateY(12px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+@media(max-width:600px) {
+  #dialogue { bottom: 55px; padding: 13px; }
+  #speech { font-size: 14px; }
+  #speaker { font-size: 16px; }
+  #interact { bottom: 66px; }
 }
 </style>
 </head>
@@ -202,260 +180,231 @@ canvas {
 <body>
 
 <div id="game">
-
   <canvas id="canvas" width="960" height="540"></canvas>
 
-  <div id="cinematic">
-    <button id="skipIntro">SKIP INTRO</button>
+  <div id="hud">
+    <div id="chapterName"></div>
+    <div id="objective"></div>
+  </div>
 
-    <h1 id="cinematicTitle"></h1>
-    <p id="cinematicText"></p>
-
-    <button id="nextScene">
+  <div id="screen" class="show">
+    <button id="skip">SKIP INTRO</button>
+    <div id="sceneLabel"></div>
+    <h1 id="sceneTitle"></h1>
+    <p id="sceneText"></p>
+    <button class="goldButton" id="sceneNext">
       CONTINUE
     </button>
   </div>
 
-  <div id="chapterCard">
-    <p>CHAPTER I</p>
-    <h1>THE GOLDEN KINGDOM</h1>
-  </div>
-
-  <div id="objective"></div>
-
-  <div id="dialogueBox">
+  <div id="dialogue">
     <div id="speaker"></div>
-    <div id="dialogueText"></div>
+    <div id="speech"></div>
     <div id="dialogueHint">
-      Press E, Space or click to continue
+      E / SPACE / CLICK — Continue
     </div>
   </div>
 
-  <button id="interactButton">
-    E — INTERACT
-  </button>
+  <button id="interact">E — INTERACT</button>
 
   <div id="controls">
-    WASD / Arrow Keys — Move
-    | E — Interact / Continue Dialogue
-    | Talk to the highlighted characters
+    WASD / Arrow Keys — Move |
+    E — Interact |
+    Space / Click — Continue Dialogue
   </div>
-
 </div>
 
 <script>
 "use strict";
 
-// ==========================================
+// ========================================
 // THE FORGOTTEN KING
-// OPENING CINEMATIC + CHAPTER ONE
-// ==========================================
+// CHAPTERS 1 AND 2
+// ========================================
 
-const canvas = document.getElementById("canvas");
+const $ = id => document.getElementById(id);
+
+const canvas = $("canvas");
 const ctx = canvas.getContext("2d");
 
 ctx.imageSmoothingEnabled = false;
 
-const W = canvas.width;
-const H = canvas.height;
+const W = 960;
+const H = 540;
 
-const cinematic = document.getElementById("cinematic");
-const cinematicTitle = document.getElementById("cinematicTitle");
-const cinematicText = document.getElementById("cinematicText");
-const nextSceneButton = document.getElementById("nextScene");
-const skipButton = document.getElementById("skipIntro");
-
-const chapterCard = document.getElementById("chapterCard");
-const objective = document.getElementById("objective");
-
-const dialogueBox = document.getElementById("dialogueBox");
-const speaker = document.getElementById("speaker");
-const dialogueText = document.getElementById("dialogueText");
-const interactButton = document.getElementById("interactButton");
-
-let mode = "intro";
-let introIndex = 0;
+let chapter = 0;
 let stage = 0;
+let mode = "cinematic";
 let time = 0;
-let lastFrame = 0;
+let last = 0;
 
 const keys = {};
 
 const player = {
-  x: 460,
+  x: 470,
   y: 430,
   speed: 180,
   facing: 1
 };
 
-// ==========================================
-// OPENING CINEMATIC SCRIPT
-// ==========================================
-
-const introScenes = [
-  {
-    title: "HUNDREDS OF YEARS AGO...",
-    text:
-      "Long before the villagers disappeared. " +
-      "Before the darkness swallowed the land."
-  },
-  {
-    title: "A KINGDOM OF LIGHT",
-    text:
-      "There once stood a magnificent kingdom, " +
-      "protected by its loyal knights and a king " +
-      "beloved by all his people."
-  },
-  {
-    title: "BUT PEACE NEVER LASTS FOREVER",
-    text:
-      "Deep beneath the royal castle, miners " +
-      "discovered something that had been buried " +
-      "for thousands of years."
-  },
-  {
-    title: "THE PURPLE CRYSTAL",
-    text:
-      "It pulsed with a strange light. " +
-      "And from within it, something whispered."
-  },
-  {
-    title: "A PROMISE OF POWER",
-    text:
-      "The king believed the crystal could " +
-      "protect his kingdom forever. " +
-      "He could not see the darkness hiding inside."
-  },
-  {
-    title: "EVERY KINGDOM HAS A BEGINNING...",
-    text:
-      "And every darkness has an origin."
-  },
-  {
-    title: "THEDARKWITHIN",
-    text:
-      "DLC I — THE FORGOTTEN KING"
-  }
+const chapterNames = [
+  "The Golden Kingdom",
+  "Beneath the Castle"
 ];
 
-function showIntroScene() {
-  const scene = introScenes[introIndex];
+const objectives = [
+  [
+    "Speak with the Royal Guard",
+    "Speak with the Villager",
+    "Report to King Aldric"
+  ],
+  [
+    "Speak with King Aldric",
+    "Find the Injured Miner",
+    "Investigate the Purple Crystal",
+    "Return to King Aldric"
+  ]
+];
 
-  cinematicTitle.style.animation = "none";
-  void cinematicTitle.offsetWidth;
-  cinematicTitle.style.animation = "fadeIn 2s ease";
+// ========================================
+// CINEMATIC ENGINE
+// ========================================
 
-  cinematicTitle.textContent = scene.title;
-  cinematicText.textContent = scene.text;
+let scenes = [];
+let sceneIndex = 0;
+let afterScenes = null;
 
-  nextSceneButton.textContent =
-    introIndex === introScenes.length - 1
-      ? "BEGIN THE STORY"
+function cinematic(sequence, finished) {
+  scenes = sequence;
+  sceneIndex = 0;
+  afterScenes = finished;
+  mode = "cinematic";
+
+  $("screen").classList.add("show");
+  $("hud").style.display = "none";
+
+  showScene();
+}
+
+function showScene() {
+  const scene = scenes[sceneIndex];
+
+  $("sceneLabel").textContent =
+    scene.label || "THE FORGOTTEN KING";
+
+  $("sceneTitle").textContent =
+    scene.title;
+
+  $("sceneText").textContent =
+    scene.text || "";
+
+  $("sceneNext").textContent =
+    sceneIndex === scenes.length - 1
+      ? "CONTINUE STORY"
       : "CONTINUE";
 }
 
-nextSceneButton.addEventListener("click", () => {
-  introIndex++;
+function nextScene() {
+  if (mode !== "cinematic") return;
 
-  if (introIndex >= introScenes.length) {
-    startChapter();
+  sceneIndex++;
+
+  if (sceneIndex < scenes.length) {
+    showScene();
+    return;
+  }
+
+  $("screen").classList.remove("show");
+
+  const callback = afterScenes;
+  afterScenes = null;
+
+  mode = "playing";
+
+  $("hud").style.display = "block";
+
+  if (callback) callback();
+}
+
+$("sceneNext").addEventListener(
+  "click", nextScene
+);
+
+$("skip").addEventListener("click", () => {
+  if (chapter === 0 && stage === 0) {
+    $("screen").classList.remove("show");
+    startChapter(0);
   } else {
-    showIntroScene();
+    nextScene();
   }
 });
 
-skipButton.addEventListener("click", startChapter);
+// ========================================
+// OPENING PREQUEL CUTSCENE
+// ========================================
 
-// ==========================================
-// CHAPTER TRANSITION
-// ==========================================
+const openingScenes = [
+  {
+    label: "A STORY FROM THE PAST",
+    title: "HUNDREDS OF YEARS EARLIER...",
+    text:
+      "Long before the villagers disappeared.\n" +
+      "Before the darkness consumed the land."
+  },
+  {
+    label: "THE AGE OF PEACE",
+    title: "A KINGDOM OF LIGHT",
+    text:
+      "There was once a kingdom ruled by a beloved king.\n" +
+      "Its people knew neither fear nor darkness."
+  },
+  {
+    label: "DEEP BELOW THE CASTLE",
+    title: "AN ANCIENT DISCOVERY",
+    text:
+      "Miners uncovered a mysterious purple crystal.\n" +
+      "Something within it had been waiting for centuries."
+  },
+  {
+    label: "A WARNING",
+    title: "POWER ALWAYS HAS A PRICE",
+    text:
+      "The king saw a miracle.\n" +
+      "But something inside the crystal saw an opportunity."
+  },
+  {
+    label: "THEDARKWITHIN",
+    title: "THE FORGOTTEN KING",
+    text:
+      "The story of the kingdom's final days.\n" +
+      "And the knight who witnessed its fall."
+  }
+];
 
-function startChapter() {
-  if (mode !== "intro") return;
-
-  mode = "transition";
-
-  cinematic.classList.add("hidden");
-
-  chapterCard.style.display = "flex";
-
-  setTimeout(() => {
-    chapterCard.style.display = "none";
-
-    mode = "playing";
-    stage = 0;
-
-    player.x = 460;
-    player.y = 430;
-
-    updateObjective();
-
-    playDialogue([
-      {
-        name: "Narrator",
-        text:
-          "The Golden Kingdom. Hundreds of years " +
-          "before the events of TheDarkWithin."
-      },
-      {
-        name: "Narrator",
-        text:
-          "You are Sir Aeron, the king's most trusted knight."
-      },
-      {
-        name: "Sir Aeron",
-        text:
-          "Another peaceful morning. " +
-          "I should report to His Majesty."
-      }
-    ]);
-
-  }, 2600);
-}
-
-// ==========================================
-// CHAPTER OBJECTIVES
-// ==========================================
-
-function updateObjective() {
-  objective.style.display = "block";
-
-  const objectives = [
-    "OBJECTIVE: Speak to the Royal Guard",
-    "OBJECTIVE: Speak to the Villager",
-    "OBJECTIVE: Report to the King",
-    "CHAPTER COMPLETE: Await the next chapter"
-  ];
-
-  objective.textContent = objectives[stage];
-}
-
-// ==========================================
+// ========================================
 // DIALOGUE SYSTEM
-// ==========================================
+// ========================================
 
-let dialogue = [];
+let dialogueLines = [];
 let dialogueIndex = 0;
 let dialogueActive = false;
-let onDialogueFinish = null;
+let dialogueFinished = null;
 
-function playDialogue(lines, finished = null) {
-  dialogue = lines;
+function talk(lines, finished) {
+  dialogueLines = lines;
   dialogueIndex = 0;
   dialogueActive = true;
-  onDialogueFinish = finished;
+  dialogueFinished = finished || null;
 
-  dialogueBox.style.display = "block";
-  interactButton.style.display = "none";
-
-  showDialogueLine();
+  $("dialogue").style.display = "block";
+  showLine();
 }
 
-function showDialogueLine() {
-  const line = dialogue[dialogueIndex];
+function showLine() {
+  const line = dialogueLines[dialogueIndex];
 
-  speaker.textContent = line.name;
-  dialogueText.textContent = line.text;
+  $("speaker").textContent = line[0];
+  $("speech").textContent = line[1];
 }
 
 function advanceDialogue() {
@@ -463,65 +412,491 @@ function advanceDialogue() {
 
   dialogueIndex++;
 
-  if (dialogueIndex < dialogue.length) {
-    showDialogueLine();
+  if (dialogueIndex < dialogueLines.length) {
+    showLine();
     return;
   }
 
   dialogueActive = false;
-  dialogueBox.style.display = "none";
+  $("dialogue").style.display = "none";
 
-  const finished = onDialogueFinish;
-  onDialogueFinish = null;
+  const callback = dialogueFinished;
+  dialogueFinished = null;
 
-  if (finished) finished();
+  if (callback) callback();
 }
 
-// ==========================================
-// STORY CHARACTERS
-// ==========================================
+$("dialogue").addEventListener(
+  "click", advanceDialogue
+);
 
-const characters = [
-  {
-    x: 235,
-    y: 400,
-    name: "Royal Guard",
-    color: "#7b8ea1",
-    stage: 0
-  },
-  {
-    x: 715,
-    y: 415,
-    name: "Villager",
-    color: "#a77357",
-    stage: 1
-  },
-  {
-    x: 485,
-    y: 205,
-    name: "King Aldric",
-    color: "#c2a047",
-    stage: 2
+// ========================================
+// CHAPTER SYSTEM
+// ========================================
+
+function updateHUD() {
+  $("chapterName").textContent =
+    "CHAPTER " + (chapter + 1) +
+    " — " + chapterNames[chapter];
+
+  $("objective").textContent =
+    "OBJECTIVE: " +
+    (
+      objectives[chapter][stage] ||
+      "Continue the story"
+    );
+}
+
+function startChapter(number) {
+  chapter = number;
+  stage = 0;
+  mode = "playing";
+
+  player.x = 470;
+  player.y = 430;
+
+  $("screen").classList.remove("show");
+  $("hud").style.display = "block";
+
+  updateHUD();
+
+  if (chapter === 0) {
+    talk([
+      [
+        "Narrator",
+        "The Golden Kingdom. Hundreds of years " +
+        "before the events of TheDarkWithin."
+      ],
+      [
+        "Narrator",
+        "You are Sir Aeron, the king's most trusted knight."
+      ],
+      [
+        "Sir Aeron",
+        "Another peaceful morning. " +
+        "I should report to His Majesty."
+      ]
+    ]);
   }
+
+  if (chapter === 1) {
+    talk([
+      [
+        "Narrator",
+        "Far beneath the castle, the air grows cold."
+      ],
+      [
+        "Sir Aeron",
+        "These tunnels feel wrong. " +
+        "The miners should never have come this deep."
+      ],
+      [
+        "King Aldric",
+        "Come, Aeron. We must see what they discovered."
+      ]
+    ]);
+  }
+}
+
+function advanceStage() {
+  stage++;
+  updateHUD();
+}
+
+// ========================================
+// CHAPTER ONE DIALOGUE
+// ========================================
+
+function chapterOneInteract() {
+  if (stage === 0) {
+    talk([
+      [
+        "Royal Guard",
+        "Sir Aeron! The capital is peaceful today."
+      ],
+      [
+        "Sir Aeron",
+        "Then why are the guards so restless?"
+      ],
+      [
+        "Royal Guard",
+        "The king ordered the miners deeper beneath " +
+        "the castle. No one knows why."
+      ],
+      [
+        "Sir Aeron",
+        "I will investigate."
+      ]
+    ], advanceStage);
+  }
+
+  else if (stage === 1) {
+    talk([
+      [
+        "Villager",
+        "Sir Aeron, my brother works in the mines."
+      ],
+      [
+        "Villager",
+        "He told me they discovered a purple light."
+      ],
+      [
+        "Villager",
+        "He said it whispered his name."
+      ],
+      [
+        "Sir Aeron",
+        "A whisper from the stone? " +
+        "I must speak with His Majesty."
+      ]
+    ], advanceStage);
+  }
+
+  else if (stage === 2) {
+    talk([
+      [
+        "King Aldric",
+        "Aeron, my loyal friend. " +
+        "You seem troubled."
+      ],
+      [
+        "Sir Aeron",
+        "Your Majesty, what have the miners found?"
+      ],
+      [
+        "King Aldric",
+        "Something extraordinary. " +
+        "Something that could protect us forever."
+      ],
+      [
+        "Royal Messenger",
+        "YOUR MAJESTY! One of the miners has vanished!"
+      ],
+      [
+        "Royal Messenger",
+        "And the crystal... " +
+        "it has started glowing again!"
+      ],
+      [
+        "King Aldric",
+        "Prepare the expedition. " +
+        "We descend immediately."
+      ]
+    ], chapterOneEnding);
+  }
+}
+
+function chapterOneEnding() {
+  cinematic([
+    {
+      label: "CHAPTER I COMPLETE",
+      title: "THE GOLDEN KINGDOM",
+      text:
+        "The peaceful kingdom has been disturbed.\n" +
+        "Something beneath the castle has awakened."
+    },
+    {
+      label: "THE NEXT CHAPTER",
+      title: "BENEATH THE CASTLE",
+      text:
+        "King Aldric and Sir Aeron enter the royal mines.\n" +
+        "Neither knows what waits below."
+    }
+  ], () => startChapter(1));
+}
+
+// ========================================
+// CHAPTER TWO
+// ========================================
+
+function chapterTwoInteract() {
+  if (stage === 0) {
+    talk([
+      [
+        "King Aldric",
+        "Look at these tunnels, Aeron. " +
+        "They extend far beyond the castle."
+      ],
+      [
+        "Sir Aeron",
+        "Your Majesty, these markings aren't ours."
+      ],
+      [
+        "King Aldric",
+        "Our ancestors must have built something here."
+      ],
+      [
+        "Sir Aeron",
+        "Then why was its existence forgotten?"
+      ],
+      [
+        "King Aldric",
+        "Find the missing miners. " +
+        "I will examine these walls."
+      ]
+    ], advanceStage);
+  }
+
+  else if (stage === 1) {
+    talk([
+      [
+        "Injured Miner",
+        "Stay back! Please... don't let it hear you."
+      ],
+      [
+        "Sir Aeron",
+        "Calm yourself. I am Sir Aeron."
+      ],
+      [
+        "Injured Miner",
+        "We broke through the final wall. " +
+        "There was a crystal."
+      ],
+      [
+        "Injured Miner",
+        "Then the whispers started."
+      ],
+      [
+        "Sir Aeron",
+        "What happened to the others?"
+      ],
+      [
+        "Injured Miner",
+        "They followed the voice into the darkness."
+      ],
+      [
+        "Injured Miner",
+        "It knows our names, Sir Aeron."
+      ],
+      [
+        "Injured Miner",
+        "And it said... the king would come."
+      ]
+    ], () => {
+      advanceStage();
+
+      cinematic([
+        {
+          label: "DEEP IN THE ROYAL MINES",
+          title: "THE WHISPERS",
+          text:
+            "A cold wind passes through the tunnels.\n" +
+            "The torches flicker, although no wind should reach this far."
+        },
+        {
+          label: "AN UNKNOWN VOICE",
+          title: "\"HE IS NEAR...\"",
+          text:
+            "\"The one who will carry our power...\"\n" +
+            "\"The king approaches.\""
+        }
+      ], () => {
+        mode = "playing";
+        updateHUD();
+      });
+    });
+  }
+
+  else if (stage === 2) {
+    talk([
+      [
+        "Sir Aeron",
+        "So this is what the miners discovered..."
+      ],
+      [
+        "Sir Aeron",
+        "A purple crystal... " +
+        "buried beneath an ancient seal."
+      ],
+      [
+        "Unknown Voice",
+        "...Aeron..."
+      ],
+      [
+        "Sir Aeron",
+        "WHO'S THERE?!"
+      ],
+      [
+        "Unknown Voice",
+        "You cannot stop what has already begun."
+      ]
+    ], () => {
+      advanceStage();
+
+      cinematic([
+        {
+          label: "THE SEALED CHAMBER",
+          title: "THE CRYSTAL AWAKENS",
+          text:
+            "The crystal releases a pulse of violet light.\n" +
+            "The cavern trembles."
+        },
+        {
+          label: "THE FIRST WARNING",
+          title: "SOMETHING IS WATCHING",
+          text:
+            "For a moment, a dark silhouette appears within the crystal.\n" +
+            "Then it disappears."
+        }
+      ], () => {
+        mode = "playing";
+        updateHUD();
+      });
+    });
+  }
+
+  else if (stage === 3) {
+    talk([
+      [
+        "Sir Aeron",
+        "Your Majesty, we have to leave. " +
+        "This thing is dangerous."
+      ],
+      [
+        "King Aldric",
+        "Dangerous? No, Aeron..."
+      ],
+      [
+        "King Aldric",
+        "I felt its power. " +
+        "It showed me a kingdom without suffering."
+      ],
+      [
+        "Sir Aeron",
+        "The crystal spoke to you?"
+      ],
+      [
+        "King Aldric",
+        "It offered me a way to protect our people."
+      ],
+      [
+        "Sir Aeron",
+        "We don't know what it wants in return."
+      ],
+      [
+        "King Aldric",
+        "I am their king. " +
+        "It is my duty to protect them."
+      ],
+      [
+        "Unknown Voice",
+        "Yes... my king..."
+      ],
+      [
+        "Sir Aeron",
+        "Your Majesty? Your eyes..."
+      ],
+      [
+        "King Aldric",
+        "What about my eyes, Aeron?"
+      ]
+    ], chapterTwoEnding);
+  }
+}
+
+// ========================================
+// CHAPTER TWO ENDING CUTSCENE
+// ========================================
+
+function chapterTwoEnding() {
+  cinematic([
+    {
+      label: "THE PURPLE CRYSTAL",
+      title: "THE FIRST CORRUPTION",
+      text:
+        "King Aldric places his hand upon the crystal.\n" +
+        "Purple energy spreads through his fingers."
+    },
+    {
+      label: "SIR AERON",
+      title: "\"YOUR MAJESTY, STOP!\"",
+      text:
+        "Aeron tries to pull the king away.\n" +
+        "But Aldric no longer hears him."
+    },
+    {
+      label: "AN ANCIENT VOICE",
+      title: "\"AT LAST...\"",
+      text:
+        "\"A ruler willing to sacrifice everything.\"\n" +
+        "\"You will make a beautiful king.\""
+    },
+    {
+      label: "CHAPTER II COMPLETE",
+      title: "BENEATH THE CASTLE",
+      text:
+        "The expedition returns to the surface.\n" +
+        "But King Aldric has brought something back with him."
+    },
+    {
+      label: "TO BE CONTINUED",
+      title: "CHAPTER III: THE KING'S SECRET",
+      text:
+        "The king begins to change.\n" +
+        "And Sir Aeron must uncover what happened in the mines."
+    }
+  ], showChapterTwoComplete);
+}
+
+function showChapterTwoComplete() {
+  mode = "complete";
+
+  $("screen").classList.add("show");
+  $("hud").style.display = "none";
+
+  $("sceneLabel").textContent =
+    "THE FORGOTTEN KING";
+
+  $("sceneTitle").textContent =
+    "TO BE CONTINUED";
+
+  $("sceneText").textContent =
+    "Chapters 1 and 2 complete!\n" +
+    "Chapter 3: The King's Secret is coming next.";
+
+  $("sceneNext").textContent = "REPLAY STORY";
+  $("skip").style.display = "none";
+
+  $("sceneNext").onclick = () => {
+    location.reload();
+  };
+}
+
+// ========================================
+// INTERACTION TARGETS
+// ========================================
+
+const chapterOneNPCs = [
+  { x: 235, y: 405, name: "Royal Guard", color: "#7d8ca0" },
+  { x: 730, y: 420, name: "Villager", color: "#a36b52" },
+  { x: 480, y: 210, name: "King Aldric", color: "#d3aa55", king: true }
 ];
 
-function nearestCharacter() {
+const chapterTwoNPCs = [
+  { x: 360, y: 325, name: "King Aldric", color: "#d3aa55", king: true },
+  { x: 720, y: 420, name: "Injured Miner", color: "#8f665b" },
+  { x: 510, y: 285, name: "Purple Crystal", crystal: true },
+  { x: 360, y: 325, name: "King Aldric", color: "#d3aa55", king: true }
+];
+
+function activeTarget() {
+  return chapter === 0
+    ? chapterOneNPCs[stage]
+    : chapterTwoNPCs[stage];
+}
+
+function nearTarget() {
   if (mode !== "playing" || dialogueActive) {
-    return null;
+    return false;
   }
 
-  for (const npc of characters) {
-    if (npc.stage !== stage) continue;
+  const target = activeTarget();
+  if (!target) return false;
 
-    const dist = Math.hypot(
-      npc.x - player.x,
-      npc.y - player.y
-    );
-
-    if (dist < 95) return npc;
-  }
-
-  return null;
+  return Math.hypot(
+    player.x - target.x,
+    player.y - target.y
+  ) < 92;
 }
 
 function interact() {
@@ -531,514 +906,416 @@ function interact() {
   }
 
   if (mode !== "playing") return;
+  if (!nearTarget()) return;
 
-  const npc = nearestCharacter();
-  if (!npc) return;
-
-  if (stage === 0) {
-    playDialogue([
-      {
-        name: "Royal Guard",
-        text:
-          "Sir Aeron! Good morning. " +
-          "The capital is peaceful today."
-      },
-      {
-        name: "Sir Aeron",
-        text:
-          "Let's hope it stays that way."
-      },
-      {
-        name: "Royal Guard",
-        text:
-          "There is something strange, though. " +
-          "The miners have been working deep " +
-          "beneath the castle."
-      },
-      {
-        name: "Sir Aeron",
-        text:
-          "Mining beneath the castle? " +
-          "Why wasn't I informed?"
-      }
-    ], () => {
-      stage = 1;
-      updateObjective();
-    });
-  }
-
-  else if (stage === 1) {
-    playDialogue([
-      {
-        name: "Villager",
-        text:
-          "Sir Aeron! Thank goodness you're here."
-      },
-      {
-        name: "Sir Aeron",
-        text:
-          "What's troubling you?"
-      },
-      {
-        name: "Villager",
-        text:
-          "My brother works in the royal mines. " +
-          "He says they found a strange purple light."
-      },
-      {
-        name: "Villager",
-        text:
-          "He told me he could hear a voice " +
-          "calling from beneath the ground."
-      },
-      {
-        name: "Sir Aeron",
-        text:
-          "A voice? I need to speak with the king."
-      }
-    ], () => {
-      stage = 2;
-      updateObjective();
-    });
-  }
-
-  else if (stage === 2) {
-    playDialogue([
-      {
-        name: "King Aldric",
-        text:
-          "Aeron! My most loyal knight. " +
-          "Come forward."
-      },
-      {
-        name: "Sir Aeron",
-        text:
-          "Your Majesty. I hear troubling " +
-          "rumors about the mines."
-      },
-      {
-        name: "King Aldric",
-        text:
-          "There is nothing to fear. " +
-          "The miners have discovered something " +
-          "extraordinary."
-      },
-      {
-        name: "Sir Aeron",
-        text:
-          "What exactly have they found?"
-      },
-      {
-        name: "King Aldric",
-        text:
-          "Something that may ensure the safety " +
-          "of our kingdom for eternity."
-      },
-      {
-        name: "Sir Aeron",
-        text:
-          "I do not like the sound of this."
-      },
-      {
-        name: "Royal Messenger",
-        text:
-          "YOUR MAJESTY! An urgent message " +
-          "from the royal excavation!"
-      },
-      {
-        name: "Royal Messenger",
-        text:
-          "The crystal... it has begun to glow. " +
-          "And one of the miners has vanished!"
-      },
-      {
-        name: "King Aldric",
-        text:
-          "...Prepare the guards. " +
-          "We go beneath the castle at once."
-      }
-    ], finishChapter);
+  if (chapter === 0) {
+    chapterOneInteract();
+  } else {
+    chapterTwoInteract();
   }
 }
 
-// ==========================================
-// CHAPTER ONE ENDING
-// ==========================================
+$("interact").addEventListener("click", interact);
 
-function finishChapter() {
-  stage = 3;
-  updateObjective();
-  mode = "finished";
+// ========================================
+// KEYBOARD MOVEMENT
+// ========================================
 
-  cinematic.classList.remove("hidden");
-
-  cinematicTitle.textContent =
-    "CHAPTER I COMPLETE";
-
-  cinematicText.textContent =
-    "Beneath the peaceful kingdom, " +
-    "an ancient power has awakened. " +
-    "King Aldric has ordered an expedition " +
-    "into the royal mines. " +
-    "To be continued in Chapter II: " +
-    "Beneath the Castle.";
-
-  nextSceneButton.textContent =
-    "REPLAY CHAPTER";
-
-  skipButton.style.display = "none";
-
-  nextSceneButton.onclick = () => {
-    window.location.reload();
-  };
-}
-
-// ==========================================
-// INPUT
-// ==========================================
-
-window.addEventListener("keydown", e => {
-  const key = e.key.toLowerCase();
+window.addEventListener("keydown", event => {
+  const key = event.key.toLowerCase();
 
   if (
     ["arrowup", "arrowdown", "arrowleft",
      "arrowright", " "].includes(key)
   ) {
-    e.preventDefault();
+    event.preventDefault();
   }
 
   keys[key] = true;
 
-  if (
-    !e.repeat &&
-    (key === "e" || key === " ")
-  ) {
+  if (!event.repeat && (key === "e" || key === " ")) {
     interact();
   }
 });
 
-window.addEventListener("keyup", e => {
-  keys[e.key.toLowerCase()] = false;
+window.addEventListener("keyup", event => {
+  keys[event.key.toLowerCase()] = false;
 });
 
 window.addEventListener("blur", () => {
   for (const key in keys) keys[key] = false;
 });
 
-interactButton.addEventListener("click", interact);
-dialogueBox.addEventListener("click", advanceDialogue);
-
-// ==========================================
-// PLAYER MOVEMENT
-// ==========================================
-
 function movePlayer(dt) {
-  if (mode !== "playing" || dialogueActive) {
-    return;
-  }
+  if (mode !== "playing" || dialogueActive) return;
 
-  let dx = 0;
-  let dy = 0;
+  let x = 0;
+  let y = 0;
 
-  if (keys["a"] || keys["arrowleft"]) dx--;
-  if (keys["d"] || keys["arrowright"]) dx++;
-  if (keys["w"] || keys["arrowup"]) dy--;
-  if (keys["s"] || keys["arrowdown"]) dy++;
+  if (keys.a || keys.arrowleft) x--;
+  if (keys.d || keys.arrowright) x++;
+  if (keys.w || keys.arrowup) y--;
+  if (keys.s || keys.arrowdown) y++;
 
-  const length = Math.hypot(dx, dy);
+  const length = Math.hypot(x, y);
 
   if (length > 0) {
-    dx /= length;
-    dy /= length;
+    x /= length;
+    y /= length;
 
-    player.x += dx * player.speed * dt;
-    player.y += dy * player.speed * dt;
+    player.x += x * player.speed * dt;
+    player.y += y * player.speed * dt;
 
-    if (dx !== 0) {
-      player.facing = dx > 0 ? 1 : -1;
+    if (x !== 0) {
+      player.facing = x > 0 ? 1 : -1;
     }
   }
 
   player.x = Math.max(25, Math.min(W - 25, player.x));
-  player.y = Math.max(175, Math.min(H - 30, player.y));
+  player.y = Math.max(190, Math.min(H - 30, player.y));
 }
 
-// ==========================================
-// PIXEL ART CASTLE ENVIRONMENT
-// ==========================================
+// ========================================
+// GRAPHICS — PIXEL ART CHARACTERS
+// ========================================
 
-function drawCastle() {
-  // Golden sky.
-  const sky = ctx.createLinearGradient(
-    0, 0, 0, H
-  );
-
-  sky.addColorStop(0, "#9e634f");
-  sky.addColorStop(0.6, "#e9ae69");
-  sky.addColorStop(1, "#705c52");
-
-  ctx.fillStyle = sky;
-  ctx.fillRect(0, 0, W, H);
-
-  // Sun.
-  ctx.fillStyle = "#fbe5a0";
-  ctx.beginPath();
-  ctx.arc(745, 95, 53, 0, Math.PI * 2);
-  ctx.fill();
-
-  // Distant walls.
-  ctx.fillStyle = "#69646c";
-  ctx.fillRect(0, 175, W, 135);
-
-  // Stone details.
-  ctx.strokeStyle = "#484751";
-  ctx.lineWidth = 3;
-
-  for (let y = 190; y < 300; y += 27) {
-    ctx.beginPath();
-    ctx.moveTo(0, y);
-    ctx.lineTo(W, y);
-    ctx.stroke();
-  }
-
-  // Castle towers.
-  for (const x of [145, 710]) {
-    ctx.fillStyle = "#77747b";
-    ctx.fillRect(x, 65, 115, 240);
-
-    ctx.fillStyle = "#55515c";
-
-    for (let i = 0; i < 5; i++) {
-      ctx.fillRect(x + i * 24, 40, 19, 38);
-    }
-
-    ctx.fillStyle = "#3b3142";
-    ctx.fillRect(x + 44, 115, 25, 70);
-
-    ctx.fillStyle = "#c29a4f";
-    ctx.fillRect(x + 15, 205, 20, 65);
-  }
-
-  // Main castle.
-  ctx.fillStyle = "#85808b";
-  ctx.fillRect(325, 85, 310, 240);
-
-  ctx.fillStyle = "#66616e";
-  ctx.fillRect(365, 35, 230, 75);
-
-  // Castle roof.
-  ctx.fillStyle = "#423b4d";
-  ctx.beginPath();
-  ctx.moveTo(340, 42);
-  ctx.lineTo(480, -20);
-  ctx.lineTo(620, 42);
-  ctx.fill();
-
-  // Throne doorway.
-  ctx.fillStyle = "#2c2530";
-  ctx.fillRect(438, 185, 88, 145);
-
-  ctx.fillStyle = "#b08a45";
-  ctx.fillRect(448, 200, 68, 125);
-
-  // Royal banners.
-  for (const x of [355, 590]) {
-    ctx.fillStyle = "#822b35";
-    ctx.fillRect(x, 110, 27, 112);
-
-    ctx.fillStyle = "#dfba66";
-    ctx.fillRect(x + 8, 128, 11, 38);
-  }
-
-  // Courtyard.
-  ctx.fillStyle = "#878071";
-  ctx.fillRect(0, 318, W, H - 318);
-
-  for (let y = 325; y < H; y += 35) {
-    ctx.strokeStyle = "#6f685e";
-    ctx.lineWidth = 2;
-
-    ctx.beginPath();
-    ctx.moveTo(0, y);
-    ctx.lineTo(W, y);
-    ctx.stroke();
-
-    for (let x = (y % 70); x < W; x += 75) {
-      ctx.beginPath();
-      ctx.moveTo(x, y);
-      ctx.lineTo(x, y + 35);
-      ctx.stroke();
-    }
-  }
-
-  // Decorative bushes.
-  for (const x of [55, 120, 815, 890]) {
-    ctx.fillStyle = "#345b3d";
-    ctx.fillRect(x, 350, 38, 26);
-
-    ctx.fillStyle = "#497a48";
-    ctx.fillRect(x + 7, 338, 26, 23);
-  }
-}
-
-// ==========================================
-// CHARACTER DRAWING
-// ==========================================
-
-function drawPerson(x, y, color, crown = false) {
-  const bob = Math.sin(time * 2) * 1.5;
-
+function drawPerson(x, y, color, king = false) {
   ctx.save();
-  ctx.translate(Math.round(x), Math.round(y + bob));
+  ctx.translate(Math.round(x), Math.round(y));
 
-  // Shadow.
-  ctx.fillStyle = "#17151a55";
-  ctx.fillRect(-15, 17, 30, 6);
+  ctx.fillStyle = "#0005";
+  ctx.fillRect(-17, 18, 34, 7);
 
-  // Boots.
-  ctx.fillStyle = "#24222d";
-  ctx.fillRect(-12, 8, 9, 17);
-  ctx.fillRect(4, 8, 9, 17);
+  ctx.fillStyle = "#302a32";
+  ctx.fillRect(-13, 8, 10, 19);
+  ctx.fillRect(4, 8, 10, 19);
 
-  // Body.
   ctx.fillStyle = color;
-  ctx.fillRect(-16, -23, 32, 35);
+  ctx.fillRect(-17, -23, 34, 37);
 
-  // Face.
-  ctx.fillStyle = "#e1aa7d";
-  ctx.fillRect(-12, -43, 24, 22);
+  ctx.fillStyle = "#dfaa83";
+  ctx.fillRect(-12, -44, 24, 23);
 
-  // Hair.
-  ctx.fillStyle = "#493029";
+  ctx.fillStyle = "#49352c";
   ctx.fillRect(-13, -47, 26, 9);
 
-  // Eyes.
-  ctx.fillStyle = "#20171a";
-  ctx.fillRect(-7, -34, 4, 4);
-  ctx.fillRect(5, -34, 4, 4);
+  ctx.fillStyle = "#161019";
+  ctx.fillRect(-8, -33, 5, 4);
+  ctx.fillRect(5, -33, 5, 4);
 
-  // Crown.
-  if (crown) {
-    ctx.fillStyle = "#e6c25c";
-    ctx.fillRect(-15, -57, 30, 10);
-    ctx.fillRect(-15, -65, 6, 10);
-    ctx.fillRect(-3, -69, 6, 13);
-    ctx.fillRect(9, -65, 6, 10);
+  if (king) {
+    ctx.fillStyle = "#f3c95b";
+    ctx.fillRect(-16, -56, 32, 10);
+    ctx.fillRect(-16, -64, 6, 9);
+    ctx.fillRect(-3, -69, 6, 14);
+    ctx.fillRect(10, -64, 6, 9);
+
+    if (chapter === 1 && stage >= 3) {
+      ctx.fillStyle = "#ba30ec";
+      ctx.fillRect(-8, -33, 5, 4);
+      ctx.fillRect(5, -33, 5, 4);
+    }
   }
 
   ctx.restore();
 }
 
-function drawKnight() {
-  drawPerson(
-    player.x,
-    player.y,
-    "#586e87"
-  );
+function drawCrystal(x, y) {
+  const pulse = Math.sin(time * 4) * 6;
 
-  // Knight's sword.
-  ctx.fillStyle = "#c6d0df";
-  ctx.fillRect(
-    player.x + player.facing * 19,
-    player.y - 23,
-    5,
-    43
-  );
+  ctx.save();
+  ctx.translate(x, y);
 
-  ctx.fillStyle = "#8b6a3c";
-  ctx.fillRect(
-    player.x + player.facing * 13,
-    player.y + 13,
-    18,
-    5
-  );
+  ctx.fillStyle = "#7d28ac55";
+  ctx.beginPath();
+  ctx.arc(0, 0, 65 + pulse, 0, Math.PI * 2);
+  ctx.fill();
+
+  ctx.fillStyle = "#67209f";
+  ctx.beginPath();
+  ctx.moveTo(0, -65);
+  ctx.lineTo(40, -15);
+  ctx.lineTo(28, 48);
+  ctx.lineTo(-30, 48);
+  ctx.lineTo(-40, -15);
+  ctx.closePath();
+  ctx.fill();
+
+  ctx.fillStyle = "#b94bff";
+  ctx.beginPath();
+  ctx.moveTo(0, -60);
+  ctx.lineTo(20, -10);
+  ctx.lineTo(0, 42);
+  ctx.lineTo(-15, -12);
+  ctx.closePath();
+  ctx.fill();
+
+  ctx.strokeStyle = "#edb4ff";
+  ctx.lineWidth = 3;
+  ctx.stroke();
+
+  ctx.restore();
 }
 
-function drawCharacters() {
-  for (const npc of characters) {
-    drawPerson(
-      npc.x,
-      npc.y,
-      npc.color,
-      npc.name === "King Aldric"
-    );
+function drawNPCs() {
+  const npcs =
+    chapter === 0 ? chapterOneNPCs : chapterTwoNPCs;
 
-    if (npc.stage === stage) {
-      // Story objective marker.
-      const bob = Math.sin(time * 4) * 5;
+  const shown = new Set();
 
-      ctx.fillStyle = "#ffe08a";
+  npcs.forEach(npc => {
+    const key = npc.x + "," + npc.y;
+
+    if (shown.has(key)) return;
+    shown.add(key);
+
+    if (npc.crystal) {
+      drawCrystal(npc.x, npc.y);
+    } else {
+      drawPerson(npc.x, npc.y, npc.color, npc.king);
+    }
+  });
+
+  if (mode === "playing" && !dialogueActive) {
+    const target = activeTarget();
+
+    if (target) {
+      ctx.fillStyle = "#ffe19e";
       ctx.font = "bold 28px Arial";
       ctx.textAlign = "center";
 
       ctx.fillText(
         "!",
-        npc.x,
-        npc.y - 78 + bob
+        target.x,
+        target.y - (target.crystal ? 80 : 75) +
+          Math.sin(time * 4) * 5
       );
 
       ctx.textAlign = "left";
     }
-
-    ctx.fillStyle = "#fff0c6";
-    ctx.font = "13px Arial";
-    ctx.textAlign = "center";
-
-    ctx.fillText(
-      npc.name,
-      npc.x,
-      npc.y + 43
-    );
-
-    ctx.textAlign = "left";
   }
 }
 
-// ==========================================
-// DRAW GAME
-// ==========================================
+function drawPlayer() {
+  drawPerson(player.x, player.y, "#687f9c");
+
+  ctx.fillStyle = "#c9d9e6";
+  ctx.fillRect(
+    player.x + player.facing * 19,
+    player.y - 24,
+    5,
+    42
+  );
+
+  ctx.fillStyle = "#a07b48";
+  ctx.fillRect(
+    player.x + player.facing * 13,
+    player.y + 11,
+    18,
+    5
+  );
+}
+
+// ========================================
+// CHAPTER 1 — CASTLE BACKGROUND
+// ========================================
+
+function drawCastle() {
+  const sky = ctx.createLinearGradient(0,0,0,H);
+  sky.addColorStop(0, "#a46b5b");
+  sky.addColorStop(1, "#edb476");
+
+  ctx.fillStyle = sky;
+  ctx.fillRect(0,0,W,H);
+
+  ctx.fillStyle = "#f8dfa0";
+  ctx.beginPath();
+  ctx.arc(790,95,52,0,Math.PI*2);
+  ctx.fill();
+
+  ctx.fillStyle = "#67616d";
+  ctx.fillRect(0,175,W,160);
+
+  for (const x of [140,700]) {
+    ctx.fillStyle = "#807883";
+    ctx.fillRect(x,70,120,255);
+
+    ctx.fillStyle = "#504656";
+    for (let i=0;i<5;i++) {
+      ctx.fillRect(x+i*25,42,19,36);
+    }
+  }
+
+  ctx.fillStyle = "#98919a";
+  ctx.fillRect(325,95,310,240);
+
+  ctx.fillStyle = "#565160";
+  ctx.fillRect(370,45,220,70);
+
+  ctx.fillStyle = "#3b3246";
+  ctx.fillRect(442,180,80,150);
+
+  ctx.fillStyle = "#ab854d";
+  ctx.fillRect(453,195,58,130);
+
+  for (const x of [355,580]) {
+    ctx.fillStyle = "#8e3040";
+    ctx.fillRect(x,115,30,115);
+
+    ctx.fillStyle = "#e3bb64";
+    ctx.fillRect(x+10,135,10,43);
+  }
+
+  ctx.fillStyle = "#817a70";
+  ctx.fillRect(0,320,W,220);
+
+  ctx.strokeStyle = "#625e58";
+  ctx.lineWidth = 2;
+
+  for (let y=330;y<H;y+=36) {
+    ctx.beginPath();
+    ctx.moveTo(0,y);
+    ctx.lineTo(W,y);
+    ctx.stroke();
+  }
+}
+
+// ========================================
+// CHAPTER 2 — UNDERGROUND MINES
+// ========================================
+
+function drawMines() {
+  ctx.fillStyle = "#15101c";
+  ctx.fillRect(0,0,W,H);
+
+  // Purple glow around crystal chamber.
+  const glow = ctx.createRadialGradient(
+    510,275,15,
+    510,275,340
+  );
+
+  glow.addColorStop(0,"#512075");
+  glow.addColorStop(1,"#15101c");
+
+  ctx.fillStyle = glow;
+  ctx.fillRect(0,0,W,H);
+
+  // Cave ceiling.
+  ctx.fillStyle = "#090910";
+
+  for (let x=0;x<W;x+=65) {
+    const size = 50+(x*7%80);
+
+    ctx.beginPath();
+    ctx.moveTo(x,0);
+    ctx.lineTo(x+35,size);
+    ctx.lineTo(x+65,0);
+    ctx.fill();
+  }
+
+  // Cave floor.
+  ctx.fillStyle = "#302838";
+  ctx.fillRect(0,365,W,175);
+
+  for (let i=0;i<50;i++) {
+    const x = (i*137)%W;
+    const y = 370+(i*79)%160;
+
+    ctx.fillStyle =
+      i%3===0 ? "#4b3855" : "#221b29";
+
+    ctx.fillRect(x,y,15,6);
+  }
+
+  // Wooden supports.
+  for (const x of [130,810]) {
+    ctx.fillStyle = "#59432c";
+    ctx.fillRect(x,120,18,300);
+    ctx.fillRect(x-35,118,95,18);
+  }
+
+  // Torches.
+  for (const x of [165,830]) {
+    ctx.fillStyle = "#754f2e";
+    ctx.fillRect(x,255,8,28);
+
+    ctx.fillStyle = "#ff982d";
+    ctx.beginPath();
+    ctx.arc(x+4,245,12+Math.sin(time*9)*2,0,Math.PI*2);
+    ctx.fill();
+
+    ctx.fillStyle = "#ffdf72";
+    ctx.beginPath();
+    ctx.arc(x+4,244,5,0,Math.PI*2);
+    ctx.fill();
+  }
+
+  // Old mining rails.
+  ctx.strokeStyle = "#625566";
+  ctx.lineWidth = 5;
+
+  ctx.beginPath();
+  ctx.moveTo(390,540);
+  ctx.lineTo(470,350);
+  ctx.moveTo(620,540);
+  ctx.lineTo(545,350);
+  ctx.stroke();
+
+  // Tracks.
+  for (let i=0;i<8;i++) {
+    const y = 385+i*22;
+    const half = 35+i*12;
+
+    ctx.strokeStyle = "#68513a";
+    ctx.lineWidth = 6;
+
+    ctx.beginPath();
+    ctx.moveTo(508-half,y);
+    ctx.lineTo(508+half,y);
+    ctx.stroke();
+  }
+}
+
+// ========================================
+// GAME LOOP
+// ========================================
 
 function draw() {
-  drawCastle();
-  drawCharacters();
-  drawKnight();
-
-  if (mode === "playing" && !dialogueActive) {
-    interactButton.style.display =
-      nearestCharacter() ? "block" : "none";
+  if (chapter === 0) {
+    drawCastle();
   } else {
-    interactButton.style.display = "none";
+    drawMines();
   }
+
+  drawNPCs();
+  drawPlayer();
+
+  $("interact").style.display =
+    nearTarget() ? "block" : "none";
 }
 
-// ==========================================
-// MAIN GAME LOOP
-// ==========================================
-
-function gameLoop(timestamp) {
+function loop(timestamp) {
   const dt = Math.min(
-    (timestamp - (lastFrame || timestamp)) / 1000,
+    (timestamp-(last||timestamp))/1000,
     0.05
   );
 
-  lastFrame = timestamp;
+  last = timestamp;
   time += dt;
 
   movePlayer(dt);
   draw();
 
-  requestAnimationFrame(gameLoop);
+  requestAnimationFrame(loop);
 }
 
-// ==========================================
-// START THE INTRODUCTION
-// ==========================================
+// ========================================
+// BEGIN THE STORY
+// ========================================
 
-showIntroScene();
-requestAnimationFrame(gameLoop);
+cinematic(openingScenes, () => startChapter(0));
+requestAnimationFrame(loop);
 
 </script>
-
 </body>
 </html>
-
