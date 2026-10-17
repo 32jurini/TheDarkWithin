@@ -4,68 +4,65 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>The Spirit Realm | TheDarkWithin DLC II</title>
+<title>The Spirit Realm — TheDarkWithin DLC II</title>
 <style>
 *{box-sizing:border-box}
-html{background:#080618}
+html{background:#080619}
 body{
  margin:0;
- background:linear-gradient(#150d30,#080618 65%);
- color:#f1eaff;
+ background:linear-gradient(#171033,#080619);
+ color:#f3ecff;
  font-family:Arial,Helvetica,sans-serif;
 }
 header{
  display:flex;
- justify-content:space-between;
  align-items:center;
- flex-wrap:wrap;
+ justify-content:space-between;
  gap:12px;
- padding:18px 5%;
- border-bottom:2px solid #947bff;
- background:#100c25;
+ flex-wrap:wrap;
+ padding:17px 5%;
+ background:#110c27;
+ border-bottom:2px solid #9c81ed;
 }
 header h1{
- color:#d4c7ff;
  margin:0;
- font-size:clamp(20px,4vw,32px);
+ font-size:clamp(20px,4vw,33px);
+ color:#e6d9ff;
 }
-a{color:#d5c7ff;text-decoration:none}
-main{max-width:1100px;margin:22px auto;padding:0 12px}
+a{color:#d4c6ff;text-decoration:none}
+main{max-width:1130px;margin:20px auto;padding:0 12px}
 button,select{
- background:#29204f;
- color:#f1eaff;
- border:1px solid #9180dc;
- border-radius:6px;
  padding:10px 13px;
- cursor:pointer;
+ border:1px solid #9180da;
+ background:#2a2050;
+ color:#f6f0ff;
+ border-radius:6px;
  font-weight:bold;
+ cursor:pointer;
 }
-button:hover{background:#42347c}
+button:hover:not(:disabled){background:#48377e}
 button:disabled{opacity:.4;cursor:default}
-#settings,#controls,#musicControls{
+#settings,#buttons,#musicPanel{
  display:flex;
- align-items:center;
  justify-content:center;
- gap:10px;
+ align-items:center;
  flex-wrap:wrap;
- background:#17112f;
- border:1px solid #524582;
- padding:12px;
+ gap:10px;
+ padding:11px;
  margin-bottom:12px;
+ background:#17112f;
+ border:1px solid #584a89;
  border-radius:8px;
  font-size:13px;
 }
-#settings label,#musicControls label{
- display:flex;
- align-items:center;
- gap:8px;
-}
+label{display:flex;align-items:center;gap:9px}
+input[type=range]{accent-color:#ab95ff}
 #game{
  position:relative;
- background:#08051b;
  overflow:hidden;
- border:2px solid #9580ed;
- box-shadow:0 0 35px #49318d44;
+ background:#09061e;
+ border:2px solid #a08bff;
+ box-shadow:0 0 35px #5833a04b;
 }
 canvas{
  display:block;
@@ -74,36 +71,64 @@ canvas{
  image-rendering:pixelated;
 }
 #hud{
+ display:none;
  position:absolute;
  left:12px;
  top:12px;
- background:#08051cdd;
- border:1px solid #8777c7;
- border-radius:7px;
- padding:10px;
- font-size:13px;
  z-index:3;
- display:none;
- max-width:70%;
+ max-width:72%;
+ padding:10px;
+ background:#09051edc;
+ border:1px solid #8276b9;
+ border-radius:7px;
+ font-size:13px;
+ pointer-events:none;
 }
-#hudTitle{color:#e2d5ff;font-weight:bold}
-#hudObjective{margin-top:7px;color:#d3c8e4}
-#hudStats{margin-top:7px;color:#94eeff}
-#bossBar{
+#hudTitle{font-weight:bold;color:#e5d6ff}
+#hudObjective{margin-top:6px;color:#ead4ff}
+#hudStats{margin-top:6px;color:#a5f1ff}
+#bossHud{
  display:none;
  position:absolute;
- left:22%;
- top:15px;
- width:56%;
- height:16px;
- background:#251130;
- border:1px solid #cc85ff;
+ top:13px;
+ right:13px;
+ width:42%;
  z-index:4;
+ background:#08061ddf;
+ padding:8px;
+ border:1px solid #a28dff;
+ border-radius:6px;
+ text-align:center;
+ font-size:11px;
+ color:#e8deff;
+}
+#bossTrack{
+ height:13px;
+ margin-top:6px;
+ background:#29152d;
+ border:1px solid #9a72aa;
 }
 #bossFill{
  height:100%;
- background:linear-gradient(90deg,#6552f0,#e070fa);
  width:100%;
+ background:linear-gradient(90deg,#648eff,#d06cff);
+}
+#notice{
+ display:none;
+ position:absolute;
+ left:50%;
+ bottom:18px;
+ transform:translateX(-50%);
+ z-index:5;
+ width:max-content;
+ max-width:90%;
+ padding:10px 15px;
+ background:#0d092ae8;
+ border:1px solid #9e92ff;
+ border-radius:5px;
+ text-align:center;
+ font-size:13px;
+ pointer-events:none;
 }
 #overlay{
  position:absolute;
@@ -113,639 +138,791 @@ canvas{
  flex-direction:column;
  align-items:center;
  justify-content:center;
- background:radial-gradient(circle,#2e2156,#070519 80%);
+ padding:20px;
  text-align:center;
- padding:18px 28px;
+ background:radial-gradient(circle,#302059f5,#08051cf8 85%);
+ overflow:auto;
 }
 #overlayLabel{
+ color:#a8ecff;
+ font-size:12px;
  letter-spacing:3px;
- color:#aee9ff;
- font-size:11px;
 }
 #overlayTitle{
- font-size:clamp(23px,5vw,49px);
- color:#e7d9ff;
- margin:15px 0;
+ margin:14px 0;
+ font-size:clamp(24px,5vw,48px);
+ color:#efe4ff;
 }
 #overlayText{
+ max-width:720px;
  white-space:pre-line;
- line-height:1.65;
- max-width:700px;
  font-size:clamp(13px,2vw,18px);
+ line-height:1.75;
+ color:#ece4ff;
 }
 #overlayButtons{
  display:flex;
- gap:12px;
- flex-wrap:wrap;
  justify-content:center;
- margin-top:13px;
+ gap:10px;
+ flex-wrap:wrap;
+ margin-top:12px;
 }
-#notice{
- position:absolute;
- bottom:14px;
- left:50%;
- transform:translateX(-50%);
- background:#100b32e8;
- border:1px solid #a090ff;
- padding:10px 18px;
- font-size:13px;
- z-index:5;
- display:none;
+#overlayButtons button{
+ min-width:150px;
+ background:#46357c;
+}
+#buttons button{font-size:12px}
+#musicPanel{margin-top:12px}
+#instructions{
+ color:#c4b9dd;
+ font-size:12px;
+ line-height:1.8;
  text-align:center;
- max-width:90%;
- pointer-events:none;
+ padding:10px;
+}
+footer{
+ color:#988baf;
+ padding:24px;
+ text-align:center;
+ font-size:12px;
 }
 #game:fullscreen{
+ width:100vw;
+ height:100vh;
  display:flex;
  justify-content:center;
  align-items:center;
- width:100vw;
- height:100vh;
  border:0;
- background:#050316;
+ background:#050313;
 }
 #game:fullscreen canvas{
  width:100%;
  height:100%;
  object-fit:contain;
 }
-#game:fullscreen #overlay{
- background:#0b0825f2;
+#game:fullscreen #overlay{background:#09061cf0}
+@media(max-width:650px){
+ #hud{font-size:9px;padding:6px}
+ #bossHud{font-size:9px}
+ #buttons button{font-size:10px;padding:8px}
+ #overlay{padding:11px}
+ #overlayButtons button{min-width:110px}
 }
-#game:fullscreen #hud{
- top:16px;
- left:16px;
-}
-#game:fullscreen #bossBar{
- top:16px;
-}
-#controls button{font-size:12px}
-#musicControls{margin-top:12px}
-input[type=range]{accent-color:#b29aff}
-#instructions{
- text-align:center;
- color:#b6accd;
- font-size:12px;
- line-height:1.8;
- padding:8px;
-}
-footer{
- padding:25px;
- text-align:center;
- color:#9187ad;
- font-size:12px;
-}
-@media(max-width:600px){
- #hud{font-size:10px;padding:6px}
- #settings,#controls{gap:6px}
- #controls button{padding:8px;font-size:10px}
- #overlay{padding:14px}
+@media(prefers-reduced-motion:reduce){
+ *,*::before,*::after{
+  animation:none!important;
+  transition:none!important;
+ }
 }
 </style>
 </head>
 <body>
 
 <header>
-<h1>💜 THE SPIRIT REALM</h1>
-<a href="index.html">← BACK TO LAUNCHER</a>
+ <h1>💜 THE SPIRIT REALM</h1>
+ <a href="index.html">← BACK TO LAUNCHER</a>
 </header>
 
 <main>
 
 <div id="settings">
-<label>
- DIFFICULTY
- <select id="difficulty">
-  <option value="easy">Easy</option>
-  <option value="medium" selected>Medium</option>
-  <option value="hard">Hard</option>
-  <option value="extreme">Extreme</option>
- </select>
-</label>
-<button id="fullButton">⛶ FULLSCREEN</button>
-<button id="restartButton">↻ RESTART CHAPTER</button>
+ <label>
+  DIFFICULTY
+  <select id="difficulty">
+   <option value="easy">Easy</option>
+   <option value="medium" selected>Medium</option>
+   <option value="hard">Hard</option>
+   <option value="extreme">Extreme</option>
+  </select>
+ </label>
+ <button id="fullscreen">⛶ FULLSCREEN</button>
+ <button id="restart">↻ RESTART CHAPTER</button>
+ <button id="menuButton">☰ MENU</button>
 </div>
 
 <div id="game">
-<canvas id="canvas" width="960" height="540"></canvas>
 
-<div id="hud">
- <div id="hudTitle"></div>
- <div id="hudObjective"></div>
- <div id="hudStats"></div>
-</div>
+ <canvas id="canvas" width="960" height="540"></canvas>
 
-<div id="bossBar"><div id="bossFill"></div></div>
-<div id="notice"></div>
-
-<div id="overlay">
- <div id="overlayLabel">THEDARKWITHIN — DLC II</div>
- <h1 id="overlayTitle">THE SPIRIT REALM</h1>
- <p id="overlayText"></p>
- <div id="overlayButtons">
-  <button id="continueButton">BEGIN STORY</button>
-  <button id="newButton">NEW GAME</button>
+ <div id="hud">
+  <div id="hudTitle"></div>
+  <div id="hudObjective"></div>
+  <div id="hudStats"></div>
  </div>
-</div>
+
+ <div id="bossHud">
+  <strong>THE SPIRIT TITAN</strong>
+  <div id="bossPhase">PHASE 1</div>
+  <div id="bossTrack">
+   <div id="bossFill"></div>
+  </div>
+ </div>
+
+ <div id="notice"></div>
+
+ <div id="overlay">
+  <div id="overlayLabel">THEDARKWITHIN — DLC II</div>
+  <h1 id="overlayTitle">THE SPIRIT REALM</h1>
+  <p id="overlayText"></p>
+  <div id="overlayButtons">
+   <button id="primaryButton">BEGIN STORY</button>
+   <button id="secondaryButton">NEW GAME</button>
+  </div>
+ </div>
+
 </div>
 
-<div id="controls">
-<button id="jumpButton">SPACE — JUMP</button>
-<button id="dashButton">SHIFT — DASH</button>
-<button id="bladeButton">J — SOUL BLADE</button>
-<button id="burstButton">K — SPIRIT BURST</button>
-<button id="shieldButton">N — PHANTOM SHIELD</button>
+<div id="buttons">
+ <button id="jump">SPACE — JUMP</button>
+ <button id="dash">SHIFT — DASH</button>
+ <button id="slash">J — SOUL BLADE</button>
+ <button id="burst">K — SPIRIT BURST</button>
+ <button id="shield">N — PHANTOM SHIELD</button>
 </div>
 
-<div id="musicControls">
-<button id="musicButton">♫ MUSIC: ON</button>
-<label>
- VOLUME
- <input id="volume" type="range" min="0" max="100" value="35">
-</label>
-<span id="track">Spirit soundtrack ready</span>
+<div id="musicPanel">
+ <button id="musicToggle">♫ MUSIC: ON</button>
+ <label>
+  VOLUME
+  <input id="volume" type="range" min="0" max="100" value="35">
+ </label>
+ <span id="musicTitle">Spirit soundtrack ready</span>
 </div>
 
 <div id="instructions">
-A / D or ← / → — MOVE • W / ↑ / SPACE — JUMP •
-DOUBLE JUMP • SHIFT — AIR DASH •
-J — SOUL BLADE • K — SPIRIT BURST • N — SHIELD
+ A / D or ← / → — MOVE •
+ W / ↑ / SPACE — JUMP / DOUBLE JUMP •
+ SHIFT — DASH • J — SOUL BLADE •
+ K — SPIRIT BURST • N — SHIELD
 </div>
 
 </main>
 
 <footer>
-THE SPIRIT REALM • EIGHT-CHAPTER PLATFORMING ADVENTURE
+ THEDARKWITHIN • THE SPIRIT REALM • DLC II
 </footer>
 
 <script>
-(()=>{
+(() => {
 "use strict";
 
-// ======================================
-// BASIC SETUP
-// ======================================
+/* ======================================
+   MAIN SETUP
+====================================== */
 
-const $=id=>document.getElementById(id);
-const canvas=$("canvas");
-const ctx=canvas.getContext("2d");
-ctx.imageSmoothingEnabled=false;
+const $ = id => document.getElementById(id);
 
-const W=960,H=540;
-const GRAVITY=1650;
-const SAVE="tdw-spirit-realm-save-v1";
+const canvas = $("canvas");
+const ctx = canvas.getContext("2d");
 
-const clamp=(n,a,b)=>Math.max(a,Math.min(b,n));
-const rand=(a,b)=>a+Math.random()*(b-a);
-const distance=(a,b,c,d)=>Math.hypot(a-c,b-d);
+ctx.imageSmoothingEnabled = false;
 
-let chapter=0;
-let mode="menu";
-let time=0;
-let last=0;
-let camera=0;
-let worldEnd=3900;
-let platforms=[];
-let shards=[];
-let hazards=[];
-let enemies=[];
-let projectiles=[];
-let particles=[];
-let checkpoints=[];
-let collected=0;
-let checkpointX=70;
-let checkpointY=410;
-let noticeUntil=0;
-let boss=null;
-let bossStarted=false;
-let ending=false;
+const W = 960;
+const H = 540;
+const GRAVITY = 1650;
+const SAVE_KEY = "tdw-spirit-realm-save-v2";
 
-const keys={};
+const clamp = (v,a,b) => Math.max(a,Math.min(b,v));
+const dist = (x,y,x2,y2) => Math.hypot(x-x2,y-y2);
+const random = (a,b) => a+Math.random()*(b-a);
 
-const player={
- x:70,y:400,
- w:27,h:42,
+const difficulties = {
+ easy:{
+  hearts:9,
+  damage:.6,
+  bossHp:.7,
+  speed:.78
+ },
+ medium:{
+  hearts:6,
+  damage:1,
+  bossHp:1,
+  speed:1
+ },
+ hard:{
+  hearts:4,
+  damage:1.5,
+  bossHp:1.3,
+  speed:1.2
+ },
+ extreme:{
+  hearts:3,
+  damage:2,
+  bossHp:1.65,
+  speed:1.4
+ }
+};
+
+let difficulty = "medium";
+let chapter = 0;
+let mode = "menu";
+let time = 0;
+let lastFrame = 0;
+let camera = 0;
+let worldEnd = 3900;
+let levelEnding = false;
+
+let platforms = [];
+let shards = [];
+let checkpoints = [];
+let enemies = [];
+let hazards = [];
+let projectiles = [];
+let particles = [];
+
+let collected = 0;
+let checkpointX = 65;
+let checkpointY = 425;
+let noticeTimer = 0;
+
+let boss = null;
+let bossStarted = false;
+let bossDefeated = false;
+let bossArenaX = 0;
+let bossCutsceneSeen = false;
+
+const keys = {};
+
+const player = {
+ x:65,y:415,
+ w:26,h:42,
  vx:0,vy:0,
- speed:310,
  facing:1,
+ speed:315,
  grounded:false,
  jumps:0,
- maxJumps:2,
- dashTime:0,
  dashReady:true,
- hp:5,maxHp:5,
+ dashTimer:0,
+ hp:6,maxHp:6,
  invincible:0,
- shieldTime:0,
- attackCd:0,
- burstCd:0,
- shieldCd:0,
- slashTime:0
+ shield:0,
+ shieldCooldown:0,
+ slashCooldown:0,
+ slashTimer:0,
+ burstCooldown:0
 };
 
-const difficulties={
- easy:{name:"Easy",damage:.5,hp:.7,speed:.85,hearts:8},
- medium:{name:"Medium",damage:1,hp:1,speed:1,hearts:5},
- hard:{name:"Hard",damage:1.6,hp:1.3,speed:1.2,hearts:4},
- extreme:{name:"Extreme",damage:2.3,hp:1.7,speed:1.4,hearts:3}
-};
+/* ======================================
+   STORY — EIGHT CHAPTERS
+====================================== */
 
-let difficulty="medium";
-
-const chapters=[
+const chapters = [
  {
- name:"The Broken Portal",
- theme:"portal",
- story:[
-  "After the Purple King's defeat, a portal opens in the ruins.",
-  "Beyond it lies a world suspended between life and death.",
-  "The hero steps into the Spirit Realm."
- ],
- end:"The portal closes behind you. There is no easy way home."
+  name:"The Broken Portal",
+  theme:"portal",
+  intro:[
+   "NARRATOR: The Purple King has fallen. But the darkness has not disappeared.",
+   "PLAYER: That portal wasn't there before...",
+   "UNKNOWN SPIRIT: Enter, wanderer. Our realm is breaking.",
+   "PLAYER: If there's still darkness out there, I have to find its source."
+  ],
+  outro:[
+   "PLAYER: The ground itself is floating...",
+   "UNKNOWN SPIRIT: Every island is a memory of a world that was lost."
+  ]
  },
  {
- name:"Floating Echoes",
- theme:"echoes",
- story:[
-  "The realm is fractured into thousands of floating islands.",
-  "Echoes of forgotten lives drift across the void.",
-  "Three spirit fragments may reveal the path forward."
- ],
- end:"The fragments reveal an ancient forest suspended in the clouds."
+  name:"Floating Echoes",
+  theme:"echoes",
+  intro:[
+   "PLAYER: How can an entire world be broken into pieces?",
+   "UNKNOWN SPIRIT: A terrible power shattered the realm long ago.",
+   "UNKNOWN SPIRIT: Gather three soul fragments to open the path forward."
+  ],
+  outro:[
+   "PLAYER: These fragments are showing me another part of the realm.",
+   "UNKNOWN SPIRIT: Follow them into the Phantom Forest."
+  ]
  },
  {
- name:"The Phantom Forest",
- theme:"forest",
- story:[
-  "Ghost trees grow where the laws of nature no longer apply.",
-  "Some pathways exist only for a few seconds.",
-  "A distant voice whispers: 'The king was never alone.'"
- ],
- end:"The phantom forest hides a path toward the realm's deepest wound."
+  name:"The Phantom Forest",
+  theme:"forest",
+  intro:[
+   "PLAYER: Those trees... they aren't alive.",
+   "UNKNOWN SPIRIT: They are memories. Even the ground beneath them may vanish.",
+   "PLAYER: Then I'd better keep moving."
+  ],
+  outro:[
+   "PLAYER: Someone was here before me.",
+   "UNKNOWN SPIRIT: Someone you already know."
+  ]
  },
  {
- name:"The Shattered Path",
- theme:"shattered",
- story:[
-  "Broken bridges float over an endless abyss.",
-  "Only a spirit who masters the air can cross this place.",
-  "The hero feels a strange new power awakening."
- ],
- end:"A powerful spirit dash carries you beyond the shattered path."
+  name:"The Shattered Path",
+  theme:"shattered",
+  intro:[
+   "PLAYER: These gaps are getting wider.",
+   "UNKNOWN SPIRIT: Trust the power of your spirit.",
+   "UNKNOWN SPIRIT: Dash through the air and cross the shattered path."
+  ],
+  outro:[
+   "PLAYER: I can feel the realm responding to me.",
+   "UNKNOWN SPIRIT: The deeper you go, the more it remembers."
+  ]
  },
  {
- name:"Echoes of the King",
- theme:"memories",
- story:[
-  "Fragments of King Aldric's memories haunt the realm.",
-  "The Black Spirit drew strength from more than one world.",
-  "Destroying the Purple King did not end its influence."
- ],
- end:"An ancient memory points toward a prison hidden in the void."
+  name:"Echoes of the King",
+  theme:"memories",
+  intro:[
+   "PLAYER: That's King Aldric... but it's only a memory.",
+   "ECHO OF ALDRIC: The crystal promised me the strength to protect everyone.",
+   "ECHO OF ALDRIC: I never understood what was trapped inside it.",
+   "PLAYER: The Black Spirit came from this realm..."
+  ],
+  outro:[
+   "PLAYER: Defeating Aldric wasn't the end.",
+   "UNKNOWN SPIRIT: No. There are still souls waiting to be freed."
+  ]
  },
  {
- name:"The Prison of Souls",
- theme:"prison",
- story:[
-  "Countless souls remain imprisoned in floating crystal cages.",
-  "Their energy fuels the corruption spreading through the realm.",
-  "Collect the three seals to weaken the prison."
- ],
- end:"The souls are freed, but the entire realm begins to shake."
+  name:"The Prison of Souls",
+  theme:"prison",
+  intro:[
+   "TRAPPED SOUL: Please... don't leave us here.",
+   "PLAYER: I'll find a way to break the prison.",
+   "UNKNOWN SPIRIT: Collect the seals. They are hidden across the floating ruins."
+  ],
+  outro:[
+   "TRAPPED SOULS: We're free...",
+   "UNKNOWN SPIRIT: The realm's guardian has felt what you've done."
+  ]
  },
  {
- name:"Heart of the Realm",
- theme:"heart",
- story:[
-  "The floating islands crumble around the realm's heart.",
-  "A guardian awakens to protect its failing power.",
-  "At the highest island waits the Spirit Titan."
- ],
- end:"The guardian falls. A giant armored spirit rises above the void."
+  name:"Heart of the Realm",
+  theme:"heart",
+  intro:[
+   "PLAYER: Everything is shaking.",
+   "UNKNOWN SPIRIT: You're approaching the heart of this broken world.",
+   "UNKNOWN SPIRIT: Beyond it waits the oldest guardian of the Spirit Realm."
+  ],
+  outro:[
+   "PLAYER: What is that enormous island ahead?",
+   "UNKNOWN SPIRIT: The Titan's battlefield.",
+   "UNKNOWN SPIRIT: Be careful. It has not allowed a living soul through in centuries."
+  ]
  },
  {
- name:"The Spirit Titan",
- theme:"titan",
- story:[
-  "A towering ghost with blue-white flames and dark spiked armor appears.",
-  "It has guarded the realm since before King Aldric was born.",
-  "Defeat the Spirit Titan and uncover the Black Spirit's final secret."
- ],
- end:"The Spirit Titan fades, leaving behind the Light of Souls."
+  name:"The Spirit Titan",
+  theme:"titan",
+  intro:[
+   "NARRATOR: The hero enters the final region of the Spirit Realm.",
+   "PLAYER: There's nowhere left to go but forward.",
+   "UNKNOWN SPIRIT: The guardian is waiting at the end of the shattered path.",
+   "UNKNOWN SPIRIT: What happens next will determine the realm's fate."
+  ],
+  outro:[]
  }
 ];
 
-// ======================================
-// ORIGINAL CHIPTUNE SOUNDTRACK
-// ======================================
+/* ======================================
+   MUSIC — ORIGINAL 8-BIT SOUND
+====================================== */
 
-const Music=(()=>{
- let ac=null,master=null,noise=null,timer=null;
- let enabled=true,volume=.35;
- let active=-1,beatStep=0,nextTime=0;
+const Music = (() => {
+ let audio = null;
+ let master = null;
+ let enabled = true;
+ let volume = .35;
+ let timer = null;
+ let songIndex = -1;
+ let step = 0;
+ let nextTime = 0;
 
- const semitones={C:0,D:2,E:4,F:5,G:7,A:9,B:11};
+ const notes = {
+  C:0,D:2,E:4,F:5,G:7,A:9,B:11
+ };
 
- const songs=[
-  {name:"Broken Portal",bpm:96,
+ const songs = [
+  {
+   name:"Broken Portal",
+   bpm:100,
    lead:["C5","G5","D#5","G5","A#5","G5","F5","R",
          "D#5","G5","C6","A#5","G5","F5","D#5","R"],
-   bass:["C3","G2","G#2","A#2"]},
-  {name:"Floating Echoes",bpm:112,
+   bass:["C3","G2","G#2","A#2"]
+  },
+  {
+   name:"Floating Echoes",
+   bpm:112,
    lead:["F5","A#5","C6","A#5","F5","D#5","C5","R",
          "D5","F5","G5","A#5","G5","F5","D5","R"],
-   bass:["F3","D#3","A#2","C3"]},
-  {name:"Phantom Forest",bpm:100,
+   bass:["F3","D#3","A#2","C3"]
+  },
+  {
+   name:"Phantom Forest",
+   bpm:103,
    lead:["D5","F5","A5","R","G5","F5","D5","R",
          "C5","D5","F5","A5","G5","E5","D5","R"],
-   bass:["D3","A2","A#2","C3"]},
-  {name:"Shattered Path",bpm:132,
+   bass:["D3","A2","A#2","C3"]
+  },
+  {
+   name:"Shattered Path",
+   bpm:134,
    lead:["E5","G5","B5","G5","D6","B5","G5","R",
          "E5","F#5","G5","B5","A5","G5","F#5","R"],
-   bass:["E3","C3","D3","B2"]},
-  {name:"Echoes of the King",bpm:88,
+   bass:["E3","C3","D3","B2"]
+  },
+  {
+   name:"Echoes of the King",
+   bpm:89,
    lead:["C5","E5","G5","C6","B5","G5","E5","R",
          "D#5","G5","A#5","G5","F#5","D#5","C5","R"],
-   bass:["C3","G2","D#3","F#2"]},
-  {name:"Prison of Souls",bpm:125,
+   bass:["C3","G2","D#3","F#2"]
+  },
+  {
+   name:"Prison of Souls",
+   bpm:124,
    lead:["A4","C5","F5","A5","G5","F5","C5","R",
          "A4","D5","F5","G5","F5","D5","C5","R"],
-   bass:["F2","C3","D#3","F2"]},
-  {name:"Heart of the Realm",bpm:148,
+   bass:["F2","C3","D#3","F2"]
+  },
+  {
+   name:"Heart of the Realm",
+   bpm:145,
    lead:["G5","A#5","D6","C6","A#5","G5","F5","R",
          "G5","A#5","C6","D6","F6","D6","C6","R"],
-   bass:["G2","D3","D#3","F3"]},
-  {name:"Spirit Titan — Final Battle",bpm:166,
+   bass:["G2","D3","D#3","F3"]
+  },
+  {
+   name:"SPIRIT TITAN — THE FINAL STAND",
+   bpm:165,
    lead:["C6","G5","D#5","G5","A#5","C6","D6","R",
          "D#6","D6","C6","A#5","G5","A#5","C6","R"],
-   bass:["C3","G2","G#2","A#2"]}
+   bass:["C3","G2","G#2","A#2"]
+  }
  ];
 
- function freq(n){
-  if(!n||n==="R")return 0;
-  const m=/^([A-G])(#?)(\d)$/.exec(n);
+ function freq(note){
+  if(note==="R")return 0;
+  const m=/^([A-G])(#?)(\d)$/.exec(note);
   if(!m)return 0;
   const midi=(Number(m[3])+1)*12+
-     semitones[m[1]]+(m[2]?1:0);
+   notes[m[1]]+(m[2]?1:0);
   return 440*Math.pow(2,(midi-69)/12);
  }
 
  function setup(){
-  if(ac)return;
-  const AC=window.AudioContext||window.webkitAudioContext;
+  if(audio)return;
+  const AC=window.AudioContext||
+           window.webkitAudioContext;
   if(!AC)return;
-  ac=new AC();
-  master=ac.createGain();
-  master.gain.value=volume*.48;
-  master.connect(ac.destination);
-
-  noise=ac.createBuffer(1,ac.sampleRate,ac.sampleRate);
-  const a=noise.getChannelData(0);
-  for(let i=0;i<a.length;i++)a[i]=Math.random()*2-1;
+  audio=new AC();
+  master=audio.createGain();
+  master.gain.value=volume*.45;
+  master.connect(audio.destination);
  }
 
- function tone(n,at,len,type="lead",level=.13){
-  if(!ac||!enabled)return;
-  const f=freq(n);
+ function tone(note,at,len,bass=false){
+  if(!enabled||!audio)return;
+  const f=freq(note);
   if(!f)return;
 
-  const osc=ac.createOscillator();
-  const gain=ac.createGain();
+  const osc=audio.createOscillator();
+  const gain=audio.createGain();
 
-  osc.type=type==="bass"?"triangle":"square";
-  osc.frequency.setValueAtTime(f,at);
+  osc.type=bass?"triangle":"square";
+  osc.frequency.value=f;
+
+  const v=bass?.19:.09;
 
   gain.gain.setValueAtTime(.0001,at);
-  gain.gain.linearRampToValueAtTime(level,at+.014);
+  gain.gain.linearRampToValueAtTime(v,at+.012);
   gain.gain.exponentialRampToValueAtTime(.0001,at+len);
 
   osc.connect(gain);
   gain.connect(master);
+
   osc.start(at);
-  osc.stop(at+len+.015);
+  osc.stop(at+len+.02);
  }
 
- function drum(at,kind){
-  if(!ac||!enabled)return;
+ function tick(){
+  if(!enabled||!audio||
+     audio.state!=="running")return;
 
-  if(kind==="kick"){
-   const osc=ac.createOscillator();
-   const gain=ac.createGain();
-   osc.frequency.setValueAtTime(145,at);
-   osc.frequency.exponentialRampToValueAtTime(48,at+.16);
-   gain.gain.setValueAtTime(.32,at);
-   gain.gain.exponentialRampToValueAtTime(.001,at+.18);
-   osc.connect(gain);gain.connect(master);
-   osc.start(at);osc.stop(at+.19);
-  }else{
-   const src=ac.createBufferSource();
-   src.buffer=noise;
-   const filter=ac.createBiquadFilter();
-   filter.type="highpass";
-   filter.frequency.value=kind==="snare"?1300:4700;
-   const gain=ac.createGain();
-   const duration=kind==="snare"?.13:.045;
-   gain.gain.setValueAtTime(kind==="snare"?.11:.035,at);
-   gain.gain.exponentialRampToValueAtTime(.001,at+duration);
-   src.connect(filter);filter.connect(gain);gain.connect(master);
-   src.start(at);src.stop(at+duration+.01);
-  }
- }
-
- function schedule(){
-  if(!ac||!enabled||ac.state!=="running")return;
   const song=songs[chapter];
 
-  if(active!==chapter){
-   active=chapter;
-   beatStep=0;
-   nextTime=ac.currentTime+.06;
-   $("track").textContent="♫ "+song.name;
+  if(songIndex!==chapter){
+   songIndex=chapter;
+   step=0;
+   nextTime=audio.currentTime+.06;
+   $("musicTitle").textContent="♫ "+song.name;
   }
 
   const unit=30/song.bpm;
 
-  while(nextTime<ac.currentTime+.2){
-   const i=beatStep%16;
-   tone(song.lead[i],nextTime,unit*.8,"lead",
-     chapter===7?.18:.12);
+  while(nextTime<audio.currentTime+.18){
+   const i=step%16;
+
+   tone(song.lead[i],nextTime,unit*.82);
 
    if(i%4===0){
-    tone(song.bass[(i/4)%4],nextTime,unit*3.5,"bass",.23);
-    drum(nextTime,"kick");
+    tone(song.bass[(i/4)%4],nextTime,unit*3.6,true);
    }
-   if(i%4===2)drum(nextTime,"snare");
-   if(chapter>=3||i%2===0)drum(nextTime,"hat");
-   if(chapter===7&&i%4===3)drum(nextTime,"snare");
 
-   beatStep++;
+   if(chapter===7&&i%4===2){
+    tone("C3",nextTime,unit*.16,true);
+   }
+
+   step++;
    nextTime+=unit;
   }
  }
 
  async function start(){
   setup();
-  if(!ac)return;
-  try{await ac.resume();}catch(e){}
-  if(!timer)timer=setInterval(schedule,55);
+  if(!audio)return;
+  try{await audio.resume();}catch(e){}
+  if(!timer)timer=setInterval(tick,55);
  }
 
  function toggle(){
   enabled=!enabled;
-  $("musicButton").textContent=
+  $("musicToggle").textContent=
    enabled?"♫ MUSIC: ON":"♫ MUSIC: OFF";
 
-  if(master&&ac)
+  if(master&&audio){
    master.gain.setTargetAtTime(
-    enabled?volume*.48:0,ac.currentTime,.025
+    enabled?volume*.45:0,
+    audio.currentTime,.03
    );
+  }
 
   if(enabled){
-   active=-1;
+   songIndex=-1;
    start();
   }
  }
 
  function setVolume(v){
   volume=Number(v)/100;
-  if(master&&ac)
+  if(master&&audio){
    master.gain.setTargetAtTime(
-    enabled?volume*.48:0,ac.currentTime,.025
+    enabled?volume*.45:0,
+    audio.currentTime,.03
    );
+  }
  }
 
  return{
   start,toggle,setVolume,
-  chapterChanged:()=>{active=-1}
+  reset:()=>{songIndex=-1}
  };
 })();
 
-$("musicButton").onclick=()=>Music.toggle();
+$("musicToggle").onclick=()=>Music.toggle();
 $("volume").oninput=e=>Music.setVolume(e.target.value);
 
-// ======================================
-// CUTSCENE SYSTEM
-// ======================================
+/* ======================================
+   SCREEN / CUTSCENE SYSTEM
+====================================== */
 
-let slideList=[];
-let slideIndex=0;
-let slideCallback=null;
+let dialogue=[];
+let dialogueIndex=0;
+let dialogueDone=null;
+let screenPrimary=null;
+let screenSecondary=null;
 
-function cutscene(lines,callback){
- slideList=lines;
- slideIndex=0;
- slideCallback=callback||null;
- mode="scene";
+function showScreen(label,title,text,
+                    primaryText,primaryFn,
+                    secondaryText,secondaryFn){
  $("overlay").style.display="flex";
- $("hud").style.display="none";
- $("bossBar").style.display="none";
- $("newButton").style.display="none";
- $("continueButton").style.display="inline-block";
- $("continueButton").textContent="CONTINUE";
- showSlide();
-}
+ $("overlayLabel").textContent=label;
+ $("overlayTitle").textContent=title;
+ $("overlayText").textContent=text;
 
-function showSlide(){
- $("overlayLabel").textContent=
-   "CHAPTER "+(chapter+1)+" — "+chapters[chapter].name;
- $("overlayTitle").textContent=
-   chapters[chapter].name.toUpperCase();
- $("overlayText").textContent=slideList[slideIndex];
-}
+ $("primaryButton").textContent=primaryText;
+ screenPrimary=primaryFn;
 
-function nextSlide(){
- if(mode!=="scene")return;
-
- slideIndex++;
-
- if(slideIndex<slideList.length){
-  showSlide();
-  return;
+ if(secondaryText){
+  $("secondaryButton").style.display="inline-block";
+  $("secondaryButton").textContent=secondaryText;
+  screenSecondary=secondaryFn;
+ }else{
+  $("secondaryButton").style.display="none";
+  screenSecondary=null;
  }
 
- $("overlay").style.display="none";
- $("hud").style.display="block";
- mode="playing";
-
- const callback=slideCallback;
- slideCallback=null;
- if(callback)callback();
+ $("hud").style.display="none";
+ $("bossHud").style.display="none";
 }
 
-// ======================================
-// LEVEL GENERATION
-// ======================================
+$("primaryButton").onclick=()=>{
+ if(screenPrimary)screenPrimary();
+};
 
-function createLevel(index){
- chapter=index;
+$("secondaryButton").onclick=()=>{
+ if(screenSecondary)screenSecondary();
+};
+
+function hideScreen(){
+ $("overlay").style.display="none";
+ $("hud").style.display="block";
+
+ if(bossStarted&&!bossDefeated){
+  $("bossHud").style.display="block";
+ }
+}
+
+function cutscene(lines,onFinish,title){
+ mode="scene";
+ dialogue=lines;
+ dialogueIndex=0;
+ dialogueDone=onFinish||null;
+
+ function showLine(){
+  const line=dialogue[dialogueIndex];
+  const isLast=dialogueIndex===dialogue.length-1;
+
+  showScreen(
+   "STORY CUTSCENE",
+   title||chapters[chapter].name,
+   line,
+   isLast?"CONTINUE ADVENTURE":"NEXT →",
+   ()=>{
+    dialogueIndex++;
+
+    if(dialogueIndex<dialogue.length){
+     showLine();
+    }else{
+     hideScreen();
+     mode="playing";
+
+     const done=dialogueDone;
+     dialogueDone=null;
+     if(done)done();
+    }
+   }
+  );
+ }
+
+ showLine();
+}
+
+/* ======================================
+   NOTIFICATIONS
+====================================== */
+
+function notify(text,duration=1.7){
+ $("notice").textContent=text;
+ $("notice").style.display="block";
+ noticeTimer=duration;
+}
+
+function updateHUD(){
+ $("hudTitle").textContent=
+  "CHAPTER "+(chapter+1)+
+  " — "+chapters[chapter].name;
+
+ $("hudObjective").textContent=
+  bossStarted&&!bossDefeated
+  ?"DEFEAT THE SPIRIT TITAN"
+  :collected<3
+   ?"SOUL FRAGMENTS: "+collected+"/3"
+   :"FIND THE EXIT →";
+
+ $("hudStats").textContent=
+  "♥ "+Math.ceil(player.hp)+"/"+player.maxHp+
+  "  ✦ DASH "+(player.dashReady?"READY":"USED")+
+  "  🛡 "+(player.shieldCooldown<=0?"READY":"RECHARGING");
+}
+
+/* ======================================
+   SAVE / LEVEL SETUP
+====================================== */
+
+function savedChapter(){
+ try{
+  return clamp(
+   Number(localStorage.getItem(SAVE_KEY)||0),
+   0,7
+  );
+ }catch(e){
+  return 0;
+ }
+}
+
+function saveChapter(n){
+ try{
+  const old=Number(localStorage.getItem(SAVE_KEY)||0);
+  localStorage.setItem(
+   SAVE_KEY,
+   String(Math.max(old,n))
+  );
+ }catch(e){}
+}
+
+function addPlatform(x,y,w,type="solid",phase=0){
+ platforms.push({
+  x,y,w,h:24,type,
+  baseY:y,phase
+ });
+}
+
+function createLevel(n){
+ chapter=n;
  mode="playing";
  time=0;
  camera=0;
+ levelEnding=false;
  collected=0;
- ending=false;
- bossStarted=false;
  boss=null;
+ bossStarted=false;
+ bossDefeated=false;
+ bossCutsceneSeen=false;
 
  platforms=[];
  shards=[];
- hazards=[];
- enemies=[];
- projectiles=[];
- particles=[];
  checkpoints=[];
+ enemies=[];
+ hazards=[];
+ particles=[];
+ projectiles=[];
 
  const diff=difficulties[difficulty];
+
  player.maxHp=diff.hearts;
  player.hp=player.maxHp;
- player.x=70;
- player.y=398;
- player.vx=player.vy=0;
+ player.x=65;
+ player.y=425;
+ player.vx=0;
+ player.vy=0;
  player.grounded=false;
  player.jumps=0;
  player.dashReady=true;
- player.shieldTime=0;
+ player.dashTimer=0;
  player.invincible=1;
- player.attackCd=0;
- player.burstCd=0;
- player.shieldCd=0;
+ player.shield=0;
+ player.shieldCooldown=0;
+ player.slashCooldown=0;
+ player.burstCooldown=0;
+ player.slashTimer=0;
 
- checkpointX=70;
- checkpointY=398;
+ checkpointX=65;
+ checkpointY=425;
 
- // Safe starting island.
- platforms.push({
-  x:0,y:470,w:340,h:30,
-  type:"solid",baseY:470,
-  phase:0
- });
+ addPlatform(0,470,345);
 
- // Build a route of floating platforms.
- const count=index===7?14:15;
+ const count=n===7?12:15;
+ const heights=[416,365,400,342,380,329,376,350];
 
  for(let i=0;i<count;i++){
-  const x=305+i*238;
-  const pattern=[416,365,395,340,382,330,375,350];
-  const y=pattern[(i+index)%pattern.length];
+  const x=300+i*231;
+  const y=heights[(i+n)%heights.length];
 
   let type="solid";
-  if(index>=1&&i%5===2)type="moving";
-  if(index>=2&&i%5===4)type="vanish";
-  if(index>=3&&i%7===5)type="bounce";
 
-  // Important story platforms stay solid.
+  if(n>=1&&i%5===2)type="moving";
+  if(n>=2&&i%5===4)type="vanish";
+  if(n>=3&&i%7===5)type="bounce";
+
   if(i===6||i===count-1)type="solid";
 
-  const p={
-   x,y,w:195,h:22,
-   type,baseY:y,
-   phase:i*.8
-  };
+  addPlatform(x,y,195,type,i*.8);
 
-  platforms.push(p);
-
-  // Collect three soul fragments per level.
-  if([2,7,12].includes(i)){
+  if([2,7,10].includes(i)){
    shards.push({
-    x:x+95,y:y-48,
+    x:x+85,
+    y:y-54,
     taken:false,
     phase:i
    });
@@ -753,199 +930,299 @@ function createLevel(index){
 
   if(i===6){
    checkpoints.push({
-    x:x+75,y:y-20,
+    x:x+85,y:y,
     active:false
    });
   }
 
-  // Floating enemies in later levels.
-  if(index>=1&&i%4===3){
-   const hp=Math.round((55+index*11)*diff.hp);
+  if(n>=1&&i%4===3){
+   const hp=Math.round((55+n*10)*diff.bossHp);
+
    enemies.push({
-    x:x+110,
-    y:y-72,
-    baseX:x+110,
-    baseY:y-72,
+    x:x+100,y:y-78,
+    baseX:x+100,
+    baseY:y-78,
     hp,maxHp:hp,
     phase:i,
-    radius:21,
     dead:false,
-    attack:0
+    cooldown:0
    });
   }
 
-  // Void hazards that move up and down.
-  if(index>=3&&i%5===1){
+  if(n>=3&&i%6===1){
    hazards.push({
-    x:x+150,
-    y:y-105,
-    radius:17,
+    x:x+140,y:y-90,
     phase:i
    });
   }
  }
 
- const lastPlatform=platforms[platforms.length-1];
- worldEnd=lastPlatform.x+lastPlatform.w+125;
+ const last=platforms[platforms.length-1];
+ worldEnd=last.x+last.w+170;
 
- // Final boss has a dedicated arena.
- if(index===7){
-  const arenaX=worldEnd-450;
+ /* SPECIAL CHAPTER 8 BATTLEFIELD */
 
-  platforms.push({
-   x:arenaX-100,
+ if(n===7){
+  bossArenaX=worldEnd+40;
+
+  // Bridge into the battlefield.
+  addPlatform(worldEnd-155,440,270);
+
+  // Massive dedicated battle arena.
+  addPlatform(bossArenaX,470,1130);
+
+  // The arena occupies its own end section.
+  worldEnd=bossArenaX+1130;
+
+  // Checkpoint before the fight.
+  checkpoints.push({
+   x:bossArenaX+85,
    y:470,
-   w:730,
-   h:32,
-   type:"solid",
-   baseY:470,
-   phase:0
+   active:false,
+   arena:true
   });
 
-  worldEnd=arenaX+570;
-
   boss={
-   x:arenaX+395,
-   y:310,
-   hp:Math.round(1250*diff.hp),
-   maxHp:Math.round(1250*diff.hp),
-   timer:1.4,
+   x:bossArenaX+835,
+   y:293,
+   hp:Math.round(1600*diff.bossHp),
+   maxHp:Math.round(1600*diff.bossHp),
    phase:1,
+   attackTimer:1.7,
+   action:"idle",
+   actionTime:0,
+   warningTime:0,
+   attackType:"",
+   targetX:0,
+   slamX:0,
+   flames:[],
+   shockwaves:[],
+   flash:0,
    dead:false,
-   flash:0
+   defeatedAnimation:0,
+   attackCount:0
   };
  }
 
- Music.chapterChanged();
+ Music.reset();
  updateHUD();
 }
 
-// ======================================
-// CHECKPOINTS / SAVING
-// ======================================
+function startChapter(n){
+ createLevel(n);
+ saveChapter(n);
 
-function saveProgress(){
- try{
-  const current=Number(localStorage.getItem(SAVE)||0);
-  localStorage.setItem(SAVE,String(Math.max(current,chapter)));
- }catch(e){}
-}
-
-function savedChapter(){
- try{
-  return clamp(Number(localStorage.getItem(SAVE)||0),0,7);
- }catch(e){
-  return 0;
- }
-}
-
-function startChapter(index){
- createLevel(index);
- saveProgress();
- cutscene(chapters[index].story,()=>{
-  mode="playing";
- });
+ cutscene(
+  chapters[n].intro,
+  ()=>{
+   mode="playing";
+   notify("COLLECT ALL THREE SOUL FRAGMENTS");
+  },
+  "CHAPTER "+(n+1)+": "+chapters[n].name
+ );
 }
 
 function completeChapter(){
- if(ending)return;
- ending=true;
+ if(levelEnding)return;
+ levelEnding=true;
 
  const next=chapter+1;
 
- cutscene([
-  "CHAPTER COMPLETE!",
-  chapters[chapter].end
- ],()=>{
-  if(next<chapters.length){
-   startChapter(next);
-  }else{
-   storyComplete();
-  }
- });
+ cutscene(
+  chapters[chapter].outro,
+  ()=>{
+   if(next<8){
+    startChapter(next);
+   }
+  },
+  "CHAPTER COMPLETE"
+ );
 }
 
-function storyComplete(){
- mode="ending";
- $("overlay").style.display="flex";
- $("hud").style.display="none";
- $("bossBar").style.display="none";
- $("overlayLabel").textContent="THE SPIRIT REALM";
- $("overlayTitle").textContent="STORY COMPLETE";
- $("overlayText").textContent=
-  "The Spirit Titan has been defeated.\n"+
-  "The captured souls are free.\n"+
-  "But the realm's final light reveals a new danger.\n\n"+
-  "TO BE CONTINUED IN THE LAST LIGHT.";
- $("continueButton").textContent="BACK TO MENU";
- $("newButton").style.display="none";
-}
-
-// ======================================
-// HUD / NOTIFICATIONS
-// ======================================
-
-function updateHUD(){
- $("hudTitle").textContent=
-  "CHAPTER "+(chapter+1)+" — "+chapters[chapter].name;
-
- $("hudObjective").textContent=
-  chapter===7&&bossStarted
-   ?"DEFEAT THE SPIRIT TITAN"
-   :"SOUL FRAGMENTS: "+collected+"/3";
-
- $("hudStats").textContent=
-  "♥ "+Math.ceil(player.hp)+"/"+player.maxHp+
-  "   ✦ Dash "+(player.dashReady?"READY":"USED");
-}
-
-function notify(text,duration=2){
- $("notice").textContent=text;
- $("notice").style.display="block";
- noticeUntil=performance.now()/1000+duration;
-}
-
-// ======================================
-// PLATFORM PHYSICS
-// ======================================
+/* ======================================
+   PLAYER MOVEMENT
+====================================== */
 
 function platformY(p){
  if(p.type==="moving"){
-  return p.baseY+Math.sin(time*1.8+p.phase)*48;
+  return p.baseY+Math.sin(time*1.75+p.phase)*44;
  }
  return p.baseY;
 }
 
 function platformVisible(p){
  if(p.type!=="vanish")return true;
- return Math.sin(time*2.1+p.phase)>-.35;
+ return Math.sin(time*2.1+p.phase)>-.4;
 }
 
 function jump(){
  if(mode!=="playing")return;
- if(player.jumps>=player.maxJumps)return;
+ if(player.jumps>=2)return;
 
- player.vy=player.jumps===0?-660:-610;
+ player.vy=player.jumps===0?-675:-620;
  player.jumps++;
  player.grounded=false;
 
- burst(player.x,player.y+18,"#b2eaff",12);
+ burst(player.x,player.y+18,"#a5f3ff",13);
 
  if(player.jumps===2){
-  notify("DOUBLE JUMP!",.55);
+  notify("DOUBLE JUMP",.5);
  }
 }
 
 function dash(){
  if(mode!=="playing"||!player.dashReady)return;
 
- player.dashTime=.2;
+ player.dashTimer=.21;
  player.dashReady=false;
  player.vy=0;
- player.vx=player.facing*730;
 
- burst(player.x,player.y,"#b298ff",24);
+ burst(player.x,player.y,"#ab97ff",23);
 }
+
+function movePlayer(dt){
+ player.invincible=Math.max(0,player.invincible-dt);
+ player.slashCooldown=Math.max(0,player.slashCooldown-dt);
+ player.burstCooldown=Math.max(0,player.burstCooldown-dt);
+ player.shieldCooldown=Math.max(0,player.shieldCooldown-dt);
+ player.shield=Math.max(0,player.shield-dt);
+ player.slashTimer=Math.max(0,player.slashTimer-dt);
+
+ let movement=0;
+ if(keys.a||keys.arrowleft)movement--;
+ if(keys.d||keys.arrowright)movement++;
+
+ if(movement!==0){
+  player.facing=movement>0?1:-1;
+ }
+
+ if(player.dashTimer>0){
+  player.dashTimer-=dt;
+  player.vx=player.facing*760;
+  player.vy=0;
+ }else{
+  player.vx=movement*player.speed;
+  player.vy+=GRAVITY*dt;
+ }
+
+ const oldBottom=player.y+player.h/2;
+
+ player.x+=player.vx*dt;
+ player.y+=player.vy*dt;
+
+ player.x=clamp(player.x,14,worldEnd-15);
+ player.grounded=false;
+
+ const bottom=player.y+player.h/2;
+
+ for(const p of platforms){
+  if(!platformVisible(p))continue;
+
+  const top=platformY(p);
+
+  if(
+   player.vy>=0 &&
+   oldBottom<=top+14 &&
+   bottom>=top &&
+   player.x+player.w/2>p.x &&
+   player.x-player.w/2<p.x+p.w
+  ){
+   player.y=top-player.h/2;
+   player.vy=0;
+   player.grounded=true;
+   player.jumps=0;
+   player.dashReady=true;
+
+   if(p.type==="bounce"){
+    player.vy=-940;
+    player.grounded=false;
+    player.jumps=1;
+    burst(player.x,top,"#7ef0ff",18);
+   }
+   break;
+  }
+ }
+
+ if(player.y>H+125){
+  respawn();
+ }
+
+ // Soul fragments.
+ for(const s of shards){
+  if(s.taken)continue;
+
+  if(dist(player.x,player.y,s.x,s.y)<34){
+   s.taken=true;
+   collected++;
+
+   burst(s.x,s.y,"#d7f7ff",25);
+   notify("SOUL FRAGMENT "+collected+"/3");
+  }
+ }
+
+ // Checkpoints.
+ for(const c of checkpoints){
+  if(
+   !c.active &&
+   Math.abs(player.x-c.x)<45 &&
+   Math.abs(player.y-(c.y-30))<85
+  ){
+   c.active=true;
+
+   checkpointX=c.x;
+   checkpointY=c.y-45;
+
+   notify(
+    c.arena
+    ?"BOSS CHECKPOINT ACTIVATED!"
+    :"CHECKPOINT ACTIVATED"
+   );
+
+   burst(c.x,c.y-38,"#8cfbe8",23);
+  }
+ }
+
+ // Normal chapter exit.
+ if(chapter<7){
+  if(player.x>worldEnd-215){
+   if(collected>=3){
+    completeChapter();
+   }else if(noticeTimer<=0){
+    notify("FIND ALL THREE SOUL FRAGMENTS");
+   }
+  }
+ }
+
+ // Chapter 8 entrance to the arena.
+ if(
+  chapter===7 &&
+  boss &&
+  !bossCutsceneSeen &&
+  player.x>bossArenaX+155
+ ){
+  if(collected<3){
+   player.x=bossArenaX+130;
+   if(noticeTimer<=0){
+    notify("COLLECT ALL THREE FRAGMENTS FIRST");
+   }
+  }else{
+   beginBossCutscene();
+  }
+ }
+
+ // Arena doors close once the battle begins.
+ if(chapter===7&&bossStarted&&!bossDefeated){
+  player.x=clamp(
+   player.x,
+   bossArenaX+130,
+   bossArenaX+1110
+  );
+ }
+}
+
+/* ======================================
+   CHECKPOINT / DAMAGE
+====================================== */
 
 function respawn(){
  player.hp-=1;
@@ -963,120 +1240,27 @@ function respawn(){
  player.vy=0;
  player.jumps=0;
  player.dashReady=true;
- player.dashTime=0;
- player.invincible=1.7;
+ player.dashTimer=0;
+ player.invincible=2;
 
  projectiles=[];
-}
 
-// ======================================
-// COMBAT
-// ======================================
-
-function soulBlade(){
- if(mode!=="playing"||player.attackCd>0)return;
-
- player.attackCd=.33;
- player.slashTime=.16;
-
- burst(
-  player.x+player.facing*35,
-  player.y,
-  "#c8dcff",12
- );
-
- for(const e of enemies){
-  if(e.dead)continue;
-  if(
-   distance(player.x,player.y,e.x,e.y)<98&&
-   (e.x-player.x)*player.facing>-20
-  ){
-   hurtEnemy(e,40);
-  }
- }
-
- if(boss&&!boss.dead&&bossStarted){
-  if(
-   distance(player.x,player.y,boss.x,boss.y)<150&&
-   (boss.x-player.x)*player.facing>-20
-  ){
-   hurtBoss(45);
-  }
- }
-}
-
-function spiritBurst(){
- if(mode!=="playing"||player.burstCd>0)return;
-
- player.burstCd=1.05;
-
- projectiles.push({
-  x:player.x+player.facing*20,
-  y:player.y-7,
-  vx:player.facing*610,
-  vy:0,
-  r:14,
-  life:2,
-  damage:75,
-  friendly:true
- });
-
- burst(player.x,player.y,"#77e8ff",13);
-}
-
-function phantomShield(){
- if(mode!=="playing"||player.shieldCd>0)return;
-
- player.shieldCd=5;
- player.shieldTime=1.9;
-
- burst(player.x,player.y,"#d8caff",20);
-}
-
-function hurtEnemy(e,damage){
- if(e.dead)return;
-
- e.hp-=damage;
- burst(e.x,e.y,"#e2baff",10);
-
- if(e.hp<=0){
-  e.dead=true;
-  burst(e.x,e.y,"#b57dff",25);
- }
-}
-
-function hurtBoss(damage){
- if(!boss||boss.dead||!bossStarted)return;
-
- boss.hp=Math.max(0,boss.hp-damage);
- boss.flash=.15;
- burst(boss.x,boss.y,"#c2efff",14);
-
- if(boss.hp<boss.maxHp*.5)boss.phase=2;
-
- if(boss.hp===0){
-  boss.dead=true;
-  bossStarted=false;
-  $("bossBar").style.display="none";
-  burst(boss.x,boss.y,"#f2e6ff",90);
-
-  cutscene([
-   "THE SPIRIT TITAN HAS FALLEN.",
-   "The guardian's blue flames dissolve into starlight.",
-   "TITAN: The Black Spirit was only one fragment of a greater darkness.",
-   "TITAN: Take the Light of Souls. You will need it."
-  ],()=>{
-   completeChapter();
-  });
+ if(bossStarted&&!bossDefeated&&boss){
+  resetBossBattle();
  }
 }
 
 function damagePlayer(amount){
- if(player.invincible>0||player.shieldTime>0)return;
+ if(
+  player.invincible>0 ||
+  player.shield>0 ||
+  mode!=="playing"
+ )return;
 
  player.hp-=amount;
- player.invincible=.85;
- burst(player.x,player.y,"#ff6f9f",14);
+ player.invincible=.9;
+
+ burst(player.x,player.y,"#ff77a7",15);
 
  if(player.hp<=0){
   player.hp=1;
@@ -1084,32 +1268,668 @@ function damagePlayer(amount){
  }
 }
 
-// ======================================
-// PARTICLES / PROJECTILES
-// ======================================
+/* ======================================
+   PLAYER ABILITIES
+====================================== */
 
-function burst(x,y,color,n){
- for(let i=0;i<n;i++){
-  const a=Math.random()*Math.PI*2;
-  particles.push({
-   x,y,
-   vx:Math.cos(a)*rand(45,210),
-   vy:Math.sin(a)*rand(45,210),
-   life:rand(.25,.7),
-   color
+function soulBlade(){
+ if(mode!=="playing"||player.slashCooldown>0)return;
+
+ player.slashCooldown=.29;
+ player.slashTimer=.19;
+
+ burst(
+  player.x+player.facing*35,
+  player.y,
+  "#d0efff",14
+ );
+
+ for(const e of enemies){
+  if(e.dead)continue;
+
+  if(
+   dist(player.x,player.y,e.x,e.y)<110 &&
+   (e.x-player.x)*player.facing>-25
+  ){
+   hurtEnemy(e,45);
+  }
+ }
+
+ if(boss&&bossStarted&&!boss.dead){
+  if(
+   Math.abs(player.x-boss.x)<155 &&
+   Math.abs(player.y-boss.y)<120 &&
+   (boss.x-player.x)*player.facing>-35
+  ){
+   hurtBoss(46);
+  }
+ }
+}
+
+function spiritBurst(){
+ if(mode!=="playing"||player.burstCooldown>0)return;
+
+ player.burstCooldown=.95;
+
+ projectiles.push({
+  x:player.x+player.facing*22,
+  y:player.y-6,
+  vx:player.facing*620,
+  vy:0,
+  radius:14,
+  damage:85,
+  friendly:true,
+  life:2.3,
+  type:"player"
+ });
+
+ burst(player.x,player.y,"#81edff",18);
+}
+
+function phantomShield(){
+ if(mode!=="playing"||player.shieldCooldown>0)return;
+
+ player.shield=2.1;
+ player.shieldCooldown=5.5;
+
+ burst(player.x,player.y,"#d4c7ff",20);
+}
+
+function hurtEnemy(e,damage){
+ e.hp-=damage;
+
+ burst(e.x,e.y,"#dfadff",10);
+
+ if(e.hp<=0&&!e.dead){
+  e.dead=true;
+  burst(e.x,e.y,"#ae80ff",25);
+ }
+}
+
+function hurtBoss(damage){
+ if(!boss||!bossStarted||boss.dead)return;
+
+ boss.hp=Math.max(0,boss.hp-damage);
+ boss.flash=.16;
+
+ burst(boss.x,boss.y,"#b9ecff",12);
+
+ if(boss.hp<=0){
+  defeatBoss();
+ }
+}
+
+/* ======================================
+   CHAPTER 8 — INTRO CUTSCENE
+====================================== */
+
+function beginBossCutscene(){
+ bossCutsceneSeen=true;
+ mode="scene";
+
+ checkpointX=bossArenaX+135;
+ checkpointY=425;
+ player.x=checkpointX;
+ player.y=checkpointY;
+ player.vx=0;
+ player.vy=0;
+
+ camera=clamp(
+  bossArenaX+230,
+  0,
+  worldEnd-W
+ );
+
+ cutscene([
+  "NARRATOR: The hero reaches a vast battlefield floating above the endless void.",
+
+  "PLAYER: So this is where the guardian waits.",
+
+  "SPIRIT TITAN: You have crossed the shattered realm, mortal.",
+
+  "PLAYER: Are you the one trapping all those souls?",
+
+  "SPIRIT TITAN: I am their guardian. I protect this realm from those who would destroy it.",
+
+  "PLAYER: Then why are the souls suffering? Why is everything falling apart?",
+
+  "SPIRIT TITAN: You carry the echo of the king's darkness. You do not understand what you have brought here.",
+
+  "PLAYER: I defeated the Purple King. I'm here to finish what he started.",
+
+  "SPIRIT TITAN: You defeated a vessel. The darkness is far older than your king.",
+
+  "PLAYER: Then tell me how to stop it.",
+
+  "SPIRIT TITAN: Words cannot prove whether your spirit is worthy.",
+
+  "PLAYER: Then I guess I'll have to show you.",
+
+  "SPIRIT TITAN: DRAW YOUR BLADE, MORTAL. LET THE REALM JUDGE YOU!"
+ ],()=>{
+  startBossBattle();
+ },"THE GUARDIAN OF SOULS");
+}
+
+function startBossBattle(){
+ bossStarted=true;
+ mode="playing";
+
+ $("bossHud").style.display="block";
+
+ notify("BOSS BATTLE — THE SPIRIT TITAN!",2.6);
+
+ boss.attackTimer=1.6;
+ boss.action="idle";
+ boss.actionTime=0;
+}
+
+function resetBossBattle(){
+ if(!boss)return;
+
+ boss.hp=boss.maxHp;
+ boss.phase=1;
+ boss.attackTimer=1.5;
+ boss.action="idle";
+ boss.actionTime=0;
+ boss.warningTime=0;
+ boss.flames=[];
+ boss.shockwaves=[];
+ boss.flash=0;
+ boss.attackCount=0;
+
+ projectiles=[];
+ bossStarted=true;
+
+ notify("THE SPIRIT TITAN CHALLENGES YOU AGAIN!",2);
+}
+
+/* ======================================
+   BOSS ATTACKS
+====================================== */
+
+function bossPhase(){
+ const ratio=boss.hp/boss.maxHp;
+
+ if(ratio<=.33)return 3;
+ if(ratio<=.66)return 2;
+ return 1;
+}
+
+function selectBossAttack(){
+ const options=[
+  "slash",
+  "orbs",
+  "slam"
+ ];
+
+ if(boss.phase>=2){
+  options.push("teleport","flames");
+ }
+
+ if(boss.phase===3){
+  options.push("slash","slam","teleport");
+ }
+
+ // Avoid repeating one attack continuously.
+ const type=options[
+  boss.attackCount%options.length
+ ];
+
+ boss.attackCount++;
+ return type;
+}
+
+function beginAttack(type){
+ boss.action="warning";
+ boss.attackType=type;
+ boss.warningTime=
+  boss.phase===1?.8:
+  boss.phase===2?.65:.48;
+
+ boss.targetX=player.x;
+
+ if(type==="slash"){
+  notify("TITAN: SPECTRAL SLASH!",.8);
+ }
+ if(type==="slam"){
+  notify("TITAN: GROUND SLAM! JUMP!",.8);
+ }
+ if(type==="orbs"){
+  notify("TITAN: SPIRIT ORBS!",.8);
+ }
+ if(type==="teleport"){
+  notify("TITAN: PHANTOM TELEPORT!",.8);
+ }
+ if(type==="flames"){
+  notify("TITAN: SOULFIRE ERUPTION!",.8);
+ }
+}
+
+function executeAttack(){
+ boss.action="recover";
+ boss.actionTime=
+  boss.phase===3?.65:
+  boss.phase===2?.85:1.1;
+
+ const diff=difficulties[difficulty];
+ const attack=boss.attackType;
+
+ if(attack==="slash"){
+  // The titan rushes into sword range.
+  const direction=player.x<boss.x?-1:1;
+
+  boss.x=clamp(
+   player.x-direction*125,
+   bossArenaX+310,
+   bossArenaX+1010
+  );
+
+  boss.slashDirection=direction;
+  boss.slashTimer=.37;
+
+  // A wide slash zone.
+  hazards.push({
+   kind:"slash",
+   x:boss.x+direction*75,
+   y:boss.y+30,
+   w:190,
+   h:165,
+   life:.35,
+   phase:0,
+   damage:diff.damage
+  });
+
+  burst(boss.x,boss.y,"#b3e9ff",35);
+ }
+
+ if(attack==="orbs"){
+  const number=
+   boss.phase===1?3:
+   boss.phase===2?5:7;
+
+  for(let i=0;i<number;i++){
+   const angle=
+    Math.atan2(
+     player.y-boss.y,
+     player.x-boss.x
+    )+
+    (i-(number-1)/2)*.15;
+
+   const speed=(230+boss.phase*50)*diff.speed;
+
+   projectiles.push({
+    x:boss.x,
+    y:boss.y-20,
+    vx:Math.cos(angle)*speed,
+    vy:Math.sin(angle)*speed,
+    radius:12,
+    damage:diff.damage,
+    friendly:false,
+    life:4,
+    type:"orb"
+   });
+  }
+ }
+
+ if(attack==="slam"){
+  // Move close to ground and release shockwaves.
+  boss.y=338;
+
+  boss.shockwaves.push({
+   x:boss.x,
+   vx:-380*diff.speed,
+   life:2.3,
+   radius:24
+  });
+
+  boss.shockwaves.push({
+   x:boss.x,
+   vx:380*diff.speed,
+   life:2.3,
+   radius:24
+  });
+
+  burst(boss.x,465,"#a2dfff",45);
+ }
+
+ if(attack==="teleport"){
+  burst(boss.x,boss.y,"#c2a0ff",35);
+
+  const side=player.facing===1?-1:1;
+
+  boss.x=clamp(
+   player.x+side*135,
+   bossArenaX+310,
+   bossArenaX+1010
+  );
+
+  burst(boss.x,boss.y,"#c2a0ff",40);
+
+  // Short-delay melee strike.
+  hazards.push({
+   kind:"teleSlash",
+   x:boss.x,
+   y:boss.y,
+   w:150,
+   h:175,
+   life:.6,
+   phase:0,
+   damage:diff.damage
   });
  }
-}
 
-function updateParticles(dt){
- for(let i=particles.length-1;i>=0;i--){
-  const p=particles[i];
-  p.x+=p.vx*dt;
-  p.y+=p.vy*dt;
-  p.life-=dt;
-  if(p.life<=0)particles.splice(i,1);
+ if(attack==="flames"){
+  // Flames appear at the marked locations.
+  // The attack is dodgeable because markers
+  // were displayed during the warning.
+  const positions=[
+   boss.targetX-150,
+   boss.targetX,
+   boss.targetX+150
+  ];
+
+  for(const x of positions){
+   boss.flames.push({
+    x:clamp(
+     x,
+     bossArenaX+180,
+     bossArenaX+1080
+    ),
+    life:1.15,
+    damage:diff.damage
+   });
+  }
  }
 }
+
+/* ======================================
+   BOSS AI / THREE PHASES
+====================================== */
+
+function updateBoss(dt){
+ if(!boss||boss.dead||!bossStarted)return;
+
+ const diff=difficulties[difficulty];
+
+ boss.flash=Math.max(0,boss.flash-dt);
+
+ const newPhase=bossPhase();
+
+ if(newPhase!==boss.phase){
+  boss.phase=newPhase;
+
+  notify(
+   newPhase===2
+   ?"PHASE 2 — THE BROKEN GUARDIAN!"
+   :"PHASE 3 — SPIRIT'S WRATH!",
+   2.5
+  );
+
+  burst(boss.x,boss.y,"#d7baff",80);
+
+  boss.action="recover";
+  boss.actionTime=1.2;
+ }
+
+ $("bossPhase").textContent=
+  "PHASE "+boss.phase+" OF 3";
+
+ $("bossFill").style.width=
+  (boss.hp/boss.maxHp*100)+"%";
+
+ if(boss.action==="idle"){
+  boss.y=293+Math.sin(time*2)*17;
+  boss.attackTimer-=dt;
+
+  if(boss.attackTimer<=0){
+   beginAttack(selectBossAttack());
+  }
+ }
+
+ if(boss.action==="warning"){
+  boss.warningTime-=dt;
+
+  if(boss.warningTime<=0){
+   executeAttack();
+  }
+ }
+
+ if(boss.action==="recover"){
+  boss.actionTime-=dt;
+
+  if(boss.actionTime<=0){
+   boss.action="idle";
+   boss.attackTimer=
+    (boss.phase===1?.8:
+     boss.phase===2?.5:.28)/diff.speed;
+  }
+ }
+
+ // Contact damage, except during warning scenes.
+ if(
+  dist(player.x,player.y,boss.x,boss.y)<91
+ ){
+  damagePlayer(diff.damage);
+ }
+
+ // Shockwaves travel across the floor.
+ for(let i=boss.shockwaves.length-1;i>=0;i--){
+  const s=boss.shockwaves[i];
+
+  s.x+=s.vx*dt;
+  s.life-=dt;
+
+  if(
+   Math.abs(player.x-s.x)<30 &&
+   player.y+player.h/2>435
+  ){
+   damagePlayer(diff.damage);
+  }
+
+  if(s.life<=0){
+   boss.shockwaves.splice(i,1);
+  }
+ }
+
+ // Soulfire pillars.
+ for(let i=boss.flames.length-1;i>=0;i--){
+  const f=boss.flames[i];
+
+  f.life-=dt;
+
+  if(
+   Math.abs(player.x-f.x)<42 &&
+   player.y+player.h/2>270
+  ){
+   damagePlayer(f.damage);
+  }
+
+  if(f.life<=0){
+   boss.flames.splice(i,1);
+  }
+ }
+}
+
+/* ======================================
+   BOSS DEFEAT / ENDING CUTSCENE
+====================================== */
+
+function defeatBoss(){
+ if(!boss||bossDefeated)return;
+
+ bossDefeated=true;
+ boss.dead=true;
+ bossStarted=false;
+ mode="scene";
+
+ $("bossHud").style.display="none";
+
+ burst(boss.x,boss.y,"#c4efff",100);
+ projectiles=[];
+
+ cutscene([
+  "NARRATOR: The Spirit Titan falls to its knees. Cracks of blue light spread across its ancient armor.",
+
+  "PLAYER: It's over. The souls are free.",
+
+  "SPIRIT TITAN: You have defeated me... but I am not your true enemy.",
+
+  "PLAYER: Then tell me who is.",
+
+  "SPIRIT TITAN: The Black Spirit was a fragment of something much older.",
+
+  "SPIRIT TITAN: Even kings could not hold back the darkness that created it.",
+
+  "NARRATOR: A glowing sphere rises from the Titan's shattered armor.",
+
+  "SPIRIT TITAN: Behold... the Light of Souls.",
+
+  "PLAYER: What is it?",
+
+  "SPIRIT TITAN: The last light that can stand against what is coming.",
+
+  "SPIRIT TITAN: You may take it... or leave it here. The choice is yours."
+ ],()=>{
+  showEndingChoice();
+ },"THE TITAN'S FINAL WORDS");
+}
+
+function showEndingChoice(){
+ mode="choice";
+
+ showScreen(
+  "A CHOICE THAT WILL SHAPE THE FUTURE",
+  "THE LIGHT OF SOULS",
+  "A glowing light floats before you.\n\n"+
+  "Will you take the Light of Souls, "+
+  "or leave it in the Spirit Realm?",
+  "TAKE THE LIGHT",
+  ()=>endingTake(),
+  "LEAVE THE LIGHT",
+  ()=>endingLeave()
+ );
+}
+
+function endingTake(){
+ cutscene([
+  "NARRATOR: The hero reaches toward the glowing sphere.",
+
+  "PLAYER: If this can protect the people I care about, I'll take it.",
+
+  "SPIRIT TITAN: Then the Light of Souls has chosen its bearer.",
+
+  "NARRATOR: A warm golden light travels through the hero's armor.",
+
+  "SPIRIT TITAN: Carry it carefully. A greater darkness has already begun to awaken.",
+
+  "PLAYER: Whatever comes next, I'll be ready.",
+
+  "NARRATOR: The Spirit Realm grows quiet as the hero returns toward the living world."
+ ],()=>{
+  finalEnding("taken");
+ },"THE LIGHT'S NEW BEARER");
+}
+
+function endingLeave(){
+ cutscene([
+  "PLAYER: This power belongs to the Spirit Realm. I'm leaving it here.",
+
+  "SPIRIT TITAN: A choice made without greed... perhaps there is hope for your world.",
+
+  "NARRATOR: The Light of Souls remains suspended above the broken battlefield.",
+
+  "SPIRIT TITAN: Remember its location. When the final darkness arrives, you may need to return.",
+
+  "PLAYER: If that day comes, I'll find my way back.",
+
+  "NARRATOR: The hero leaves the light behind and travels toward the living world."
+ ],()=>{
+  finalEnding("left");
+ },"THE LIGHT REMAINS");
+}
+
+function finalEnding(choice){
+ mode="ending";
+
+ try{
+  localStorage.setItem(
+   "tdw-spirit-realm-ending",
+   choice
+  );
+ }catch(e){}
+
+ const text=
+  choice==="taken"
+  ?"You claimed the Light of Souls.\n"+
+   "Its power now travels with the hero."
+  :"You left the Light of Souls in the Spirit Realm.\n"+
+   "One day, the hero may need to return for it.";
+
+ showScreen(
+  "THE SPIRIT REALM — COMPLETE",
+  "TO BE CONTINUED...",
+  text+"\n\n"+
+  "A greater darkness is awakening.\n\n"+
+  "THEDARKWITHIN DLC III:\n"+
+  "THE LAST LIGHT",
+  "RETURN TO MENU",
+  ()=>showMenu()
+ );
+}
+
+/* ======================================
+   ENEMY AND HAZARD UPDATES
+====================================== */
+
+function updateEnemies(dt){
+ const diff=difficulties[difficulty];
+
+ for(const e of enemies){
+  if(e.dead)continue;
+
+  e.phase+=dt;
+  e.x=e.baseX+Math.sin(e.phase*1.2)*40;
+  e.y=e.baseY+Math.sin(e.phase*2)*20;
+  e.cooldown=Math.max(0,e.cooldown-dt);
+
+  if(
+   dist(player.x,player.y,e.x,e.y)<46 &&
+   e.cooldown<=0
+  ){
+   damagePlayer(diff.damage);
+   e.cooldown=1;
+  }
+ }
+
+ for(let i=hazards.length-1;i>=0;i--){
+  const h=hazards[i];
+
+  if(h.kind==="slash"||h.kind==="teleSlash"){
+   h.life-=dt;
+
+   if(
+    Math.abs(player.x-h.x)<h.w/2 &&
+    Math.abs(player.y-h.y)<h.h/2
+   ){
+    damagePlayer(h.damage);
+   }
+
+   if(h.life<=0)hazards.splice(i,1);
+   continue;
+  }
+
+  const hy=h.y+Math.sin(time*2+h.phase)*30;
+
+  if(dist(player.x,player.y,h.x,hy)<37){
+   damagePlayer(diff.damage);
+  }
+ }
+}
+
+/* ======================================
+   PROJECTILES
+====================================== */
 
 function updateProjectiles(dt){
  for(let i=projectiles.length-1;i>=0;i--){
@@ -1123,7 +1943,10 @@ function updateProjectiles(dt){
 
   if(p.friendly){
    for(const e of enemies){
-    if(!e.dead&&distance(p.x,p.y,e.x,e.y)<p.r+e.radius){
+    if(
+     !e.dead &&
+     dist(p.x,p.y,e.x,e.y)<p.radius+23
+    ){
      hurtEnemy(e,p.damage);
      hit=true;
      break;
@@ -1131,20 +1954,25 @@ function updateProjectiles(dt){
    }
 
    if(
-    !hit&&boss&&!boss.dead&&bossStarted&&
-    distance(p.x,p.y,boss.x,boss.y)<p.r+92
+    !hit &&
+    boss &&
+    bossStarted &&
+    !boss.dead &&
+    dist(p.x,p.y,boss.x,boss.y)<p.radius+90
    ){
     hurtBoss(p.damage);
     hit=true;
    }
-  }else if(
-   distance(p.x,p.y,player.x,player.y)<p.r+23
-  ){
-   damagePlayer(p.damage);
-   hit=true;
+  }else{
+   if(
+    dist(p.x,p.y,player.x,player.y)<p.radius+22
+   ){
+    damagePlayer(p.damage);
+    hit=true;
+   }
   }
 
-  if(hit||p.life<=0||p.y>H+150){
+  if(hit||p.life<=0){
    projectiles.splice(i,1);
   }
 
@@ -1152,375 +1980,253 @@ function updateProjectiles(dt){
  }
 }
 
-// ======================================
-// UPDATE PLAYER
-// ======================================
+/* ======================================
+   PARTICLES
+====================================== */
 
-function updatePlayer(dt){
- player.invincible=Math.max(0,player.invincible-dt);
- player.attackCd=Math.max(0,player.attackCd-dt);
- player.burstCd=Math.max(0,player.burstCd-dt);
- player.shieldCd=Math.max(0,player.shieldCd-dt);
- player.shieldTime=Math.max(0,player.shieldTime-dt);
- player.slashTime=Math.max(0,player.slashTime-dt);
+function burst(x,y,color,count){
+ for(let i=0;i<count;i++){
+  const angle=random(0,Math.PI*2);
 
- let move=0;
- if(keys.a||keys.arrowleft)move--;
- if(keys.d||keys.arrowright)move++;
-
- if(move!==0)player.facing=move>0?1:-1;
-
- if(player.dashTime>0){
-  player.dashTime-=dt;
-  player.vx=player.facing*730;
-  player.vy=0;
- }else{
-  player.vx=move*player.speed;
-  player.vy+=GRAVITY*dt;
- }
-
- const oldBottom=player.y+player.h/2;
-
- player.x+=player.vx*dt;
- player.y+=player.vy*dt;
-
- player.x=clamp(player.x,14,worldEnd-14);
-
- player.grounded=false;
-
- const bottom=player.y+player.h/2;
- const half=player.w/2;
-
- // Landing on the top of floating platforms.
- for(const p of platforms){
-  if(!platformVisible(p))continue;
-
-  const top=platformY(p);
-
-  if(
-   player.vy>=0&&
-   oldBottom<=top+15&&
-   bottom>=top&&
-   player.x+half>p.x&&
-   player.x-half<p.x+p.w
-  ){
-   player.y=top-player.h/2;
-   player.vy=0;
-   player.grounded=true;
-   player.jumps=0;
-   player.dashReady=true;
-
-   if(p.type==="bounce"){
-    player.vy=-920;
-    player.grounded=false;
-    player.jumps=1;
-    burst(player.x,top,"#78f4ff",16);
-   }
-
-   break;
-  }
- }
-
- // Falling into the void returns to checkpoint.
- if(player.y>H+130){
-  respawn();
- }
-
- // Collect soul fragments.
- for(const s of shards){
-  if(s.taken)continue;
-
-  if(distance(player.x,player.y,s.x,s.y)<32){
-   s.taken=true;
-   collected++;
-   burst(s.x,s.y,"#f9eaff",25);
-   notify("SOUL FRAGMENT "+collected+"/3",1.3);
-  }
- }
-
- // Activate checkpoints.
- for(const c of checkpoints){
-  if(!c.active&&Math.abs(player.x-c.x)<52&&
-     Math.abs(player.y-c.y)<85){
-   c.active=true;
-   checkpointX=c.x;
-   checkpointY=c.y-35;
-   notify("CHECKPOINT ACTIVATED",1.8);
-   burst(c.x,c.y,"#70ffe0",30);
-  }
- }
-
- // Reach the end of the level.
- if(
-  chapter!==7&&
-  player.x>worldEnd-215&&
-  collected>=3
- ){
-  completeChapter();
- }
-
- if(
-  chapter!==7&&
-  player.x>worldEnd-215&&
-  collected<3
- ){
-  if(noticeUntil<performance.now()/1000)
-   notify("COLLECT ALL 3 SOUL FRAGMENTS",1.5);
- }
-
- // Final battle triggers after reaching the arena.
- if(
-  chapter===7&&
-  !bossStarted&&
-  boss&&!boss.dead&&
-  player.x>worldEnd-740
- ){
-  bossStarted=true;
-  checkpointX=worldEnd-690;
-  checkpointY=410;
-  $("bossBar").style.display="block";
-  notify("THE SPIRIT TITAN AWAKENS!",2.5);
+  particles.push({
+   x,y,
+   vx:Math.cos(angle)*random(40,240),
+   vy:Math.sin(angle)*random(40,240),
+   life:random(.25,.8),
+   color
+  });
  }
 }
 
-// ======================================
-// ENEMY AND HAZARD AI
-// ======================================
+function updateParticles(dt){
+ for(let i=particles.length-1;i>=0;i--){
+  const p=particles[i];
 
-function updateEnemies(dt){
- const diff=difficulties[difficulty];
+  p.x+=p.vx*dt;
+  p.y+=p.vy*dt;
+  p.life-=dt;
 
- for(const e of enemies){
-  if(e.dead)continue;
-
-  e.phase+=dt;
-  e.x=e.baseX+Math.sin(e.phase*1.25)*45;
-  e.y=e.baseY+Math.sin(e.phase*2)*20;
-  e.attack=Math.max(0,e.attack-dt);
-
-  if(
-   distance(player.x,player.y,e.x,e.y)<e.radius+22&&
-   e.attack===0
-  ){
-   damagePlayer(diff.damage);
-   e.attack=1;
-  }
- }
-
- for(const h of hazards){
-  const y=h.y+Math.sin(time*2+h.phase)*35;
-
-  if(distance(player.x,player.y,h.x,y)<h.radius+18){
-   damagePlayer(diff.damage);
-  }
+  if(p.life<=0)particles.splice(i,1);
  }
 }
 
-// ======================================
-// SPIRIT TITAN BOSS AI
-// ======================================
-
-function updateBoss(dt){
- if(!boss||boss.dead||!bossStarted)return;
-
- const diff=difficulties[difficulty];
-
- boss.timer-=dt;
- boss.flash=Math.max(0,boss.flash-dt);
- boss.y=305+Math.sin(time*2)*20;
-
- if(boss.timer<=0){
-  // Three or five projectiles per attack.
-  const count=boss.phase===1?3:5;
-
-  for(let i=0;i<count;i++){
-   const angle=
-    Math.atan2(player.y-boss.y,player.x-boss.x)+
-    (i-(count-1)/2)*.17;
-
-   const speed=(230+boss.phase*60)*diff.speed;
-
-   projectiles.push({
-    x:boss.x-50,
-    y:boss.y,
-    vx:Math.cos(angle)*speed,
-    vy:Math.sin(angle)*speed,
-    r:13,
-    damage:diff.damage,
-    life:4,
-    friendly:false
-   });
-  }
-
-  boss.timer=(boss.phase===1?2.1:1.15)/diff.speed;
- }
-
- // The titan damages players who touch its body.
- if(distance(player.x,player.y,boss.x,boss.y)<95){
-  damagePlayer(diff.damage);
- }
-
- $("bossFill").style.width=
-  (boss.hp/boss.maxHp*100)+"%";
-}
-
-// ======================================
-// WORLD SCROLLING
-// ======================================
-
-function updateCamera(dt){
- const desired=clamp(player.x-330,0,Math.max(0,worldEnd-W));
- camera+=(desired-camera)*Math.min(1,dt*6);
-}
-
-// ======================================
-// GAME UPDATE
-// ======================================
+/* ======================================
+   GAME UPDATE
+====================================== */
 
 function update(dt){
  time+=dt;
  updateParticles(dt);
 
- if(mode==="playing"){
-  updatePlayer(dt);
-
-  if(mode==="playing")updateEnemies(dt);
-  if(mode==="playing")updateBoss(dt);
-  if(mode==="playing")updateProjectiles(dt);
-  updateCamera(dt);
-  updateHUD();
+ if(noticeTimer>0){
+  noticeTimer-=dt;
+  if(noticeTimer<=0){
+   $("notice").style.display="none";
+  }
  }
 
- if(
-  noticeUntil>0&&
-  performance.now()/1000>noticeUntil
- ){
-  $("notice").style.display="none";
-  noticeUntil=0;
- }
+ if(mode!=="playing")return;
+
+ movePlayer(dt);
+
+ if(mode!=="playing")return;
+
+ updateEnemies(dt);
+ updateBoss(dt);
+ updateProjectiles(dt);
+
+ const target=clamp(
+  player.x-335,
+  0,
+  Math.max(0,worldEnd-W)
+ );
+
+ camera+=(target-camera)*Math.min(1,dt*6);
+
+ updateHUD();
 }
 
-// ======================================
-// BACKGROUND ART
-// ======================================
+/* ======================================
+   DRAW BACKGROUND
+====================================== */
 
 const palettes={
- portal:["#28144a","#6346aa"],
- echoes:["#263b70","#537ac8"],
- forest:["#142d3b","#467d8f"],
- shattered:["#2d1b64","#9156bc"],
- memories:["#33204c","#a162b5"],
- prison:["#1b2255","#5065ae"],
- heart:["#3b145c","#a140af"],
- titan:["#160d3f","#513caa"]
+ portal:["#2b164c","#6547a9"],
+ echoes:["#233670","#5a7acf"],
+ forest:["#14303a","#458f9c"],
+ shattered:["#311b69","#8d53c4"],
+ memories:["#31204a","#aa6fc8"],
+ prison:["#171e51","#536bc7"],
+ heart:["#3e145b","#a747bd"],
+ titan:["#100c39","#5644ad"]
 };
 
 function drawBackground(){
  const pal=palettes[chapters[chapter].theme];
 
- const sky=ctx.createLinearGradient(0,0,0,H);
- sky.addColorStop(0,pal[0]);
- sky.addColorStop(1,"#060516");
- ctx.fillStyle=sky;
+ const gradient=ctx.createLinearGradient(0,0,0,H);
+ gradient.addColorStop(0,pal[0]);
+ gradient.addColorStop(1,"#060518");
+
+ ctx.fillStyle=gradient;
  ctx.fillRect(0,0,W,H);
 
- // Stars drifting across the void.
+ // Twinkling spirit stars.
  for(let i=0;i<90;i++){
-  const x=((i*173-camera*.13)%1000+1000)%1000;
-  const y=(i*97)%480;
-  const brightness=.3+.5*Math.sin(time+i);
+  const x=((i*173-camera*.12)%1000+1000)%1000;
+  const y=(i*97)%470;
+  const alpha=.35+Math.sin(time*2+i)*.25;
 
-  ctx.fillStyle="rgba(207,209,255,"+
-    clamp(brightness,.1,.8)+")";
-  ctx.fillRect(x,y,i%6===0?3:2,2);
+  ctx.fillStyle=
+   "rgba(214,222,255,"+clamp(alpha,.1,.8)+")";
+
+  ctx.fillRect(x,y,i%7===0?3:2,2);
  }
 
  // Distant floating islands.
- for(let i=0;i<20;i++){
-  const x=((i*205-camera*.22)%1400+1400)%1400-150;
-  const y=120+(i*83)%285;
+ for(let i=0;i<17;i++){
+  const x=((i*215-camera*.2)%1400+1400)%1400-130;
+  const y=110+(i*83)%290;
 
-  ctx.fillStyle="#130d35aa";
+  ctx.fillStyle="#130e3690";
   ctx.beginPath();
   ctx.moveTo(x,y);
-  ctx.lineTo(x+100,y);
-  ctx.lineTo(x+60,y+85);
-  ctx.lineTo(x+20,y+62);
+  ctx.lineTo(x+115,y);
+  ctx.lineTo(x+65,y+90);
+  ctx.lineTo(x+20,y+63);
   ctx.fill();
 
-  ctx.fillStyle=pal[1]+"88";
-  ctx.fillRect(x,y,100,10);
+  ctx.fillStyle=pal[1]+"99";
+  ctx.fillRect(x,y,115,9);
  }
 
- // Giant moon / portal.
- const moonX=720-camera*.06;
- const moonY=100;
+ // Giant ring.
+ const x=725-camera*.06;
 
- ctx.fillStyle="#bca9ff22";
+ ctx.strokeStyle="#b1a0ff55";
+ ctx.lineWidth=10;
  ctx.beginPath();
- ctx.arc(moonX,moonY,105,0,Math.PI*2);
- ctx.fill();
-
- ctx.strokeStyle="#a98aff66";
- ctx.lineWidth=9;
- ctx.beginPath();
- ctx.arc(moonX,moonY,94,0,Math.PI*2);
+ ctx.arc(x,115,103,0,Math.PI*2);
  ctx.stroke();
+
+ // Dedicated Chapter 8 battlefield.
+ if(chapter===7){
+  drawArenaBackground();
+ }
 }
 
-// ======================================
-// DRAW FLOATING PLATFORMS
-// ======================================
+function drawArenaBackground(){
+ const x=bossArenaX-camera;
+
+ if(x>W||x+1130<0)return;
+
+ // Ruined pillars.
+ for(let i=0;i<5;i++){
+  const px=x+110+i*235;
+
+  ctx.fillStyle="#292443";
+  ctx.fillRect(px,225,48,245);
+
+  ctx.fillStyle="#615b88";
+  ctx.fillRect(px-12,212,72,17);
+
+  ctx.fillStyle="#393351";
+  ctx.fillRect(px-8,430,64,40);
+ }
+
+ // Huge circular portal.
+ const portalX=x+790;
+
+ ctx.strokeStyle="#9478ff";
+ ctx.lineWidth=15;
+ ctx.beginPath();
+ ctx.ellipse(
+  portalX,285,150,185,
+  0,0,Math.PI*2
+ );
+ ctx.stroke();
+
+ ctx.fillStyle="#513d9f55";
+ ctx.beginPath();
+ ctx.ellipse(
+  portalX,285,135,170,
+  0,0,Math.PI*2
+ );
+ ctx.fill();
+
+ // Blue flames around arena.
+ for(let i=0;i<6;i++){
+  const fx=x+80+i*190;
+  const flameH=35+Math.sin(time*6+i)*10;
+
+  ctx.fillStyle="#77ceff99";
+  ctx.beginPath();
+  ctx.moveTo(fx-14,465);
+  ctx.lineTo(fx,465-flameH);
+  ctx.lineTo(fx+14,465);
+  ctx.fill();
+ }
+
+ // Arena gate.
+ if(bossStarted&&!bossDefeated){
+  ctx.fillStyle="#6b50b8";
+  ctx.fillRect(x+125,220,20,250);
+  ctx.fillRect(x+1090,220,20,250);
+ }
+}
+
+/* ======================================
+   DRAW PLATFORMS
+====================================== */
 
 function drawPlatforms(){
  for(const p of platforms){
+  if(!platformVisible(p))continue;
+
   const x=p.x-camera;
   const y=platformY(p);
 
   if(x>W+50||x+p.w<-50)continue;
-  if(!platformVisible(p))continue;
 
   const color=
-   p.type==="bounce"?"#58ddff":
-   p.type==="moving"?"#a084f5":
-   p.type==="vanish"?"#dc97ff":
-   "#7d69ba";
+   p.type==="bounce"?"#7ee8ff":
+   p.type==="moving"?"#aa8fff":
+   p.type==="vanish"?"#d996ff":
+   "#806bc2";
 
-  ctx.fillStyle="#130d2b";
+  ctx.fillStyle="#19122d";
   ctx.beginPath();
-  ctx.moveTo(x,y+14);
-  ctx.lineTo(x+p.w,y+14);
-  ctx.lineTo(x+p.w*.66,y+63);
-  ctx.lineTo(x+p.w*.25,y+52);
-  ctx.closePath();
+  ctx.moveTo(x,y+13);
+  ctx.lineTo(x+p.w,y+13);
+  ctx.lineTo(x+p.w*.68,y+68);
+  ctx.lineTo(x+p.w*.28,y+52);
   ctx.fill();
 
   ctx.fillStyle=color;
   ctx.fillRect(x,y,p.w,15);
 
-  ctx.fillStyle="#322452";
-  ctx.fillRect(x+9,y+16,p.w-18,11);
+  ctx.fillStyle="#322653";
+  ctx.fillRect(x+8,y+16,p.w-16,12);
 
-  // Crystal-like edges.
-  for(let i=0;i<Math.floor(p.w/36);i++){
-   ctx.fillStyle="#baa7ff";
-   ctx.fillRect(x+13+i*36,y+5,9,4);
+  for(let i=0;i<p.w/35;i++){
+   ctx.fillStyle="#c1b3ff";
+   ctx.fillRect(x+10+i*35,y+5,9,4);
   }
 
   if(p.type==="bounce"){
-   ctx.fillStyle="#c8ffff";
-   ctx.fillRect(x+p.w/2-17,y-9,34,9);
+   ctx.fillStyle="#d0ffff";
+   ctx.fillRect(x+p.w/2-18,y-10,36,10);
   }
  }
 }
 
-// ======================================
-// SPIRIT CHARACTER
-// ======================================
+/* ======================================
+   DRAW PLAYER
+====================================== */
 
 function drawPlayer(){
  if(
-  player.invincible>0&&
+  player.invincible>0 &&
   Math.floor(time*12)%2===0
  )return;
 
@@ -1530,77 +2236,79 @@ function drawPlayer(){
  ctx.save();
  ctx.translate(Math.round(x),Math.round(y));
 
- // Floating cape.
- ctx.fillStyle="#382873";
+ // Purple cape.
+ ctx.fillStyle="#413184";
  ctx.beginPath();
- ctx.moveTo(-12,-10);
- ctx.lineTo(-21,22);
+ ctx.moveTo(-12,-12);
+ ctx.lineTo(-22,22);
  ctx.lineTo(12,17);
  ctx.fill();
 
  // Legs.
- ctx.fillStyle="#20233d";
- ctx.fillRect(-11,7,9,16);
- ctx.fillRect(3,7,9,16);
+ ctx.fillStyle="#1b1d34";
+ ctx.fillRect(-11,8,9,16);
+ ctx.fillRect(3,8,9,16);
 
  // Armor.
- ctx.fillStyle="#a39ce0";
+ ctx.fillStyle="#a4a0e5";
  ctx.fillRect(-15,-20,30,31);
 
- ctx.fillStyle="#4f489a";
+ ctx.fillStyle="#514799";
  ctx.fillRect(-9,-14,18,17);
 
  // Head.
- ctx.fillStyle="#d7c5e8";
+ ctx.fillStyle="#e2cdea";
  ctx.fillRect(-12,-43,24,24);
 
- ctx.fillStyle="#211b45";
+ ctx.fillStyle="#221b48";
  ctx.fillRect(-14,-46,28,12);
 
- // Glowing eyes.
- ctx.fillStyle="#8ceeff";
- ctx.fillRect(player.facing>0?2:-7,-34,6,4);
+ // Eye.
+ ctx.fillStyle="#90eeff";
+ ctx.fillRect(
+  player.facing>0?3:-8,
+  -34,6,4
+ );
 
- // Soul blade.
- ctx.fillStyle="#b7f2ff";
- if(player.facing>0){
-  ctx.fillRect(17,-26,5,34);
-  ctx.fillRect(15,-27,9,5);
- }else{
-  ctx.fillRect(-22,-26,5,34);
-  ctx.fillRect(-24,-27,9,5);
+ // Sword.
+ ctx.fillStyle="#d5f5ff";
+ const swordX=player.facing>0?18:-23;
+ ctx.fillRect(swordX,-30,5,37);
+ ctx.fillRect(swordX-4,-25,13,5);
+
+ if(player.dashTimer>0){
+  ctx.fillStyle="#b0b9ff6b";
+  ctx.fillRect(-player.facing*55,-27,35,43);
  }
 
- // Spirit dash trail.
- if(player.dashTime>0){
-  ctx.fillStyle="#a3aaff66";
-  ctx.fillRect(-player.facing*55,-27,35,39);
- }
-
- // Shield.
- if(player.shieldTime>0){
-  ctx.strokeStyle="#d6c8ff";
+ if(player.shield>0){
+  ctx.strokeStyle="#ddd0ff";
   ctx.lineWidth=4;
   ctx.beginPath();
-  ctx.arc(0,-5,36,0,Math.PI*2);
+  ctx.arc(0,-5,35,0,Math.PI*2);
   ctx.stroke();
  }
 
- // Attack effect.
- if(player.slashTime>0){
-  ctx.strokeStyle="#e2f8ff";
+ if(player.slashTimer>0){
+  ctx.strokeStyle="#b6f2ff";
   ctx.lineWidth=8;
   ctx.beginPath();
-  ctx.arc(player.facing*25,-5,48,-1.7,1.1);
+
+  const center=player.facing>0?0:Math.PI;
+
+  ctx.arc(
+   player.facing*25,-5,52,
+   center-1.1,center+1.1
+  );
   ctx.stroke();
  }
 
  ctx.restore();
 }
 
-// ======================================
-// DRAW ENEMIES / OBJECTS
-// ======================================
+/* ======================================
+   DRAW ENEMIES AND ITEMS
+====================================== */
 
 function drawEnemies(){
  for(const e of enemies){
@@ -1609,83 +2317,90 @@ function drawEnemies(){
   const x=e.x-camera;
   const y=e.y;
 
-  ctx.fillStyle="#8a5bdf88";
+  ctx.fillStyle="#9562df75";
   ctx.beginPath();
-  ctx.arc(x,y,27,0,Math.PI*2);
+  ctx.arc(x,y,29,0,Math.PI*2);
   ctx.fill();
 
-  ctx.fillStyle="#d4c9ff";
+  ctx.fillStyle="#e0d3ff";
   ctx.beginPath();
   ctx.arc(x,y-4,19,Math.PI,0);
-  ctx.lineTo(x+18,y+19);
-  ctx.lineTo(x+7,y+12);
+  ctx.lineTo(x+18,y+20);
+  ctx.lineTo(x+5,y+12);
   ctx.lineTo(x,y+21);
-  ctx.lineTo(x-8,y+11);
-  ctx.lineTo(x-18,y+19);
-  ctx.closePath();
+  ctx.lineTo(x-8,y+10);
+  ctx.lineTo(x-18,y+20);
   ctx.fill();
 
-  ctx.fillStyle="#50287a";
+  ctx.fillStyle="#513080";
   ctx.fillRect(x-10,y-7,6,5);
   ctx.fillRect(x+5,y-7,6,5);
  }
 }
 
-function drawObjects(){
+function drawItems(){
  for(const s of shards){
   if(s.taken)continue;
 
   const x=s.x-camera;
   const y=s.y+Math.sin(time*4+s.phase)*7;
 
-  ctx.fillStyle="#c3f9ff66";
+  ctx.fillStyle="#c4fbff50";
   ctx.beginPath();
   ctx.arc(x,y,24,0,Math.PI*2);
   ctx.fill();
 
-  ctx.fillStyle="#e1ffff";
+  ctx.fillStyle="#ebffff";
   ctx.beginPath();
   ctx.moveTo(x,y-18);
-  ctx.lineTo(x+11,y);
+  ctx.lineTo(x+12,y);
   ctx.lineTo(x,y+18);
-  ctx.lineTo(x-11,y);
-  ctx.closePath();
+  ctx.lineTo(x-12,y);
   ctx.fill();
  }
 
  for(const c of checkpoints){
   const x=c.x-camera;
 
-  ctx.fillStyle=c.active?"#84ffe5":"#7162be";
-  ctx.fillRect(x-4,c.y-55,8,57);
+  ctx.fillStyle=c.active?"#85ffe9":"#7d65c0";
+  ctx.fillRect(x-5,c.y-56,10,58);
 
-  ctx.fillStyle=c.active?"#c4fff4":"#a18bdb";
+  ctx.fillStyle=c.active?"#d5fffa":"#a693e5";
   ctx.beginPath();
-  ctx.moveTo(x,c.y-75);
-  ctx.lineTo(x+17,c.y-50);
-  ctx.lineTo(x,c.y-25);
-  ctx.lineTo(x-17,c.y-50);
+  ctx.moveTo(x,c.y-80);
+  ctx.lineTo(x+19,c.y-55);
+  ctx.lineTo(x,c.y-30);
+  ctx.lineTo(x-19,c.y-55);
   ctx.fill();
  }
 
  for(const h of hazards){
+  if(h.kind==="slash"||h.kind==="teleSlash"){
+   const x=h.x-camera;
+   const y=h.y;
+
+   ctx.strokeStyle="#b8eaff99";
+   ctx.lineWidth=12;
+   ctx.beginPath();
+   ctx.arc(x,y,75,-1.25,1.4);
+   ctx.stroke();
+   continue;
+  }
+
   const x=h.x-camera;
-  const y=h.y+Math.sin(time*2+h.phase)*35;
+  const y=h.y+Math.sin(time*2+h.phase)*30;
 
-  ctx.fillStyle="#f776d8";
+  ctx.fillStyle="#ee7ace";
   ctx.beginPath();
-  ctx.arc(x,y,h.radius,0,Math.PI*2);
+  ctx.arc(x,y,17,0,Math.PI*2);
   ctx.fill();
-
-  ctx.fillStyle="#5b1766";
-  ctx.fillRect(x-8,y-3,16,6);
  }
 }
 
-// ======================================
-// DRAW SPIRIT TITAN
-// Inspired by the supplied armor/ghost art.
-// ======================================
+/* ======================================
+   DRAW THE SPIRIT TITAN
+   ARMORED SPECTRAL BOSS
+====================================== */
 
 function drawTitan(){
  if(!boss||boss.dead)return;
@@ -1698,208 +2413,362 @@ function drawTitan(){
 
  const pulse=Math.sin(time*5)*5;
 
- // Spectral aura.
- ctx.fillStyle="#7868ff25";
+ // Ghostly aura.
+ ctx.fillStyle="#7c70ff33";
  ctx.beginPath();
- ctx.ellipse(0,45,145+pulse,185+pulse,0,0,Math.PI*2);
+ ctx.ellipse(
+  0,25,145+pulse,175+pulse,
+  0,0,Math.PI*2
+ );
  ctx.fill();
 
- // Swirling spectral tail.
- ctx.fillStyle="#e5edffb5";
+ // Swirling white-blue ghost tail.
+ ctx.fillStyle="#dce8ffb8";
  ctx.beginPath();
- ctx.moveTo(-45,20);
- ctx.bezierCurveTo(-95,90,-30,115,-60,165);
- ctx.bezierCurveTo(-100,220,20,230,-5,300);
- ctx.bezierCurveTo(35,250,-35,220,30,165);
- ctx.bezierCurveTo(92,103,65,55,45,20);
+ ctx.moveTo(-48,15);
+ ctx.bezierCurveTo(-90,85,-35,118,-60,160);
+ ctx.bezierCurveTo(-100,225,20,235,-5,300);
+ ctx.bezierCurveTo(40,245,-25,220,30,162);
+ ctx.bezierCurveTo(100,100,63,55,48,15);
  ctx.closePath();
  ctx.fill();
 
- ctx.fillStyle="#9aaaffaa";
+ ctx.fillStyle="#91a7ffc0";
  ctx.beginPath();
- ctx.moveTo(-12,45);
- ctx.bezierCurveTo(-55,120,35,145,1,205);
- ctx.bezierCurveTo(45,150,-8,118,25,45);
+ ctx.moveTo(-15,42);
+ ctx.bezierCurveTo(-55,120,35,150,0,215);
+ ctx.bezierCurveTo(48,152,-8,113,25,42);
  ctx.fill();
 
- // Ghost shoulders and arms.
- ctx.fillStyle="#edf5ff";
+ // Arms.
+ ctx.fillStyle="#e5f1ff";
  ctx.beginPath();
- ctx.ellipse(-90,15,35,83,-.3,0,Math.PI*2);
- ctx.ellipse(90,15,35,83,.3,0,Math.PI*2);
+ ctx.ellipse(-91,15,34,82,-.3,0,Math.PI*2);
+ ctx.ellipse(91,15,34,82,.3,0,Math.PI*2);
  ctx.fill();
 
- // Gauntlets.
- ctx.fillStyle="#343348";
- ctx.fillRect(-128,65,65,28);
- ctx.fillRect(65,65,65,28);
+ // Dark gauntlets.
+ ctx.fillStyle="#343448";
+ ctx.fillRect(-132,65,67,32);
+ ctx.fillRect(65,65,67,32);
 
- ctx.fillStyle="#74708e";
- ctx.fillRect(-128,67,65,6);
- ctx.fillRect(65,67,65,6);
+ ctx.fillStyle="#817c9c";
+ ctx.fillRect(-132,67,67,7);
+ ctx.fillRect(65,67,67,7);
 
- // Large spiked shoulder armor.
- ctx.fillStyle="#303043";
+ // Shoulder spikes.
+ ctx.fillStyle="#323142";
+
  ctx.beginPath();
- ctx.moveTo(-35,-87);
- ctx.lineTo(-104,-96);
- ctx.lineTo(-149,-135);
+ ctx.moveTo(-36,-87);
+ ctx.lineTo(-107,-95);
+ ctx.lineTo(-149,-138);
  ctx.lineTo(-130,-55);
- ctx.lineTo(-65,-27);
+ ctx.lineTo(-66,-25);
  ctx.closePath();
  ctx.fill();
 
  ctx.beginPath();
- ctx.moveTo(35,-87);
- ctx.lineTo(104,-96);
- ctx.lineTo(149,-135);
+ ctx.moveTo(36,-87);
+ ctx.lineTo(107,-95);
+ ctx.lineTo(149,-138);
  ctx.lineTo(130,-55);
- ctx.lineTo(65,-27);
+ ctx.lineTo(66,-25);
  ctx.closePath();
  ctx.fill();
 
- // Shoulder gem accents.
- ctx.fillStyle="#786bff";
+ // Shoulder jewels.
+ ctx.fillStyle="#857cff";
  ctx.beginPath();
  ctx.arc(-96,-78,11,0,Math.PI*2);
  ctx.arc(96,-78,11,0,Math.PI*2);
  ctx.fill();
 
- // Chest armor.
- ctx.fillStyle=boss.flash>0?"#ffffff":"#39384a";
+ // Dark chest armor.
+ ctx.fillStyle=boss.flash>0?"#fff":"#393748";
+
  ctx.beginPath();
- ctx.moveTo(-69,-74);
- ctx.lineTo(0,-89);
- ctx.lineTo(69,-74);
+ ctx.moveTo(-70,-73);
+ ctx.lineTo(0,-91);
+ ctx.lineTo(70,-73);
  ctx.lineTo(60,-8);
- ctx.lineTo(0,33);
+ ctx.lineTo(0,35);
  ctx.lineTo(-60,-8);
  ctx.closePath();
  ctx.fill();
 
- ctx.strokeStyle="#767394";
+ ctx.strokeStyle="#7c7999";
  ctx.lineWidth=5;
  ctx.stroke();
 
- // Blue glowing patterns.
- ctx.strokeStyle="#586dff";
+ // Glowing armor symbols.
+ ctx.strokeStyle="#687aff";
  ctx.lineWidth=6;
  ctx.beginPath();
- ctx.moveTo(-38,-49);
+ ctx.moveTo(-39,-49);
  ctx.lineTo(-25,-35);
- ctx.lineTo(-38,-20);
- ctx.moveTo(38,-49);
+ ctx.lineTo(-39,-20);
+ ctx.moveTo(39,-49);
  ctx.lineTo(25,-35);
- ctx.lineTo(38,-20);
+ ctx.lineTo(39,-20);
  ctx.stroke();
 
- // Head and metal helmet.
- ctx.fillStyle="#242737";
+ // Helmet.
+ ctx.fillStyle="#222638";
  ctx.beginPath();
- ctx.moveTo(-48,-160);
- ctx.lineTo(0,-185);
- ctx.lineTo(48,-160);
- ctx.lineTo(40,-105);
- ctx.lineTo(0,-80);
- ctx.lineTo(-40,-105);
+ ctx.moveTo(-50,-162);
+ ctx.lineTo(0,-188);
+ ctx.lineTo(50,-162);
+ ctx.lineTo(42,-106);
+ ctx.lineTo(0,-81);
+ ctx.lineTo(-42,-106);
  ctx.closePath();
  ctx.fill();
 
- // Horned helmet crest.
- ctx.fillStyle="#243d75";
+ // Spiked crown.
+ ctx.fillStyle="#294478";
  ctx.beginPath();
- ctx.moveTo(-50,-155);
- ctx.lineTo(-62,-197);
- ctx.lineTo(-18,-177);
- ctx.lineTo(0,-184);
- ctx.lineTo(18,-177);
- ctx.lineTo(62,-197);
- ctx.lineTo(50,-155);
- ctx.lineTo(0,-144);
+ ctx.moveTo(-50,-154);
+ ctx.lineTo(-64,-199);
+ ctx.lineTo(-18,-180);
+ ctx.lineTo(0,-189);
+ ctx.lineTo(18,-180);
+ ctx.lineTo(64,-199);
+ ctx.lineTo(50,-154);
+ ctx.lineTo(0,-143);
  ctx.closePath();
  ctx.fill();
 
- // Blue-white flame above the helmet.
- ctx.fillStyle="#b7d5ff";
+ // Blue-white fire crown.
+ ctx.fillStyle="#b9dfff";
  ctx.beginPath();
- ctx.moveTo(-34,-175);
- ctx.quadraticCurveTo(-66,-232,-16,-253);
- ctx.quadraticCurveTo(-25,-288,8,-306);
- ctx.quadraticCurveTo(2,-269,33,-263);
- ctx.quadraticCurveTo(70,-222,29,-176);
+ ctx.moveTo(-34,-176);
+ ctx.quadraticCurveTo(-68,-235,-16,-255);
+ ctx.quadraticCurveTo(-25,-291,8,-308);
+ ctx.quadraticCurveTo(3,-270,34,-265);
+ ctx.quadraticCurveTo(70,-223,30,-176);
  ctx.closePath();
  ctx.fill();
 
  ctx.fillStyle="#f5fbff";
  ctx.beginPath();
  ctx.moveTo(-20,-175);
- ctx.quadraticCurveTo(-35,-222,3,-258);
- ctx.quadraticCurveTo(0,-228,19,-212);
+ ctx.quadraticCurveTo(-35,-225,3,-259);
+ ctx.quadraticCurveTo(0,-230,20,-211);
  ctx.lineTo(20,-175);
  ctx.fill();
 
- // Glowing blue eyes.
- ctx.fillStyle="#b9edff";
+ // Glowing eyes.
+ ctx.fillStyle="#a7eeff";
  ctx.beginPath();
- ctx.moveTo(-32,-136);
- ctx.lineTo(-8,-128);
+ ctx.moveTo(-33,-136);
+ ctx.lineTo(-7,-128);
  ctx.lineTo(-15,-119);
- ctx.lineTo(-34,-126);
+ ctx.lineTo(-35,-127);
  ctx.closePath();
- ctx.moveTo(32,-136);
- ctx.lineTo(8,-128);
+
+ ctx.moveTo(33,-136);
+ ctx.lineTo(7,-128);
  ctx.lineTo(15,-119);
- ctx.lineTo(34,-126);
+ ctx.lineTo(35,-127);
  ctx.closePath();
  ctx.fill();
 
- // Spirit claws.
+ // Ghost claws.
  ctx.strokeStyle="#f0f6ff";
- ctx.lineWidth=11;
+ ctx.lineWidth=10;
  ctx.lineCap="round";
 
  for(const side of [-1,1]){
-  const handX=side*103;
-  const handY=99;
+  const hx=side*103;
 
   ctx.beginPath();
-  ctx.moveTo(handX,handY-12);
-  ctx.quadraticCurveTo(handX+side*15,handY+18,
-    handX+side*7,handY+43);
-  ctx.moveTo(handX+side*15,handY-7);
-  ctx.quadraticCurveTo(handX+side*29,handY+24,
-    handX+side*25,handY+38);
+  ctx.moveTo(hx,85);
+  ctx.quadraticCurveTo(
+   hx+side*12,116,
+   hx+side*7,142
+  );
+
+  ctx.moveTo(hx+side*16,87);
+  ctx.quadraticCurveTo(
+   hx+side*30,120,
+   hx+side*24,135
+  );
+
   ctx.stroke();
+ }
+
+ // Spectral sword appears during slash.
+ if(
+  boss.attackType==="slash" &&
+  (boss.action==="warning"||boss.action==="recover")
+ ){
+  ctx.save();
+  ctx.translate(110,65);
+  ctx.rotate(-.8+Math.sin(time*13)*.3);
+
+  ctx.fillStyle="#9de8ff";
+  ctx.fillRect(-8,-175,16,150);
+
+  ctx.fillStyle="#f5fbff";
+  ctx.fillRect(-3,-189,6,170);
+
+  ctx.fillStyle="#3c3d69";
+  ctx.fillRect(-28,-32,56,13);
+  ctx.fillRect(-6,-20,12,45);
+
+  ctx.restore();
+ }
+
+ // More flames in final phase.
+ if(boss.phase===3){
+  ctx.strokeStyle="#92dcff";
+  ctx.lineWidth=5;
+
+  for(let i=0;i<6;i++){
+   const a=time*2+i*Math.PI/3;
+
+   ctx.beginPath();
+   ctx.moveTo(
+    Math.cos(a)*120,
+    Math.sin(a)*115
+   );
+   ctx.lineTo(
+    Math.cos(a)*155,
+    Math.sin(a)*145-12
+   );
+   ctx.stroke();
+  }
  }
 
  ctx.restore();
 
- // Boss title.
  ctx.textAlign="center";
- ctx.fillStyle="#f1e5ff";
- ctx.font="bold 22px Arial";
- ctx.fillText("THE SPIRIT TITAN",x,y-323);
+ ctx.font="bold 20px Arial";
+ ctx.fillStyle="#eee2ff";
+ ctx.fillText(
+  "THE SPIRIT TITAN",
+  x,y-325
+ );
  ctx.textAlign="left";
 }
 
-// ======================================
-// DRAW EVERYTHING
-// ======================================
+/* ======================================
+   DRAW BOSS ATTACK WARNINGS
+====================================== */
 
-function draw(){
- ctx.clearRect(0,0,W,H);
+function drawBossAttacks(){
+ if(!boss||boss.dead||!bossStarted)return;
 
- drawBackground();
- drawPlatforms();
- drawObjects();
- drawEnemies();
- drawTitan();
- drawPlayer();
+ // Red warning markers.
+ if(boss.action==="warning"){
+  const type=boss.attackType;
+  const alpha=.45+Math.sin(time*22)*.25;
 
- for(const p of projectiles){
-  ctx.fillStyle=p.friendly?"#a5f3ff":"#c366ff";
+  ctx.globalAlpha=alpha;
+  ctx.fillStyle="#ff6b9d";
+
+  if(type==="slash"){
+   const direction=player.x<boss.x?-1:1;
+
+   ctx.fillRect(
+    boss.x-camera+direction*50-95,
+    300,
+    190,170
+   );
+  }
+
+  if(type==="slam"){
+   ctx.fillRect(
+    bossArenaX-camera+130,
+    455,
+    980,15
+   );
+  }
+
+  if(type==="teleport"){
+   ctx.fillRect(
+    boss.targetX-camera-70,
+    285,
+    140,185
+   );
+  }
+
+  if(type==="flames"){
+   for(const offset of [-150,0,150]){
+    const x=clamp(
+     boss.targetX+offset,
+     bossArenaX+180,
+     bossArenaX+1080
+    )-camera;
+
+    ctx.fillRect(x-42,454,84,16);
+   }
+  }
+
+  if(type==="orbs"){
+   ctx.beginPath();
+   ctx.arc(
+    boss.x-camera,
+    boss.y,
+    95,
+    0,Math.PI*2
+   );
+   ctx.fill();
+  }
+
+  ctx.globalAlpha=1;
+ }
+
+ // Ground shockwaves.
+ for(const s of boss.shockwaves){
+  const x=s.x-camera;
+
+  ctx.fillStyle="#9eeeff";
   ctx.beginPath();
-  ctx.arc(p.x-camera,p.y,p.r,0,Math.PI*2);
+  ctx.arc(x,448,24,Math.PI,0);
+  ctx.lineTo(x+24,470);
+  ctx.lineTo(x-24,470);
+  ctx.fill();
+ }
+
+ // Blue fire columns.
+ for(const f of boss.flames){
+  const x=f.x-camera;
+  const height=200+Math.sin(time*15)*18;
+
+  ctx.fillStyle="#77d7ffad";
+  ctx.beginPath();
+  ctx.moveTo(x-42,470);
+  ctx.quadraticCurveTo(
+   x-32,470-height*.6,
+   x,470-height
+  );
+  ctx.quadraticCurveTo(
+   x+40,470-height*.7,
+   x+42,470
+  );
+  ctx.closePath();
+  ctx.fill();
+
+  ctx.fillStyle="#e1fbffb0";
+  ctx.fillRect(x-12,470-height*.65,24,height*.65);
+ }
+}
+
+/* ======================================
+   DRAW PROJECTILES / PARTICLES
+====================================== */
+
+function drawEffects(){
+ for(const p of projectiles){
+  ctx.fillStyle=p.friendly?"#a2f5ff":"#c577ff";
+
+  ctx.beginPath();
+  ctx.arc(
+   p.x-camera,p.y,
+   p.radius,0,Math.PI*2
+  );
   ctx.fill();
  }
 
@@ -1910,33 +2779,62 @@ function draw(){
  }
 
  ctx.globalAlpha=1;
+}
 
- // Level exit.
- if(chapter!==7){
+/* ======================================
+   COMPLETE DRAW
+====================================== */
+
+function draw(){
+ ctx.clearRect(0,0,W,H);
+
+ drawBackground();
+ drawPlatforms();
+ drawItems();
+ drawEnemies();
+ drawTitan();
+ drawBossAttacks();
+ drawPlayer();
+ drawEffects();
+
+ // Normal exits.
+ if(chapter<7){
   const x=worldEnd-150-camera;
 
-  ctx.strokeStyle=collected===3?"#a0ffed":"#70578b";
+  ctx.strokeStyle=
+   collected===3?"#acffec":"#76598c";
+
   ctx.lineWidth=8;
   ctx.beginPath();
-  ctx.ellipse(x,385,35,70,0,0,Math.PI*2);
+  ctx.ellipse(
+   x,382,35,70,0,0,Math.PI*2
+  );
   ctx.stroke();
 
-  ctx.fillStyle="#f6eaff";
   ctx.textAlign="center";
   ctx.font="13px Arial";
-  ctx.fillText(collected===3?"EXIT OPEN":"3 SHARDS REQUIRED",
-    x,292);
+  ctx.fillStyle="#f5ecff";
+
+  ctx.fillText(
+   collected===3?"EXIT OPEN":"3 FRAGMENTS REQUIRED",
+   x,289
+  );
+
   ctx.textAlign="left";
  }
 }
 
-// ======================================
-// MAIN LOOP
-// ======================================
+/* ======================================
+   MAIN GAME LOOP
+====================================== */
 
 function loop(timestamp){
- const dt=Math.min((timestamp-(last||timestamp))/1000,.04);
- last=timestamp;
+ const dt=Math.min(
+  (timestamp-(lastFrame||timestamp))/1000,
+  .04
+ );
+
+ lastFrame=timestamp;
 
  update(dt);
  draw();
@@ -1944,25 +2842,23 @@ function loop(timestamp){
  requestAnimationFrame(loop);
 }
 
-// ======================================
-// CONTROLS
-// ======================================
+/* ======================================
+   CONTROLS
+====================================== */
 
 window.addEventListener("keydown",e=>{
  const k=e.key.toLowerCase();
 
- if([" ","arrowup","arrowdown","arrowleft",
-     "arrowright"].includes(k)){
+ if(
+  [" ","arrowup","arrowdown",
+   "arrowleft","arrowright"].includes(k)
+ ){
   e.preventDefault();
  }
 
  keys[k]=true;
- if(e.repeat)return;
 
- if(mode==="scene"&&["enter"," "].includes(k)){
-  nextSlide();
-  return;
- }
+ if(e.repeat)return;
 
  if(mode!=="playing")return;
 
@@ -1981,29 +2877,30 @@ window.addEventListener("blur",()=>{
  for(const k in keys)keys[k]=false;
 });
 
-$("jumpButton").onclick=jump;
-$("dashButton").onclick=dash;
-$("bladeButton").onclick=soulBlade;
-$("burstButton").onclick=spiritBurst;
-$("shieldButton").onclick=phantomShield;
+$("jump").onclick=jump;
+$("dash").onclick=dash;
+$("slash").onclick=soulBlade;
+$("burst").onclick=spiritBurst;
+$("shield").onclick=phantomShield;
 
-// ======================================
-// SETTINGS
-// ======================================
+/* ======================================
+   SETTINGS / FULLSCREEN
+====================================== */
 
 $("difficulty").onchange=e=>{
  difficulty=e.target.value;
- if(mode==="playing"){
+
+ if(mode!=="menu"){
   startChapter(chapter);
  }
 };
 
-$("restartButton").onclick=()=>{
+$("restart").onclick=()=>{
  if(mode==="menu")return;
  startChapter(chapter);
 };
 
-$("fullButton").onclick=async()=>{
+$("fullscreen").onclick=async()=>{
  try{
   if(document.fullscreenElement){
    await document.exitFullscreen();
@@ -2016,66 +2913,63 @@ $("fullButton").onclick=async()=>{
 };
 
 document.addEventListener("fullscreenchange",()=>{
- $("fullButton").textContent=document.fullscreenElement
+ $("fullscreen").textContent=
+  document.fullscreenElement
   ?"⛶ EXIT FULLSCREEN"
   :"⛶ FULLSCREEN";
 });
 
-// ======================================
-// START MENU
-// ======================================
+$("menuButton").onclick=()=>showMenu();
 
-function menu(){
+/* ======================================
+   MAIN MENU
+====================================== */
+
+function showMenu(){
  mode="menu";
- $("overlay").style.display="flex";
- $("hud").style.display="none";
- $("bossBar").style.display="none";
- $("newButton").style.display="inline-block";
 
- $("overlayLabel").textContent="THEDARKWITHIN — DLC II";
- $("overlayTitle").textContent="THE SPIRIT REALM";
- $("overlayText").textContent=
-  "A shattered dimension waits beyond the darkness.\n"+
-  "Leap between floating islands, master spirit powers,\n"+
-  "collect lost souls and face the Spirit Titan.\n\n"+
-  "EIGHT CHAPTERS • PARKOUR • BOSSES • CHIPTUNE MUSIC";
+ const progress=savedChapter();
 
- $("continueButton").textContent=
-  savedChapter()>0
-   ?"CONTINUE — CHAPTER "+(savedChapter()+1)
-   :"BEGIN STORY";
+ showScreen(
+  "THEDARKWITHIN — DLC II",
+  "THE SPIRIT REALM",
+  "A shattered dimension waits beyond the darkness.\n\n"+
+  "Leap between floating islands, collect lost souls, "+
+  "master spirit powers, and battle the Spirit Titan.\n\n"+
+  "EIGHT CHAPTERS • PARKOUR • BOSS FIGHT • CUTSCENES",
+  progress>0
+   ?"CONTINUE — CHAPTER "+(progress+1)
+   :"BEGIN STORY",
+  ()=>{
+   Music.start();
+   startChapter(progress);
+  },
+  "NEW GAME",
+  ()=>{
+   if(!confirm(
+    "Start again from Chapter 1? This resets saved chapter progress."
+   ))return;
+
+   try{
+    localStorage.removeItem(SAVE_KEY);
+   }catch(e){}
+
+   Music.start();
+   startChapter(0);
+  }
+ );
 }
 
-$("continueButton").onclick=()=>{
- if(mode==="scene"){
-  nextSlide();
- }else if(mode==="menu"){
-  Music.start();
-  startChapter(savedChapter());
- }else if(mode==="ending"){
-  menu();
- }
-};
-
-$("newButton").onclick=()=>{
- if(!confirm("Start from Chapter 1? Your saved checkpoint will reset."))
-  return;
-
- try{localStorage.removeItem(SAVE);}catch(e){}
-
- Music.start();
- startChapter(0);
-};
-
-// ======================================
-// INITIALIZE
-// ======================================
+/* ======================================
+   START THE GAME
+====================================== */
 
 createLevel(0);
-menu();
+showMenu();
 requestAnimationFrame(loop);
 
 })();
 </script>
+
 </body>
 </html>
