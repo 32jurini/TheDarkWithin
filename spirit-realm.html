@@ -1,0 +1,2081 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>The Spirit Realm | TheDarkWithin DLC II</title>
+<style>
+*{box-sizing:border-box}
+html{background:#080618}
+body{
+ margin:0;
+ background:linear-gradient(#150d30,#080618 65%);
+ color:#f1eaff;
+ font-family:Arial,Helvetica,sans-serif;
+}
+header{
+ display:flex;
+ justify-content:space-between;
+ align-items:center;
+ flex-wrap:wrap;
+ gap:12px;
+ padding:18px 5%;
+ border-bottom:2px solid #947bff;
+ background:#100c25;
+}
+header h1{
+ color:#d4c7ff;
+ margin:0;
+ font-size:clamp(20px,4vw,32px);
+}
+a{color:#d5c7ff;text-decoration:none}
+main{max-width:1100px;margin:22px auto;padding:0 12px}
+button,select{
+ background:#29204f;
+ color:#f1eaff;
+ border:1px solid #9180dc;
+ border-radius:6px;
+ padding:10px 13px;
+ cursor:pointer;
+ font-weight:bold;
+}
+button:hover{background:#42347c}
+button:disabled{opacity:.4;cursor:default}
+#settings,#controls,#musicControls{
+ display:flex;
+ align-items:center;
+ justify-content:center;
+ gap:10px;
+ flex-wrap:wrap;
+ background:#17112f;
+ border:1px solid #524582;
+ padding:12px;
+ margin-bottom:12px;
+ border-radius:8px;
+ font-size:13px;
+}
+#settings label,#musicControls label{
+ display:flex;
+ align-items:center;
+ gap:8px;
+}
+#game{
+ position:relative;
+ background:#08051b;
+ overflow:hidden;
+ border:2px solid #9580ed;
+ box-shadow:0 0 35px #49318d44;
+}
+canvas{
+ display:block;
+ width:100%;
+ height:auto;
+ image-rendering:pixelated;
+}
+#hud{
+ position:absolute;
+ left:12px;
+ top:12px;
+ background:#08051cdd;
+ border:1px solid #8777c7;
+ border-radius:7px;
+ padding:10px;
+ font-size:13px;
+ z-index:3;
+ display:none;
+ max-width:70%;
+}
+#hudTitle{color:#e2d5ff;font-weight:bold}
+#hudObjective{margin-top:7px;color:#d3c8e4}
+#hudStats{margin-top:7px;color:#94eeff}
+#bossBar{
+ display:none;
+ position:absolute;
+ left:22%;
+ top:15px;
+ width:56%;
+ height:16px;
+ background:#251130;
+ border:1px solid #cc85ff;
+ z-index:4;
+}
+#bossFill{
+ height:100%;
+ background:linear-gradient(90deg,#6552f0,#e070fa);
+ width:100%;
+}
+#overlay{
+ position:absolute;
+ inset:0;
+ z-index:10;
+ display:flex;
+ flex-direction:column;
+ align-items:center;
+ justify-content:center;
+ background:radial-gradient(circle,#2e2156,#070519 80%);
+ text-align:center;
+ padding:18px 28px;
+}
+#overlayLabel{
+ letter-spacing:3px;
+ color:#aee9ff;
+ font-size:11px;
+}
+#overlayTitle{
+ font-size:clamp(23px,5vw,49px);
+ color:#e7d9ff;
+ margin:15px 0;
+}
+#overlayText{
+ white-space:pre-line;
+ line-height:1.65;
+ max-width:700px;
+ font-size:clamp(13px,2vw,18px);
+}
+#overlayButtons{
+ display:flex;
+ gap:12px;
+ flex-wrap:wrap;
+ justify-content:center;
+ margin-top:13px;
+}
+#notice{
+ position:absolute;
+ bottom:14px;
+ left:50%;
+ transform:translateX(-50%);
+ background:#100b32e8;
+ border:1px solid #a090ff;
+ padding:10px 18px;
+ font-size:13px;
+ z-index:5;
+ display:none;
+ text-align:center;
+ max-width:90%;
+ pointer-events:none;
+}
+#game:fullscreen{
+ display:flex;
+ justify-content:center;
+ align-items:center;
+ width:100vw;
+ height:100vh;
+ border:0;
+ background:#050316;
+}
+#game:fullscreen canvas{
+ width:100%;
+ height:100%;
+ object-fit:contain;
+}
+#game:fullscreen #overlay{
+ background:#0b0825f2;
+}
+#game:fullscreen #hud{
+ top:16px;
+ left:16px;
+}
+#game:fullscreen #bossBar{
+ top:16px;
+}
+#controls button{font-size:12px}
+#musicControls{margin-top:12px}
+input[type=range]{accent-color:#b29aff}
+#instructions{
+ text-align:center;
+ color:#b6accd;
+ font-size:12px;
+ line-height:1.8;
+ padding:8px;
+}
+footer{
+ padding:25px;
+ text-align:center;
+ color:#9187ad;
+ font-size:12px;
+}
+@media(max-width:600px){
+ #hud{font-size:10px;padding:6px}
+ #settings,#controls{gap:6px}
+ #controls button{padding:8px;font-size:10px}
+ #overlay{padding:14px}
+}
+</style>
+</head>
+<body>
+
+<header>
+<h1>💜 THE SPIRIT REALM</h1>
+<a href="index.html">← BACK TO LAUNCHER</a>
+</header>
+
+<main>
+
+<div id="settings">
+<label>
+ DIFFICULTY
+ <select id="difficulty">
+  <option value="easy">Easy</option>
+  <option value="medium" selected>Medium</option>
+  <option value="hard">Hard</option>
+  <option value="extreme">Extreme</option>
+ </select>
+</label>
+<button id="fullButton">⛶ FULLSCREEN</button>
+<button id="restartButton">↻ RESTART CHAPTER</button>
+</div>
+
+<div id="game">
+<canvas id="canvas" width="960" height="540"></canvas>
+
+<div id="hud">
+ <div id="hudTitle"></div>
+ <div id="hudObjective"></div>
+ <div id="hudStats"></div>
+</div>
+
+<div id="bossBar"><div id="bossFill"></div></div>
+<div id="notice"></div>
+
+<div id="overlay">
+ <div id="overlayLabel">THEDARKWITHIN — DLC II</div>
+ <h1 id="overlayTitle">THE SPIRIT REALM</h1>
+ <p id="overlayText"></p>
+ <div id="overlayButtons">
+  <button id="continueButton">BEGIN STORY</button>
+  <button id="newButton">NEW GAME</button>
+ </div>
+</div>
+</div>
+
+<div id="controls">
+<button id="jumpButton">SPACE — JUMP</button>
+<button id="dashButton">SHIFT — DASH</button>
+<button id="bladeButton">J — SOUL BLADE</button>
+<button id="burstButton">K — SPIRIT BURST</button>
+<button id="shieldButton">N — PHANTOM SHIELD</button>
+</div>
+
+<div id="musicControls">
+<button id="musicButton">♫ MUSIC: ON</button>
+<label>
+ VOLUME
+ <input id="volume" type="range" min="0" max="100" value="35">
+</label>
+<span id="track">Spirit soundtrack ready</span>
+</div>
+
+<div id="instructions">
+A / D or ← / → — MOVE • W / ↑ / SPACE — JUMP •
+DOUBLE JUMP • SHIFT — AIR DASH •
+J — SOUL BLADE • K — SPIRIT BURST • N — SHIELD
+</div>
+
+</main>
+
+<footer>
+THE SPIRIT REALM • EIGHT-CHAPTER PLATFORMING ADVENTURE
+</footer>
+
+<script>
+(()=>{
+"use strict";
+
+// ======================================
+// BASIC SETUP
+// ======================================
+
+const $=id=>document.getElementById(id);
+const canvas=$("canvas");
+const ctx=canvas.getContext("2d");
+ctx.imageSmoothingEnabled=false;
+
+const W=960,H=540;
+const GRAVITY=1650;
+const SAVE="tdw-spirit-realm-save-v1";
+
+const clamp=(n,a,b)=>Math.max(a,Math.min(b,n));
+const rand=(a,b)=>a+Math.random()*(b-a);
+const distance=(a,b,c,d)=>Math.hypot(a-c,b-d);
+
+let chapter=0;
+let mode="menu";
+let time=0;
+let last=0;
+let camera=0;
+let worldEnd=3900;
+let platforms=[];
+let shards=[];
+let hazards=[];
+let enemies=[];
+let projectiles=[];
+let particles=[];
+let checkpoints=[];
+let collected=0;
+let checkpointX=70;
+let checkpointY=410;
+let noticeUntil=0;
+let boss=null;
+let bossStarted=false;
+let ending=false;
+
+const keys={};
+
+const player={
+ x:70,y:400,
+ w:27,h:42,
+ vx:0,vy:0,
+ speed:310,
+ facing:1,
+ grounded:false,
+ jumps:0,
+ maxJumps:2,
+ dashTime:0,
+ dashReady:true,
+ hp:5,maxHp:5,
+ invincible:0,
+ shieldTime:0,
+ attackCd:0,
+ burstCd:0,
+ shieldCd:0,
+ slashTime:0
+};
+
+const difficulties={
+ easy:{name:"Easy",damage:.5,hp:.7,speed:.85,hearts:8},
+ medium:{name:"Medium",damage:1,hp:1,speed:1,hearts:5},
+ hard:{name:"Hard",damage:1.6,hp:1.3,speed:1.2,hearts:4},
+ extreme:{name:"Extreme",damage:2.3,hp:1.7,speed:1.4,hearts:3}
+};
+
+let difficulty="medium";
+
+const chapters=[
+ {
+ name:"The Broken Portal",
+ theme:"portal",
+ story:[
+  "After the Purple King's defeat, a portal opens in the ruins.",
+  "Beyond it lies a world suspended between life and death.",
+  "The hero steps into the Spirit Realm."
+ ],
+ end:"The portal closes behind you. There is no easy way home."
+ },
+ {
+ name:"Floating Echoes",
+ theme:"echoes",
+ story:[
+  "The realm is fractured into thousands of floating islands.",
+  "Echoes of forgotten lives drift across the void.",
+  "Three spirit fragments may reveal the path forward."
+ ],
+ end:"The fragments reveal an ancient forest suspended in the clouds."
+ },
+ {
+ name:"The Phantom Forest",
+ theme:"forest",
+ story:[
+  "Ghost trees grow where the laws of nature no longer apply.",
+  "Some pathways exist only for a few seconds.",
+  "A distant voice whispers: 'The king was never alone.'"
+ ],
+ end:"The phantom forest hides a path toward the realm's deepest wound."
+ },
+ {
+ name:"The Shattered Path",
+ theme:"shattered",
+ story:[
+  "Broken bridges float over an endless abyss.",
+  "Only a spirit who masters the air can cross this place.",
+  "The hero feels a strange new power awakening."
+ ],
+ end:"A powerful spirit dash carries you beyond the shattered path."
+ },
+ {
+ name:"Echoes of the King",
+ theme:"memories",
+ story:[
+  "Fragments of King Aldric's memories haunt the realm.",
+  "The Black Spirit drew strength from more than one world.",
+  "Destroying the Purple King did not end its influence."
+ ],
+ end:"An ancient memory points toward a prison hidden in the void."
+ },
+ {
+ name:"The Prison of Souls",
+ theme:"prison",
+ story:[
+  "Countless souls remain imprisoned in floating crystal cages.",
+  "Their energy fuels the corruption spreading through the realm.",
+  "Collect the three seals to weaken the prison."
+ ],
+ end:"The souls are freed, but the entire realm begins to shake."
+ },
+ {
+ name:"Heart of the Realm",
+ theme:"heart",
+ story:[
+  "The floating islands crumble around the realm's heart.",
+  "A guardian awakens to protect its failing power.",
+  "At the highest island waits the Spirit Titan."
+ ],
+ end:"The guardian falls. A giant armored spirit rises above the void."
+ },
+ {
+ name:"The Spirit Titan",
+ theme:"titan",
+ story:[
+  "A towering ghost with blue-white flames and dark spiked armor appears.",
+  "It has guarded the realm since before King Aldric was born.",
+  "Defeat the Spirit Titan and uncover the Black Spirit's final secret."
+ ],
+ end:"The Spirit Titan fades, leaving behind the Light of Souls."
+ }
+];
+
+// ======================================
+// ORIGINAL CHIPTUNE SOUNDTRACK
+// ======================================
+
+const Music=(()=>{
+ let ac=null,master=null,noise=null,timer=null;
+ let enabled=true,volume=.35;
+ let active=-1,beatStep=0,nextTime=0;
+
+ const semitones={C:0,D:2,E:4,F:5,G:7,A:9,B:11};
+
+ const songs=[
+  {name:"Broken Portal",bpm:96,
+   lead:["C5","G5","D#5","G5","A#5","G5","F5","R",
+         "D#5","G5","C6","A#5","G5","F5","D#5","R"],
+   bass:["C3","G2","G#2","A#2"]},
+  {name:"Floating Echoes",bpm:112,
+   lead:["F5","A#5","C6","A#5","F5","D#5","C5","R",
+         "D5","F5","G5","A#5","G5","F5","D5","R"],
+   bass:["F3","D#3","A#2","C3"]},
+  {name:"Phantom Forest",bpm:100,
+   lead:["D5","F5","A5","R","G5","F5","D5","R",
+         "C5","D5","F5","A5","G5","E5","D5","R"],
+   bass:["D3","A2","A#2","C3"]},
+  {name:"Shattered Path",bpm:132,
+   lead:["E5","G5","B5","G5","D6","B5","G5","R",
+         "E5","F#5","G5","B5","A5","G5","F#5","R"],
+   bass:["E3","C3","D3","B2"]},
+  {name:"Echoes of the King",bpm:88,
+   lead:["C5","E5","G5","C6","B5","G5","E5","R",
+         "D#5","G5","A#5","G5","F#5","D#5","C5","R"],
+   bass:["C3","G2","D#3","F#2"]},
+  {name:"Prison of Souls",bpm:125,
+   lead:["A4","C5","F5","A5","G5","F5","C5","R",
+         "A4","D5","F5","G5","F5","D5","C5","R"],
+   bass:["F2","C3","D#3","F2"]},
+  {name:"Heart of the Realm",bpm:148,
+   lead:["G5","A#5","D6","C6","A#5","G5","F5","R",
+         "G5","A#5","C6","D6","F6","D6","C6","R"],
+   bass:["G2","D3","D#3","F3"]},
+  {name:"Spirit Titan — Final Battle",bpm:166,
+   lead:["C6","G5","D#5","G5","A#5","C6","D6","R",
+         "D#6","D6","C6","A#5","G5","A#5","C6","R"],
+   bass:["C3","G2","G#2","A#2"]}
+ ];
+
+ function freq(n){
+  if(!n||n==="R")return 0;
+  const m=/^([A-G])(#?)(\d)$/.exec(n);
+  if(!m)return 0;
+  const midi=(Number(m[3])+1)*12+
+     semitones[m[1]]+(m[2]?1:0);
+  return 440*Math.pow(2,(midi-69)/12);
+ }
+
+ function setup(){
+  if(ac)return;
+  const AC=window.AudioContext||window.webkitAudioContext;
+  if(!AC)return;
+  ac=new AC();
+  master=ac.createGain();
+  master.gain.value=volume*.48;
+  master.connect(ac.destination);
+
+  noise=ac.createBuffer(1,ac.sampleRate,ac.sampleRate);
+  const a=noise.getChannelData(0);
+  for(let i=0;i<a.length;i++)a[i]=Math.random()*2-1;
+ }
+
+ function tone(n,at,len,type="lead",level=.13){
+  if(!ac||!enabled)return;
+  const f=freq(n);
+  if(!f)return;
+
+  const osc=ac.createOscillator();
+  const gain=ac.createGain();
+
+  osc.type=type==="bass"?"triangle":"square";
+  osc.frequency.setValueAtTime(f,at);
+
+  gain.gain.setValueAtTime(.0001,at);
+  gain.gain.linearRampToValueAtTime(level,at+.014);
+  gain.gain.exponentialRampToValueAtTime(.0001,at+len);
+
+  osc.connect(gain);
+  gain.connect(master);
+  osc.start(at);
+  osc.stop(at+len+.015);
+ }
+
+ function drum(at,kind){
+  if(!ac||!enabled)return;
+
+  if(kind==="kick"){
+   const osc=ac.createOscillator();
+   const gain=ac.createGain();
+   osc.frequency.setValueAtTime(145,at);
+   osc.frequency.exponentialRampToValueAtTime(48,at+.16);
+   gain.gain.setValueAtTime(.32,at);
+   gain.gain.exponentialRampToValueAtTime(.001,at+.18);
+   osc.connect(gain);gain.connect(master);
+   osc.start(at);osc.stop(at+.19);
+  }else{
+   const src=ac.createBufferSource();
+   src.buffer=noise;
+   const filter=ac.createBiquadFilter();
+   filter.type="highpass";
+   filter.frequency.value=kind==="snare"?1300:4700;
+   const gain=ac.createGain();
+   const duration=kind==="snare"?.13:.045;
+   gain.gain.setValueAtTime(kind==="snare"?.11:.035,at);
+   gain.gain.exponentialRampToValueAtTime(.001,at+duration);
+   src.connect(filter);filter.connect(gain);gain.connect(master);
+   src.start(at);src.stop(at+duration+.01);
+  }
+ }
+
+ function schedule(){
+  if(!ac||!enabled||ac.state!=="running")return;
+  const song=songs[chapter];
+
+  if(active!==chapter){
+   active=chapter;
+   beatStep=0;
+   nextTime=ac.currentTime+.06;
+   $("track").textContent="♫ "+song.name;
+  }
+
+  const unit=30/song.bpm;
+
+  while(nextTime<ac.currentTime+.2){
+   const i=beatStep%16;
+   tone(song.lead[i],nextTime,unit*.8,"lead",
+     chapter===7?.18:.12);
+
+   if(i%4===0){
+    tone(song.bass[(i/4)%4],nextTime,unit*3.5,"bass",.23);
+    drum(nextTime,"kick");
+   }
+   if(i%4===2)drum(nextTime,"snare");
+   if(chapter>=3||i%2===0)drum(nextTime,"hat");
+   if(chapter===7&&i%4===3)drum(nextTime,"snare");
+
+   beatStep++;
+   nextTime+=unit;
+  }
+ }
+
+ async function start(){
+  setup();
+  if(!ac)return;
+  try{await ac.resume();}catch(e){}
+  if(!timer)timer=setInterval(schedule,55);
+ }
+
+ function toggle(){
+  enabled=!enabled;
+  $("musicButton").textContent=
+   enabled?"♫ MUSIC: ON":"♫ MUSIC: OFF";
+
+  if(master&&ac)
+   master.gain.setTargetAtTime(
+    enabled?volume*.48:0,ac.currentTime,.025
+   );
+
+  if(enabled){
+   active=-1;
+   start();
+  }
+ }
+
+ function setVolume(v){
+  volume=Number(v)/100;
+  if(master&&ac)
+   master.gain.setTargetAtTime(
+    enabled?volume*.48:0,ac.currentTime,.025
+   );
+ }
+
+ return{
+  start,toggle,setVolume,
+  chapterChanged:()=>{active=-1}
+ };
+})();
+
+$("musicButton").onclick=()=>Music.toggle();
+$("volume").oninput=e=>Music.setVolume(e.target.value);
+
+// ======================================
+// CUTSCENE SYSTEM
+// ======================================
+
+let slideList=[];
+let slideIndex=0;
+let slideCallback=null;
+
+function cutscene(lines,callback){
+ slideList=lines;
+ slideIndex=0;
+ slideCallback=callback||null;
+ mode="scene";
+ $("overlay").style.display="flex";
+ $("hud").style.display="none";
+ $("bossBar").style.display="none";
+ $("newButton").style.display="none";
+ $("continueButton").style.display="inline-block";
+ $("continueButton").textContent="CONTINUE";
+ showSlide();
+}
+
+function showSlide(){
+ $("overlayLabel").textContent=
+   "CHAPTER "+(chapter+1)+" — "+chapters[chapter].name;
+ $("overlayTitle").textContent=
+   chapters[chapter].name.toUpperCase();
+ $("overlayText").textContent=slideList[slideIndex];
+}
+
+function nextSlide(){
+ if(mode!=="scene")return;
+
+ slideIndex++;
+
+ if(slideIndex<slideList.length){
+  showSlide();
+  return;
+ }
+
+ $("overlay").style.display="none";
+ $("hud").style.display="block";
+ mode="playing";
+
+ const callback=slideCallback;
+ slideCallback=null;
+ if(callback)callback();
+}
+
+// ======================================
+// LEVEL GENERATION
+// ======================================
+
+function createLevel(index){
+ chapter=index;
+ mode="playing";
+ time=0;
+ camera=0;
+ collected=0;
+ ending=false;
+ bossStarted=false;
+ boss=null;
+
+ platforms=[];
+ shards=[];
+ hazards=[];
+ enemies=[];
+ projectiles=[];
+ particles=[];
+ checkpoints=[];
+
+ const diff=difficulties[difficulty];
+ player.maxHp=diff.hearts;
+ player.hp=player.maxHp;
+ player.x=70;
+ player.y=398;
+ player.vx=player.vy=0;
+ player.grounded=false;
+ player.jumps=0;
+ player.dashReady=true;
+ player.shieldTime=0;
+ player.invincible=1;
+ player.attackCd=0;
+ player.burstCd=0;
+ player.shieldCd=0;
+
+ checkpointX=70;
+ checkpointY=398;
+
+ // Safe starting island.
+ platforms.push({
+  x:0,y:470,w:340,h:30,
+  type:"solid",baseY:470,
+  phase:0
+ });
+
+ // Build a route of floating platforms.
+ const count=index===7?14:15;
+
+ for(let i=0;i<count;i++){
+  const x=305+i*238;
+  const pattern=[416,365,395,340,382,330,375,350];
+  const y=pattern[(i+index)%pattern.length];
+
+  let type="solid";
+  if(index>=1&&i%5===2)type="moving";
+  if(index>=2&&i%5===4)type="vanish";
+  if(index>=3&&i%7===5)type="bounce";
+
+  // Important story platforms stay solid.
+  if(i===6||i===count-1)type="solid";
+
+  const p={
+   x,y,w:195,h:22,
+   type,baseY:y,
+   phase:i*.8
+  };
+
+  platforms.push(p);
+
+  // Collect three soul fragments per level.
+  if([2,7,12].includes(i)){
+   shards.push({
+    x:x+95,y:y-48,
+    taken:false,
+    phase:i
+   });
+  }
+
+  if(i===6){
+   checkpoints.push({
+    x:x+75,y:y-20,
+    active:false
+   });
+  }
+
+  // Floating enemies in later levels.
+  if(index>=1&&i%4===3){
+   const hp=Math.round((55+index*11)*diff.hp);
+   enemies.push({
+    x:x+110,
+    y:y-72,
+    baseX:x+110,
+    baseY:y-72,
+    hp,maxHp:hp,
+    phase:i,
+    radius:21,
+    dead:false,
+    attack:0
+   });
+  }
+
+  // Void hazards that move up and down.
+  if(index>=3&&i%5===1){
+   hazards.push({
+    x:x+150,
+    y:y-105,
+    radius:17,
+    phase:i
+   });
+  }
+ }
+
+ const lastPlatform=platforms[platforms.length-1];
+ worldEnd=lastPlatform.x+lastPlatform.w+125;
+
+ // Final boss has a dedicated arena.
+ if(index===7){
+  const arenaX=worldEnd-450;
+
+  platforms.push({
+   x:arenaX-100,
+   y:470,
+   w:730,
+   h:32,
+   type:"solid",
+   baseY:470,
+   phase:0
+  });
+
+  worldEnd=arenaX+570;
+
+  boss={
+   x:arenaX+395,
+   y:310,
+   hp:Math.round(1250*diff.hp),
+   maxHp:Math.round(1250*diff.hp),
+   timer:1.4,
+   phase:1,
+   dead:false,
+   flash:0
+  };
+ }
+
+ Music.chapterChanged();
+ updateHUD();
+}
+
+// ======================================
+// CHECKPOINTS / SAVING
+// ======================================
+
+function saveProgress(){
+ try{
+  const current=Number(localStorage.getItem(SAVE)||0);
+  localStorage.setItem(SAVE,String(Math.max(current,chapter)));
+ }catch(e){}
+}
+
+function savedChapter(){
+ try{
+  return clamp(Number(localStorage.getItem(SAVE)||0),0,7);
+ }catch(e){
+  return 0;
+ }
+}
+
+function startChapter(index){
+ createLevel(index);
+ saveProgress();
+ cutscene(chapters[index].story,()=>{
+  mode="playing";
+ });
+}
+
+function completeChapter(){
+ if(ending)return;
+ ending=true;
+
+ const next=chapter+1;
+
+ cutscene([
+  "CHAPTER COMPLETE!",
+  chapters[chapter].end
+ ],()=>{
+  if(next<chapters.length){
+   startChapter(next);
+  }else{
+   storyComplete();
+  }
+ });
+}
+
+function storyComplete(){
+ mode="ending";
+ $("overlay").style.display="flex";
+ $("hud").style.display="none";
+ $("bossBar").style.display="none";
+ $("overlayLabel").textContent="THE SPIRIT REALM";
+ $("overlayTitle").textContent="STORY COMPLETE";
+ $("overlayText").textContent=
+  "The Spirit Titan has been defeated.\n"+
+  "The captured souls are free.\n"+
+  "But the realm's final light reveals a new danger.\n\n"+
+  "TO BE CONTINUED IN THE LAST LIGHT.";
+ $("continueButton").textContent="BACK TO MENU";
+ $("newButton").style.display="none";
+}
+
+// ======================================
+// HUD / NOTIFICATIONS
+// ======================================
+
+function updateHUD(){
+ $("hudTitle").textContent=
+  "CHAPTER "+(chapter+1)+" — "+chapters[chapter].name;
+
+ $("hudObjective").textContent=
+  chapter===7&&bossStarted
+   ?"DEFEAT THE SPIRIT TITAN"
+   :"SOUL FRAGMENTS: "+collected+"/3";
+
+ $("hudStats").textContent=
+  "♥ "+Math.ceil(player.hp)+"/"+player.maxHp+
+  "   ✦ Dash "+(player.dashReady?"READY":"USED");
+}
+
+function notify(text,duration=2){
+ $("notice").textContent=text;
+ $("notice").style.display="block";
+ noticeUntil=performance.now()/1000+duration;
+}
+
+// ======================================
+// PLATFORM PHYSICS
+// ======================================
+
+function platformY(p){
+ if(p.type==="moving"){
+  return p.baseY+Math.sin(time*1.8+p.phase)*48;
+ }
+ return p.baseY;
+}
+
+function platformVisible(p){
+ if(p.type!=="vanish")return true;
+ return Math.sin(time*2.1+p.phase)>-.35;
+}
+
+function jump(){
+ if(mode!=="playing")return;
+ if(player.jumps>=player.maxJumps)return;
+
+ player.vy=player.jumps===0?-660:-610;
+ player.jumps++;
+ player.grounded=false;
+
+ burst(player.x,player.y+18,"#b2eaff",12);
+
+ if(player.jumps===2){
+  notify("DOUBLE JUMP!",.55);
+ }
+}
+
+function dash(){
+ if(mode!=="playing"||!player.dashReady)return;
+
+ player.dashTime=.2;
+ player.dashReady=false;
+ player.vy=0;
+ player.vx=player.facing*730;
+
+ burst(player.x,player.y,"#b298ff",24);
+}
+
+function respawn(){
+ player.hp-=1;
+
+ if(player.hp<=0){
+  player.hp=player.maxHp;
+  notify("SPIRIT RESTORED — TRY AGAIN",2);
+ }else{
+  notify("RETURNED TO CHECKPOINT",1.4);
+ }
+
+ player.x=checkpointX;
+ player.y=checkpointY;
+ player.vx=0;
+ player.vy=0;
+ player.jumps=0;
+ player.dashReady=true;
+ player.dashTime=0;
+ player.invincible=1.7;
+
+ projectiles=[];
+}
+
+// ======================================
+// COMBAT
+// ======================================
+
+function soulBlade(){
+ if(mode!=="playing"||player.attackCd>0)return;
+
+ player.attackCd=.33;
+ player.slashTime=.16;
+
+ burst(
+  player.x+player.facing*35,
+  player.y,
+  "#c8dcff",12
+ );
+
+ for(const e of enemies){
+  if(e.dead)continue;
+  if(
+   distance(player.x,player.y,e.x,e.y)<98&&
+   (e.x-player.x)*player.facing>-20
+  ){
+   hurtEnemy(e,40);
+  }
+ }
+
+ if(boss&&!boss.dead&&bossStarted){
+  if(
+   distance(player.x,player.y,boss.x,boss.y)<150&&
+   (boss.x-player.x)*player.facing>-20
+  ){
+   hurtBoss(45);
+  }
+ }
+}
+
+function spiritBurst(){
+ if(mode!=="playing"||player.burstCd>0)return;
+
+ player.burstCd=1.05;
+
+ projectiles.push({
+  x:player.x+player.facing*20,
+  y:player.y-7,
+  vx:player.facing*610,
+  vy:0,
+  r:14,
+  life:2,
+  damage:75,
+  friendly:true
+ });
+
+ burst(player.x,player.y,"#77e8ff",13);
+}
+
+function phantomShield(){
+ if(mode!=="playing"||player.shieldCd>0)return;
+
+ player.shieldCd=5;
+ player.shieldTime=1.9;
+
+ burst(player.x,player.y,"#d8caff",20);
+}
+
+function hurtEnemy(e,damage){
+ if(e.dead)return;
+
+ e.hp-=damage;
+ burst(e.x,e.y,"#e2baff",10);
+
+ if(e.hp<=0){
+  e.dead=true;
+  burst(e.x,e.y,"#b57dff",25);
+ }
+}
+
+function hurtBoss(damage){
+ if(!boss||boss.dead||!bossStarted)return;
+
+ boss.hp=Math.max(0,boss.hp-damage);
+ boss.flash=.15;
+ burst(boss.x,boss.y,"#c2efff",14);
+
+ if(boss.hp<boss.maxHp*.5)boss.phase=2;
+
+ if(boss.hp===0){
+  boss.dead=true;
+  bossStarted=false;
+  $("bossBar").style.display="none";
+  burst(boss.x,boss.y,"#f2e6ff",90);
+
+  cutscene([
+   "THE SPIRIT TITAN HAS FALLEN.",
+   "The guardian's blue flames dissolve into starlight.",
+   "TITAN: The Black Spirit was only one fragment of a greater darkness.",
+   "TITAN: Take the Light of Souls. You will need it."
+  ],()=>{
+   completeChapter();
+  });
+ }
+}
+
+function damagePlayer(amount){
+ if(player.invincible>0||player.shieldTime>0)return;
+
+ player.hp-=amount;
+ player.invincible=.85;
+ burst(player.x,player.y,"#ff6f9f",14);
+
+ if(player.hp<=0){
+  player.hp=1;
+  respawn();
+ }
+}
+
+// ======================================
+// PARTICLES / PROJECTILES
+// ======================================
+
+function burst(x,y,color,n){
+ for(let i=0;i<n;i++){
+  const a=Math.random()*Math.PI*2;
+  particles.push({
+   x,y,
+   vx:Math.cos(a)*rand(45,210),
+   vy:Math.sin(a)*rand(45,210),
+   life:rand(.25,.7),
+   color
+  });
+ }
+}
+
+function updateParticles(dt){
+ for(let i=particles.length-1;i>=0;i--){
+  const p=particles[i];
+  p.x+=p.vx*dt;
+  p.y+=p.vy*dt;
+  p.life-=dt;
+  if(p.life<=0)particles.splice(i,1);
+ }
+}
+
+function updateProjectiles(dt){
+ for(let i=projectiles.length-1;i>=0;i--){
+  const p=projectiles[i];
+
+  p.x+=p.vx*dt;
+  p.y+=p.vy*dt;
+  p.life-=dt;
+
+  let hit=false;
+
+  if(p.friendly){
+   for(const e of enemies){
+    if(!e.dead&&distance(p.x,p.y,e.x,e.y)<p.r+e.radius){
+     hurtEnemy(e,p.damage);
+     hit=true;
+     break;
+    }
+   }
+
+   if(
+    !hit&&boss&&!boss.dead&&bossStarted&&
+    distance(p.x,p.y,boss.x,boss.y)<p.r+92
+   ){
+    hurtBoss(p.damage);
+    hit=true;
+   }
+  }else if(
+   distance(p.x,p.y,player.x,player.y)<p.r+23
+  ){
+   damagePlayer(p.damage);
+   hit=true;
+  }
+
+  if(hit||p.life<=0||p.y>H+150){
+   projectiles.splice(i,1);
+  }
+
+  if(mode!=="playing")break;
+ }
+}
+
+// ======================================
+// UPDATE PLAYER
+// ======================================
+
+function updatePlayer(dt){
+ player.invincible=Math.max(0,player.invincible-dt);
+ player.attackCd=Math.max(0,player.attackCd-dt);
+ player.burstCd=Math.max(0,player.burstCd-dt);
+ player.shieldCd=Math.max(0,player.shieldCd-dt);
+ player.shieldTime=Math.max(0,player.shieldTime-dt);
+ player.slashTime=Math.max(0,player.slashTime-dt);
+
+ let move=0;
+ if(keys.a||keys.arrowleft)move--;
+ if(keys.d||keys.arrowright)move++;
+
+ if(move!==0)player.facing=move>0?1:-1;
+
+ if(player.dashTime>0){
+  player.dashTime-=dt;
+  player.vx=player.facing*730;
+  player.vy=0;
+ }else{
+  player.vx=move*player.speed;
+  player.vy+=GRAVITY*dt;
+ }
+
+ const oldBottom=player.y+player.h/2;
+
+ player.x+=player.vx*dt;
+ player.y+=player.vy*dt;
+
+ player.x=clamp(player.x,14,worldEnd-14);
+
+ player.grounded=false;
+
+ const bottom=player.y+player.h/2;
+ const half=player.w/2;
+
+ // Landing on the top of floating platforms.
+ for(const p of platforms){
+  if(!platformVisible(p))continue;
+
+  const top=platformY(p);
+
+  if(
+   player.vy>=0&&
+   oldBottom<=top+15&&
+   bottom>=top&&
+   player.x+half>p.x&&
+   player.x-half<p.x+p.w
+  ){
+   player.y=top-player.h/2;
+   player.vy=0;
+   player.grounded=true;
+   player.jumps=0;
+   player.dashReady=true;
+
+   if(p.type==="bounce"){
+    player.vy=-920;
+    player.grounded=false;
+    player.jumps=1;
+    burst(player.x,top,"#78f4ff",16);
+   }
+
+   break;
+  }
+ }
+
+ // Falling into the void returns to checkpoint.
+ if(player.y>H+130){
+  respawn();
+ }
+
+ // Collect soul fragments.
+ for(const s of shards){
+  if(s.taken)continue;
+
+  if(distance(player.x,player.y,s.x,s.y)<32){
+   s.taken=true;
+   collected++;
+   burst(s.x,s.y,"#f9eaff",25);
+   notify("SOUL FRAGMENT "+collected+"/3",1.3);
+  }
+ }
+
+ // Activate checkpoints.
+ for(const c of checkpoints){
+  if(!c.active&&Math.abs(player.x-c.x)<52&&
+     Math.abs(player.y-c.y)<85){
+   c.active=true;
+   checkpointX=c.x;
+   checkpointY=c.y-35;
+   notify("CHECKPOINT ACTIVATED",1.8);
+   burst(c.x,c.y,"#70ffe0",30);
+  }
+ }
+
+ // Reach the end of the level.
+ if(
+  chapter!==7&&
+  player.x>worldEnd-215&&
+  collected>=3
+ ){
+  completeChapter();
+ }
+
+ if(
+  chapter!==7&&
+  player.x>worldEnd-215&&
+  collected<3
+ ){
+  if(noticeUntil<performance.now()/1000)
+   notify("COLLECT ALL 3 SOUL FRAGMENTS",1.5);
+ }
+
+ // Final battle triggers after reaching the arena.
+ if(
+  chapter===7&&
+  !bossStarted&&
+  boss&&!boss.dead&&
+  player.x>worldEnd-740
+ ){
+  bossStarted=true;
+  checkpointX=worldEnd-690;
+  checkpointY=410;
+  $("bossBar").style.display="block";
+  notify("THE SPIRIT TITAN AWAKENS!",2.5);
+ }
+}
+
+// ======================================
+// ENEMY AND HAZARD AI
+// ======================================
+
+function updateEnemies(dt){
+ const diff=difficulties[difficulty];
+
+ for(const e of enemies){
+  if(e.dead)continue;
+
+  e.phase+=dt;
+  e.x=e.baseX+Math.sin(e.phase*1.25)*45;
+  e.y=e.baseY+Math.sin(e.phase*2)*20;
+  e.attack=Math.max(0,e.attack-dt);
+
+  if(
+   distance(player.x,player.y,e.x,e.y)<e.radius+22&&
+   e.attack===0
+  ){
+   damagePlayer(diff.damage);
+   e.attack=1;
+  }
+ }
+
+ for(const h of hazards){
+  const y=h.y+Math.sin(time*2+h.phase)*35;
+
+  if(distance(player.x,player.y,h.x,y)<h.radius+18){
+   damagePlayer(diff.damage);
+  }
+ }
+}
+
+// ======================================
+// SPIRIT TITAN BOSS AI
+// ======================================
+
+function updateBoss(dt){
+ if(!boss||boss.dead||!bossStarted)return;
+
+ const diff=difficulties[difficulty];
+
+ boss.timer-=dt;
+ boss.flash=Math.max(0,boss.flash-dt);
+ boss.y=305+Math.sin(time*2)*20;
+
+ if(boss.timer<=0){
+  // Three or five projectiles per attack.
+  const count=boss.phase===1?3:5;
+
+  for(let i=0;i<count;i++){
+   const angle=
+    Math.atan2(player.y-boss.y,player.x-boss.x)+
+    (i-(count-1)/2)*.17;
+
+   const speed=(230+boss.phase*60)*diff.speed;
+
+   projectiles.push({
+    x:boss.x-50,
+    y:boss.y,
+    vx:Math.cos(angle)*speed,
+    vy:Math.sin(angle)*speed,
+    r:13,
+    damage:diff.damage,
+    life:4,
+    friendly:false
+   });
+  }
+
+  boss.timer=(boss.phase===1?2.1:1.15)/diff.speed;
+ }
+
+ // The titan damages players who touch its body.
+ if(distance(player.x,player.y,boss.x,boss.y)<95){
+  damagePlayer(diff.damage);
+ }
+
+ $("bossFill").style.width=
+  (boss.hp/boss.maxHp*100)+"%";
+}
+
+// ======================================
+// WORLD SCROLLING
+// ======================================
+
+function updateCamera(dt){
+ const desired=clamp(player.x-330,0,Math.max(0,worldEnd-W));
+ camera+=(desired-camera)*Math.min(1,dt*6);
+}
+
+// ======================================
+// GAME UPDATE
+// ======================================
+
+function update(dt){
+ time+=dt;
+ updateParticles(dt);
+
+ if(mode==="playing"){
+  updatePlayer(dt);
+
+  if(mode==="playing")updateEnemies(dt);
+  if(mode==="playing")updateBoss(dt);
+  if(mode==="playing")updateProjectiles(dt);
+  updateCamera(dt);
+  updateHUD();
+ }
+
+ if(
+  noticeUntil>0&&
+  performance.now()/1000>noticeUntil
+ ){
+  $("notice").style.display="none";
+  noticeUntil=0;
+ }
+}
+
+// ======================================
+// BACKGROUND ART
+// ======================================
+
+const palettes={
+ portal:["#28144a","#6346aa"],
+ echoes:["#263b70","#537ac8"],
+ forest:["#142d3b","#467d8f"],
+ shattered:["#2d1b64","#9156bc"],
+ memories:["#33204c","#a162b5"],
+ prison:["#1b2255","#5065ae"],
+ heart:["#3b145c","#a140af"],
+ titan:["#160d3f","#513caa"]
+};
+
+function drawBackground(){
+ const pal=palettes[chapters[chapter].theme];
+
+ const sky=ctx.createLinearGradient(0,0,0,H);
+ sky.addColorStop(0,pal[0]);
+ sky.addColorStop(1,"#060516");
+ ctx.fillStyle=sky;
+ ctx.fillRect(0,0,W,H);
+
+ // Stars drifting across the void.
+ for(let i=0;i<90;i++){
+  const x=((i*173-camera*.13)%1000+1000)%1000;
+  const y=(i*97)%480;
+  const brightness=.3+.5*Math.sin(time+i);
+
+  ctx.fillStyle="rgba(207,209,255,"+
+    clamp(brightness,.1,.8)+")";
+  ctx.fillRect(x,y,i%6===0?3:2,2);
+ }
+
+ // Distant floating islands.
+ for(let i=0;i<20;i++){
+  const x=((i*205-camera*.22)%1400+1400)%1400-150;
+  const y=120+(i*83)%285;
+
+  ctx.fillStyle="#130d35aa";
+  ctx.beginPath();
+  ctx.moveTo(x,y);
+  ctx.lineTo(x+100,y);
+  ctx.lineTo(x+60,y+85);
+  ctx.lineTo(x+20,y+62);
+  ctx.fill();
+
+  ctx.fillStyle=pal[1]+"88";
+  ctx.fillRect(x,y,100,10);
+ }
+
+ // Giant moon / portal.
+ const moonX=720-camera*.06;
+ const moonY=100;
+
+ ctx.fillStyle="#bca9ff22";
+ ctx.beginPath();
+ ctx.arc(moonX,moonY,105,0,Math.PI*2);
+ ctx.fill();
+
+ ctx.strokeStyle="#a98aff66";
+ ctx.lineWidth=9;
+ ctx.beginPath();
+ ctx.arc(moonX,moonY,94,0,Math.PI*2);
+ ctx.stroke();
+}
+
+// ======================================
+// DRAW FLOATING PLATFORMS
+// ======================================
+
+function drawPlatforms(){
+ for(const p of platforms){
+  const x=p.x-camera;
+  const y=platformY(p);
+
+  if(x>W+50||x+p.w<-50)continue;
+  if(!platformVisible(p))continue;
+
+  const color=
+   p.type==="bounce"?"#58ddff":
+   p.type==="moving"?"#a084f5":
+   p.type==="vanish"?"#dc97ff":
+   "#7d69ba";
+
+  ctx.fillStyle="#130d2b";
+  ctx.beginPath();
+  ctx.moveTo(x,y+14);
+  ctx.lineTo(x+p.w,y+14);
+  ctx.lineTo(x+p.w*.66,y+63);
+  ctx.lineTo(x+p.w*.25,y+52);
+  ctx.closePath();
+  ctx.fill();
+
+  ctx.fillStyle=color;
+  ctx.fillRect(x,y,p.w,15);
+
+  ctx.fillStyle="#322452";
+  ctx.fillRect(x+9,y+16,p.w-18,11);
+
+  // Crystal-like edges.
+  for(let i=0;i<Math.floor(p.w/36);i++){
+   ctx.fillStyle="#baa7ff";
+   ctx.fillRect(x+13+i*36,y+5,9,4);
+  }
+
+  if(p.type==="bounce"){
+   ctx.fillStyle="#c8ffff";
+   ctx.fillRect(x+p.w/2-17,y-9,34,9);
+  }
+ }
+}
+
+// ======================================
+// SPIRIT CHARACTER
+// ======================================
+
+function drawPlayer(){
+ if(
+  player.invincible>0&&
+  Math.floor(time*12)%2===0
+ )return;
+
+ const x=player.x-camera;
+ const y=player.y;
+
+ ctx.save();
+ ctx.translate(Math.round(x),Math.round(y));
+
+ // Floating cape.
+ ctx.fillStyle="#382873";
+ ctx.beginPath();
+ ctx.moveTo(-12,-10);
+ ctx.lineTo(-21,22);
+ ctx.lineTo(12,17);
+ ctx.fill();
+
+ // Legs.
+ ctx.fillStyle="#20233d";
+ ctx.fillRect(-11,7,9,16);
+ ctx.fillRect(3,7,9,16);
+
+ // Armor.
+ ctx.fillStyle="#a39ce0";
+ ctx.fillRect(-15,-20,30,31);
+
+ ctx.fillStyle="#4f489a";
+ ctx.fillRect(-9,-14,18,17);
+
+ // Head.
+ ctx.fillStyle="#d7c5e8";
+ ctx.fillRect(-12,-43,24,24);
+
+ ctx.fillStyle="#211b45";
+ ctx.fillRect(-14,-46,28,12);
+
+ // Glowing eyes.
+ ctx.fillStyle="#8ceeff";
+ ctx.fillRect(player.facing>0?2:-7,-34,6,4);
+
+ // Soul blade.
+ ctx.fillStyle="#b7f2ff";
+ if(player.facing>0){
+  ctx.fillRect(17,-26,5,34);
+  ctx.fillRect(15,-27,9,5);
+ }else{
+  ctx.fillRect(-22,-26,5,34);
+  ctx.fillRect(-24,-27,9,5);
+ }
+
+ // Spirit dash trail.
+ if(player.dashTime>0){
+  ctx.fillStyle="#a3aaff66";
+  ctx.fillRect(-player.facing*55,-27,35,39);
+ }
+
+ // Shield.
+ if(player.shieldTime>0){
+  ctx.strokeStyle="#d6c8ff";
+  ctx.lineWidth=4;
+  ctx.beginPath();
+  ctx.arc(0,-5,36,0,Math.PI*2);
+  ctx.stroke();
+ }
+
+ // Attack effect.
+ if(player.slashTime>0){
+  ctx.strokeStyle="#e2f8ff";
+  ctx.lineWidth=8;
+  ctx.beginPath();
+  ctx.arc(player.facing*25,-5,48,-1.7,1.1);
+  ctx.stroke();
+ }
+
+ ctx.restore();
+}
+
+// ======================================
+// DRAW ENEMIES / OBJECTS
+// ======================================
+
+function drawEnemies(){
+ for(const e of enemies){
+  if(e.dead)continue;
+
+  const x=e.x-camera;
+  const y=e.y;
+
+  ctx.fillStyle="#8a5bdf88";
+  ctx.beginPath();
+  ctx.arc(x,y,27,0,Math.PI*2);
+  ctx.fill();
+
+  ctx.fillStyle="#d4c9ff";
+  ctx.beginPath();
+  ctx.arc(x,y-4,19,Math.PI,0);
+  ctx.lineTo(x+18,y+19);
+  ctx.lineTo(x+7,y+12);
+  ctx.lineTo(x,y+21);
+  ctx.lineTo(x-8,y+11);
+  ctx.lineTo(x-18,y+19);
+  ctx.closePath();
+  ctx.fill();
+
+  ctx.fillStyle="#50287a";
+  ctx.fillRect(x-10,y-7,6,5);
+  ctx.fillRect(x+5,y-7,6,5);
+ }
+}
+
+function drawObjects(){
+ for(const s of shards){
+  if(s.taken)continue;
+
+  const x=s.x-camera;
+  const y=s.y+Math.sin(time*4+s.phase)*7;
+
+  ctx.fillStyle="#c3f9ff66";
+  ctx.beginPath();
+  ctx.arc(x,y,24,0,Math.PI*2);
+  ctx.fill();
+
+  ctx.fillStyle="#e1ffff";
+  ctx.beginPath();
+  ctx.moveTo(x,y-18);
+  ctx.lineTo(x+11,y);
+  ctx.lineTo(x,y+18);
+  ctx.lineTo(x-11,y);
+  ctx.closePath();
+  ctx.fill();
+ }
+
+ for(const c of checkpoints){
+  const x=c.x-camera;
+
+  ctx.fillStyle=c.active?"#84ffe5":"#7162be";
+  ctx.fillRect(x-4,c.y-55,8,57);
+
+  ctx.fillStyle=c.active?"#c4fff4":"#a18bdb";
+  ctx.beginPath();
+  ctx.moveTo(x,c.y-75);
+  ctx.lineTo(x+17,c.y-50);
+  ctx.lineTo(x,c.y-25);
+  ctx.lineTo(x-17,c.y-50);
+  ctx.fill();
+ }
+
+ for(const h of hazards){
+  const x=h.x-camera;
+  const y=h.y+Math.sin(time*2+h.phase)*35;
+
+  ctx.fillStyle="#f776d8";
+  ctx.beginPath();
+  ctx.arc(x,y,h.radius,0,Math.PI*2);
+  ctx.fill();
+
+  ctx.fillStyle="#5b1766";
+  ctx.fillRect(x-8,y-3,16,6);
+ }
+}
+
+// ======================================
+// DRAW SPIRIT TITAN
+// Inspired by the supplied armor/ghost art.
+// ======================================
+
+function drawTitan(){
+ if(!boss||boss.dead)return;
+
+ const x=boss.x-camera;
+ const y=boss.y;
+
+ ctx.save();
+ ctx.translate(Math.round(x),Math.round(y));
+
+ const pulse=Math.sin(time*5)*5;
+
+ // Spectral aura.
+ ctx.fillStyle="#7868ff25";
+ ctx.beginPath();
+ ctx.ellipse(0,45,145+pulse,185+pulse,0,0,Math.PI*2);
+ ctx.fill();
+
+ // Swirling spectral tail.
+ ctx.fillStyle="#e5edffb5";
+ ctx.beginPath();
+ ctx.moveTo(-45,20);
+ ctx.bezierCurveTo(-95,90,-30,115,-60,165);
+ ctx.bezierCurveTo(-100,220,20,230,-5,300);
+ ctx.bezierCurveTo(35,250,-35,220,30,165);
+ ctx.bezierCurveTo(92,103,65,55,45,20);
+ ctx.closePath();
+ ctx.fill();
+
+ ctx.fillStyle="#9aaaffaa";
+ ctx.beginPath();
+ ctx.moveTo(-12,45);
+ ctx.bezierCurveTo(-55,120,35,145,1,205);
+ ctx.bezierCurveTo(45,150,-8,118,25,45);
+ ctx.fill();
+
+ // Ghost shoulders and arms.
+ ctx.fillStyle="#edf5ff";
+ ctx.beginPath();
+ ctx.ellipse(-90,15,35,83,-.3,0,Math.PI*2);
+ ctx.ellipse(90,15,35,83,.3,0,Math.PI*2);
+ ctx.fill();
+
+ // Gauntlets.
+ ctx.fillStyle="#343348";
+ ctx.fillRect(-128,65,65,28);
+ ctx.fillRect(65,65,65,28);
+
+ ctx.fillStyle="#74708e";
+ ctx.fillRect(-128,67,65,6);
+ ctx.fillRect(65,67,65,6);
+
+ // Large spiked shoulder armor.
+ ctx.fillStyle="#303043";
+ ctx.beginPath();
+ ctx.moveTo(-35,-87);
+ ctx.lineTo(-104,-96);
+ ctx.lineTo(-149,-135);
+ ctx.lineTo(-130,-55);
+ ctx.lineTo(-65,-27);
+ ctx.closePath();
+ ctx.fill();
+
+ ctx.beginPath();
+ ctx.moveTo(35,-87);
+ ctx.lineTo(104,-96);
+ ctx.lineTo(149,-135);
+ ctx.lineTo(130,-55);
+ ctx.lineTo(65,-27);
+ ctx.closePath();
+ ctx.fill();
+
+ // Shoulder gem accents.
+ ctx.fillStyle="#786bff";
+ ctx.beginPath();
+ ctx.arc(-96,-78,11,0,Math.PI*2);
+ ctx.arc(96,-78,11,0,Math.PI*2);
+ ctx.fill();
+
+ // Chest armor.
+ ctx.fillStyle=boss.flash>0?"#ffffff":"#39384a";
+ ctx.beginPath();
+ ctx.moveTo(-69,-74);
+ ctx.lineTo(0,-89);
+ ctx.lineTo(69,-74);
+ ctx.lineTo(60,-8);
+ ctx.lineTo(0,33);
+ ctx.lineTo(-60,-8);
+ ctx.closePath();
+ ctx.fill();
+
+ ctx.strokeStyle="#767394";
+ ctx.lineWidth=5;
+ ctx.stroke();
+
+ // Blue glowing patterns.
+ ctx.strokeStyle="#586dff";
+ ctx.lineWidth=6;
+ ctx.beginPath();
+ ctx.moveTo(-38,-49);
+ ctx.lineTo(-25,-35);
+ ctx.lineTo(-38,-20);
+ ctx.moveTo(38,-49);
+ ctx.lineTo(25,-35);
+ ctx.lineTo(38,-20);
+ ctx.stroke();
+
+ // Head and metal helmet.
+ ctx.fillStyle="#242737";
+ ctx.beginPath();
+ ctx.moveTo(-48,-160);
+ ctx.lineTo(0,-185);
+ ctx.lineTo(48,-160);
+ ctx.lineTo(40,-105);
+ ctx.lineTo(0,-80);
+ ctx.lineTo(-40,-105);
+ ctx.closePath();
+ ctx.fill();
+
+ // Horned helmet crest.
+ ctx.fillStyle="#243d75";
+ ctx.beginPath();
+ ctx.moveTo(-50,-155);
+ ctx.lineTo(-62,-197);
+ ctx.lineTo(-18,-177);
+ ctx.lineTo(0,-184);
+ ctx.lineTo(18,-177);
+ ctx.lineTo(62,-197);
+ ctx.lineTo(50,-155);
+ ctx.lineTo(0,-144);
+ ctx.closePath();
+ ctx.fill();
+
+ // Blue-white flame above the helmet.
+ ctx.fillStyle="#b7d5ff";
+ ctx.beginPath();
+ ctx.moveTo(-34,-175);
+ ctx.quadraticCurveTo(-66,-232,-16,-253);
+ ctx.quadraticCurveTo(-25,-288,8,-306);
+ ctx.quadraticCurveTo(2,-269,33,-263);
+ ctx.quadraticCurveTo(70,-222,29,-176);
+ ctx.closePath();
+ ctx.fill();
+
+ ctx.fillStyle="#f5fbff";
+ ctx.beginPath();
+ ctx.moveTo(-20,-175);
+ ctx.quadraticCurveTo(-35,-222,3,-258);
+ ctx.quadraticCurveTo(0,-228,19,-212);
+ ctx.lineTo(20,-175);
+ ctx.fill();
+
+ // Glowing blue eyes.
+ ctx.fillStyle="#b9edff";
+ ctx.beginPath();
+ ctx.moveTo(-32,-136);
+ ctx.lineTo(-8,-128);
+ ctx.lineTo(-15,-119);
+ ctx.lineTo(-34,-126);
+ ctx.closePath();
+ ctx.moveTo(32,-136);
+ ctx.lineTo(8,-128);
+ ctx.lineTo(15,-119);
+ ctx.lineTo(34,-126);
+ ctx.closePath();
+ ctx.fill();
+
+ // Spirit claws.
+ ctx.strokeStyle="#f0f6ff";
+ ctx.lineWidth=11;
+ ctx.lineCap="round";
+
+ for(const side of [-1,1]){
+  const handX=side*103;
+  const handY=99;
+
+  ctx.beginPath();
+  ctx.moveTo(handX,handY-12);
+  ctx.quadraticCurveTo(handX+side*15,handY+18,
+    handX+side*7,handY+43);
+  ctx.moveTo(handX+side*15,handY-7);
+  ctx.quadraticCurveTo(handX+side*29,handY+24,
+    handX+side*25,handY+38);
+  ctx.stroke();
+ }
+
+ ctx.restore();
+
+ // Boss title.
+ ctx.textAlign="center";
+ ctx.fillStyle="#f1e5ff";
+ ctx.font="bold 22px Arial";
+ ctx.fillText("THE SPIRIT TITAN",x,y-323);
+ ctx.textAlign="left";
+}
+
+// ======================================
+// DRAW EVERYTHING
+// ======================================
+
+function draw(){
+ ctx.clearRect(0,0,W,H);
+
+ drawBackground();
+ drawPlatforms();
+ drawObjects();
+ drawEnemies();
+ drawTitan();
+ drawPlayer();
+
+ for(const p of projectiles){
+  ctx.fillStyle=p.friendly?"#a5f3ff":"#c366ff";
+  ctx.beginPath();
+  ctx.arc(p.x-camera,p.y,p.r,0,Math.PI*2);
+  ctx.fill();
+ }
+
+ for(const p of particles){
+  ctx.globalAlpha=clamp(p.life*2,0,1);
+  ctx.fillStyle=p.color;
+  ctx.fillRect(p.x-camera,p.y,5,5);
+ }
+
+ ctx.globalAlpha=1;
+
+ // Level exit.
+ if(chapter!==7){
+  const x=worldEnd-150-camera;
+
+  ctx.strokeStyle=collected===3?"#a0ffed":"#70578b";
+  ctx.lineWidth=8;
+  ctx.beginPath();
+  ctx.ellipse(x,385,35,70,0,0,Math.PI*2);
+  ctx.stroke();
+
+  ctx.fillStyle="#f6eaff";
+  ctx.textAlign="center";
+  ctx.font="13px Arial";
+  ctx.fillText(collected===3?"EXIT OPEN":"3 SHARDS REQUIRED",
+    x,292);
+  ctx.textAlign="left";
+ }
+}
+
+// ======================================
+// MAIN LOOP
+// ======================================
+
+function loop(timestamp){
+ const dt=Math.min((timestamp-(last||timestamp))/1000,.04);
+ last=timestamp;
+
+ update(dt);
+ draw();
+
+ requestAnimationFrame(loop);
+}
+
+// ======================================
+// CONTROLS
+// ======================================
+
+window.addEventListener("keydown",e=>{
+ const k=e.key.toLowerCase();
+
+ if([" ","arrowup","arrowdown","arrowleft",
+     "arrowright"].includes(k)){
+  e.preventDefault();
+ }
+
+ keys[k]=true;
+ if(e.repeat)return;
+
+ if(mode==="scene"&&["enter"," "].includes(k)){
+  nextSlide();
+  return;
+ }
+
+ if(mode!=="playing")return;
+
+ if(k===" "||k==="w"||k==="arrowup")jump();
+ if(k==="shift")dash();
+ if(k==="j")soulBlade();
+ if(k==="k")spiritBurst();
+ if(k==="n")phantomShield();
+});
+
+window.addEventListener("keyup",e=>{
+ keys[e.key.toLowerCase()]=false;
+});
+
+window.addEventListener("blur",()=>{
+ for(const k in keys)keys[k]=false;
+});
+
+$("jumpButton").onclick=jump;
+$("dashButton").onclick=dash;
+$("bladeButton").onclick=soulBlade;
+$("burstButton").onclick=spiritBurst;
+$("shieldButton").onclick=phantomShield;
+
+// ======================================
+// SETTINGS
+// ======================================
+
+$("difficulty").onchange=e=>{
+ difficulty=e.target.value;
+ if(mode==="playing"){
+  startChapter(chapter);
+ }
+};
+
+$("restartButton").onclick=()=>{
+ if(mode==="menu")return;
+ startChapter(chapter);
+};
+
+$("fullButton").onclick=async()=>{
+ try{
+  if(document.fullscreenElement){
+   await document.exitFullscreen();
+  }else{
+   await $("game").requestFullscreen();
+  }
+ }catch(e){
+  alert("Fullscreen is unavailable in this browser.");
+ }
+};
+
+document.addEventListener("fullscreenchange",()=>{
+ $("fullButton").textContent=document.fullscreenElement
+  ?"⛶ EXIT FULLSCREEN"
+  :"⛶ FULLSCREEN";
+});
+
+// ======================================
+// START MENU
+// ======================================
+
+function menu(){
+ mode="menu";
+ $("overlay").style.display="flex";
+ $("hud").style.display="none";
+ $("bossBar").style.display="none";
+ $("newButton").style.display="inline-block";
+
+ $("overlayLabel").textContent="THEDARKWITHIN — DLC II";
+ $("overlayTitle").textContent="THE SPIRIT REALM";
+ $("overlayText").textContent=
+  "A shattered dimension waits beyond the darkness.\n"+
+  "Leap between floating islands, master spirit powers,\n"+
+  "collect lost souls and face the Spirit Titan.\n\n"+
+  "EIGHT CHAPTERS • PARKOUR • BOSSES • CHIPTUNE MUSIC";
+
+ $("continueButton").textContent=
+  savedChapter()>0
+   ?"CONTINUE — CHAPTER "+(savedChapter()+1)
+   :"BEGIN STORY";
+}
+
+$("continueButton").onclick=()=>{
+ if(mode==="scene"){
+  nextSlide();
+ }else if(mode==="menu"){
+  Music.start();
+  startChapter(savedChapter());
+ }else if(mode==="ending"){
+  menu();
+ }
+};
+
+$("newButton").onclick=()=>{
+ if(!confirm("Start from Chapter 1? Your saved checkpoint will reset."))
+  return;
+
+ try{localStorage.removeItem(SAVE);}catch(e){}
+
+ Music.start();
+ startChapter(0);
+};
+
+// ======================================
+// INITIALIZE
+// ======================================
+
+createLevel(0);
+menu();
+requestAnimationFrame(loop);
+
+})();
+</script>
+</body>
+</html>
