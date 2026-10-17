@@ -2,1368 +2,1735 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>TheDarkWithin — Official Story Launcher>
-
-<style>
-* {
-  box-sizing: border-box;
-}
-
-html {
-  scroll-behavior: smooth;
-}
-
-body {
-  --accent: #e5bb73;
-  --bright: #ffe2a6;
-  --background: #110b1b;
-  --panel: #21162d;
-  --panel2: #30213f;
-  --border: #8867a0;
-  --muted: #c6b9d0;
-  --glow: #8743bd;
-
-  margin: 0;
-  min-height: 100vh;
-  background: var(--background);
-  color: #f5efff;
-  font-family: Arial, Helvetica, sans-serif;
-  transition: background .4s;
-}
-
-/* =====================================
-   EACH GAME HAS ITS OWN THEME
-   ===================================== */
-
-body.theme-king {
-  --accent: #e5bb73;
-  --bright: #ffe2a6;
-  --background: #110b1b;
-  --panel: #21162d;
-  --panel2: #30213f;
-  --border: #8867a0;
-  --muted: #c6b9d0;
-  --glow: #8743bd;
-}
-
-body.theme-main {
-  --accent: #6ee59b;
-  --bright: #c4ffd5;
-  --background: #060f0a;
-  --panel: #111d16;
-  --panel2: #1a3323;
-  --border: #3c8052;
-  --muted: #aec7b5;
-  --glow: #247f4a;
-}
-
-body.theme-spirit {
-  --accent: #86d9ff;
-  --bright: #d2efff;
-  --background: #090920;
-  --panel: #171633;
-  --panel2: #292454;
-  --border: #756ad1;
-  --muted: #bdbbe6;
-  --glow: #6a4bdf;
-}
-
-body.theme-light {
-  --accent: #ffc47b;
-  --bright: #ffe8bc;
-  --background: #1b100d;
-  --panel: #2d1d19;
-  --panel2: #453026;
-  --border: #9f744e;
-  --muted: #d5bdae;
-  --glow: #d37b36;
-}
-
-/* =====================================
-   WEBSITE HEADER
-   ===================================== */
-
-header {
-  text-align: center;
-  padding: 28px 16px;
-  background: #08090eea;
-  border-bottom: 2px solid var(--accent);
-}
-
-header h1 {
-  margin: 0;
-  font-size: clamp(30px, 6vw, 58px);
-  letter-spacing: 3px;
-}
-
-header h1 span {
-  color: var(--accent);
-}
-
-header p {
-  margin: 12px 0 0;
-  font-size: 12px;
-  letter-spacing: 3px;
-  color: var(--muted);
-}
-
-/* =====================================
-   LAUNCHER
-   ===================================== */
-
-.launcher {
-  max-width: 1120px;
-  margin: 25px auto 0;
-  padding: 0 12px;
-}
-
-.launcher-label {
-  color: var(--muted);
-  text-align: center;
-  font-size: 12px;
-  font-weight: bold;
-  letter-spacing: 2px;
-  margin-bottom: 13px;
-}
-
-.launcher-card {
-  position: relative;
-  min-height: 465px;
-  border: 2px solid var(--accent);
-  border-radius: 14px;
-  overflow: hidden;
-  isolation: isolate;
-  background: #120d20;
-  transition: border-color .35s;
-}
-
-/* THEMED SKY */
-
-.launcher-card::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  z-index: -3;
-  background:
-    radial-gradient(circle at 75% 28%, #704aab, transparent 43%),
-    linear-gradient(110deg, #241630, #100b1a);
-}
-
-.theme-main .launcher-card::before {
-  background:
-    radial-gradient(circle at 75% 28%, #267f48, transparent 43%),
-    linear-gradient(110deg, #102618, #050b08);
-}
-
-.theme-spirit .launcher-card::before {
-  background:
-    radial-gradient(circle at 75% 28%, #6652d8, transparent 45%),
-    linear-gradient(110deg, #16264d, #0d0b29);
-}
-
-.theme-light .launcher-card::before {
-  background:
-    radial-gradient(circle at 75% 28%, #ea934a, transparent 47%),
-    linear-gradient(110deg, #4c2925, #180e12);
-}
-
-/* =====================================
-   PIXEL SCENERY
-   ===================================== */
-
-.scenery {
-  position: absolute;
-  inset: 0;
-  z-index: -1;
-  overflow: hidden;
-  pointer-events: none;
-}
-
-.moon {
-  position: absolute;
-  top: 45px;
-  right: 15%;
-  width: 150px;
-  height: 150px;
-  border-radius: 50%;
-  background: #e1bdff;
-  box-shadow: 0 0 65px var(--glow);
-  opacity: .85;
-}
-
-.theme-main .moon {
-  background: #79f4a3;
-}
-
-.theme-spirit .moon {
-  background: #b3deff;
-  box-shadow: 0 0 95px #9a83ff;
-}
-
-.theme-light .moon {
-  background: #ffe4a5;
-  box-shadow: 0 0 100px #ffae59;
-}
-
-.hills {
-  position: absolute;
-  bottom: 0;
-  width: 100%;
-  height: 205px;
-  background: #1a122b;
-  clip-path: polygon(
-    0 45%, 8% 12%, 17% 48%,
-    28% 5%, 37% 57%, 48% 23%,
-    59% 55%, 70% 8%, 80% 50%,
-    92% 15%, 100% 43%,
-    100% 100%, 0 100%
-  );
-}
-
-.theme-main .hills {
-  background: #06170d;
-}
-
-.theme-spirit .hills {
-  background: #171340;
-}
-
-.theme-light .hills {
-  background: #382219;
-}
-
-/* ROYAL CASTLE */
-
-.castle {
-  position: absolute;
-  right: 12%;
-  bottom: 30px;
-  width: 235px;
-  height: 165px;
-  opacity: .85;
-  transition: opacity .3s;
-}
-
-.castle-body {
-  position: absolute;
-  left: 38px;
-  bottom: 0;
-  width: 159px;
-  height: 145px;
-  background: #b59886;
-}
-
-.castle-tower {
-  position: absolute;
-  bottom: 0;
-  width: 58px;
-  height: 205px;
-  background: #d5b28b;
-}
-
-.castle-tower.left { left: 0; }
-.castle-tower.right { right: 0; }
-
-.castle-tower::before {
-  content: "";
-  position: absolute;
-  top: -40px;
-  width: 100%;
-  height: 43px;
-  background: #7540a1;
-  clip-path: polygon(50% 0, 100% 100%, 0 100%);
-}
-
-.castle-door {
-  position: absolute;
-  left: 90px;
-  bottom: 0;
-  width: 56px;
-  height: 90px;
-  background: #28172f;
-  border-radius: 30px 30px 0 0;
-}
-
-.theme-main .castle {
-  filter: brightness(.3) hue-rotate(70deg);
-  opacity: .65;
-}
-
-.theme-spirit .castle {
-  opacity: 0;
-}
-
-.theme-light .castle {
-  filter: sepia(.7);
-  opacity: .5;
-}
-
-/* PURPLE CRYSTAL */
-
-.crystal {
-  position: absolute;
-  top: 65px;
-  right: 35%;
-  width: 68px;
-  height: 110px;
-  background: linear-gradient(
-    125deg, #f7caff, #9b47ed, #4d0c8c
-  );
-  clip-path: polygon(
-    50% 0, 100% 30%, 85% 80%,
-    50% 100%, 15% 80%, 0 30%
-  );
-  filter: drop-shadow(0 0 20px #ac57ff);
-  animation: float 3s ease-in-out infinite;
-}
-
-.theme-main .crystal {
-  opacity: 0;
-}
-
-.theme-spirit .crystal {
-  opacity: .65;
-}
-
-.theme-light .crystal {
-  opacity: .2;
-}
-
-@keyframes float {
-  50% { transform: translateY(-14px); }
-}
-
-/* FLOATING SPIRIT ISLANDS */
-
-.floating-island {
-  position: absolute;
-  background: #342b72;
-  border-top: 10px solid #a99aff;
-  clip-path: polygon(
-    0 0, 100% 0, 100% 35%,
-    65% 100%, 30% 75%, 0 35%
-  );
-  opacity: 0;
-}
-
-.island-one {
-  right: 10%;
-  bottom: 55px;
-  width: 165px;
-  height: 95px;
-  animation: float 4s ease-in-out infinite;
-}
-
-.island-two {
-  right: 32%;
-  bottom: 170px;
-  width: 120px;
-  height: 76px;
-  animation: float 3.3s ease-in-out infinite reverse;
-}
-
-.island-three {
-  right: 5%;
-  bottom: 260px;
-  width: 100px;
-  height: 65px;
-  animation: float 5s ease-in-out infinite;
-}
-
-.theme-spirit .floating-island {
-  opacity: 1;
-}
-
-/* =====================================
-   LEFT AND RIGHT ARROWS
-   ===================================== */
-
-.arrow {
-  position: absolute;
-  top: 50%;
-  transform: translateY(-50%);
-  z-index: 4;
-  height: 63px;
-  width: 49px;
-  border: 1px solid var(--accent);
-  background: #070815d9;
-  color: var(--bright);
-  border-radius: 8px;
-  font-size: 34px;
-  cursor: pointer;
-}
-
-.arrow:hover:not(:disabled) {
-  background: var(--panel2);
-}
-
-.arrow:disabled {
-  opacity: .25;
-  cursor: default;
-}
-
-.arrow.left { left: 12px; }
-.arrow.right { right: 12px; }
-
-/* =====================================
-   GAME INFO
-   ===================================== */
-
-.hero-content {
-  position: relative;
-  z-index: 2;
-  min-height: 465px;
-  max-width: 720px;
-  padding: 55px 85px;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-}
-
-.era {
-  color: var(--bright);
-  font-weight: bold;
-  font-size: 12px;
-  letter-spacing: 2px;
-  text-shadow: 0 2px 6px black;
-}
-
-.status {
-  display: inline-block;
-  align-self: flex-start;
-  background: #090716ce;
-  border: 1px solid var(--accent);
-  color: var(--bright);
-  border-radius: 5px;
-  padding: 8px 12px;
-  margin-top: 15px;
-  font-size: 11px;
-  font-weight: bold;
-}
-
-.hero-content h2 {
-  color: white;
-  font-size: clamp(29px, 5.4vw, 58px);
-  margin: 20px 0 12px;
-  line-height: 1.1;
-  text-shadow: 0 3px 16px black;
-}
-
-.hero-content p {
-  color: #f1ecf6;
-  font-size: 16px;
-  line-height: 1.75;
-  max-width: 520px;
-  text-shadow: 0 2px 9px black;
-}
-
-.play {
-  display: inline-block;
-  align-self: flex-start;
-  background: var(--accent);
-  color: #100b18;
-  border: 2px solid var(--bright);
-  border-radius: 6px;
-  padding: 15px 25px;
-  margin-top: 13px;
-  font-weight: 900;
-  text-decoration: none;
-}
-
-.play:hover {
-  filter: brightness(1.15);
-}
-
-.play.locked {
-  background: #39333d;
-  border-color: #716b76;
-  color: #bbb4c4;
-  pointer-events: none;
-}
-
-/* POSITION INDICATOR */
-
-.progress {
-  display: flex;
-  justify-content: center;
-  gap: 10px;
-  padding: 18px 0;
-}
-
-.progress-dot {
-  width: 12px;
-  height: 12px;
-  border: 1px solid var(--border);
-  border-radius: 30px;
-  background: var(--panel2);
-  cursor: pointer;
-}
-
-.progress-dot.active {
-  width: 30px;
-  background: var(--accent);
-}
-
-.progress-label {
-  text-align: center;
-  font-size: 12px;
-  color: var(--muted);
-  margin: 0 0 20px;
-}
-
-/* =====================================
-   FOUR TABS — VERSIONS REMOVED
-   ===================================== */
-
-nav {
-  max-width: 1100px;
-  margin: 12px auto 0;
-  display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: 2px;
-  background: var(--border);
-  border: 1px solid var(--border);
-}
-
-nav button {
-  border: 0;
-  background: var(--panel);
-  color: var(--muted);
-  padding: 19px 6px;
-  font-weight: bold;
-  cursor: pointer;
-}
-
-nav button.active,
-nav button:hover {
-  background: var(--panel2);
-  color: var(--bright);
-}
-
-main {
-  max-width: 1100px;
-  margin: 0 auto;
-  padding: 27px 15px 65px;
-}
-
-.tab {
-  display: none;
-}
-
-.tab.active {
-  display: block;
-}
-
-h2, h3 {
-  color: var(--bright);
-}
-
-p {
-  color: var(--muted);
-  line-height: 1.7;
-}
-
-.grid {
-  display: grid;
-  grid-template-columns:
-    repeat(auto-fit, minmax(245px, 1fr));
-  gap: 20px;
-  margin-top: 20px;
-}
-
-.card {
-  border: 1px solid var(--border);
-  background: var(--panel);
-  border-radius: 10px;
-  padding: 24px;
-}
-
-.badge {
-  display: inline-block;
-  border: 1px solid var(--accent);
-  color: var(--bright);
-  border-radius: 5px;
-  padding: 7px 10px;
-  font-size: 11px;
-  font-weight: bold;
-  margin-bottom: 10px;
-}
-
-.badge.planned {
-  border-color: #77717d;
-  color: #bbb3c5;
-}
-
-.link {
-  display: inline-block;
-  text-decoration: none;
-  color: #120d18;
-  background: var(--accent);
-  padding: 12px 19px;
-  margin-top: 10px;
-  font-weight: bold;
-  border-radius: 5px;
-}
-
-.link:hover {
-  filter: brightness(1.15);
-}
-
-/* =====================================
-   TIMELINE
-   ===================================== */
-
-.timeline {
-  padding-left: 34px;
-  border-left: 4px solid var(--accent);
-  margin: 30px 0;
-}
-
-.timeline-entry {
-  position: relative;
-  margin-bottom: 24px;
-  padding: 25px;
-  border-radius: 10px;
-  background: var(--panel);
-  border: 1px solid var(--border);
-}
-
-.timeline-entry::before {
-  content: "";
-  position: absolute;
-  left: -46px;
-  top: 27px;
-  width: 19px;
-  height: 19px;
-  border-radius: 50%;
-  background: var(--accent);
-  border: 3px solid var(--background);
-}
-
-.timeline-era {
-  display: block;
-  color: var(--accent);
-  letter-spacing: 2px;
-  font-size: 12px;
-  font-weight: bold;
-}
-
-.timeline-note {
-  color: var(--bright);
-  padding: 12px;
-  background: var(--panel2);
-  border-left: 3px solid var(--accent);
-  font-size: 13px;
-  line-height: 1.7;
-}
-
-/* FOOTER */
-
-.pixelground {
-  height: 85px;
-  background: repeating-linear-gradient(
-    90deg,
-    var(--panel2) 0 25px,
-    var(--background) 25px 45px,
-    var(--panel) 45px 65px
-  );
-}
-
-footer {
-  border-top: 1px solid var(--border);
-  color: var(--muted);
-  text-align: center;
-  padding: 26px;
-  font-size: 12px;
-}
-
-@media (max-width: 650px) {
-  .launcher-card, .hero-content {
-    min-height: 470px;
-  }
-
-  .hero-content {
-    padding: 32px 59px;
-  }
-
-  .hero-content p {
-    font-size: 13px;
-  }
-
-  .arrow {
-    height: 47px;
-    width: 35px;
-    font-size: 25px;
-  }
-
-  .arrow.left { left: 4px; }
-  .arrow.right { right: 4px; }
-
-  .castle {
-    right: -35px;
-    opacity: .3;
-  }
-
-  .crystal {
-    right: 15%;
-  }
-
-  nav button {
-    font-size: 11px;
-  }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  *, *::before, *::after {
-    animation: none !important;
-    transition: none !important;
-  }
-}
-</style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TheDarkWithin — Official Story Launcher</title>
+
+  <style>
+    /* =========================================
+       THEDARKWITHIN — STORY LAUNCHER
+       ========================================= */
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      --accent: #eac27a;
+      --bright: #fff0be;
+      --background: #100b1a;
+      --panel: #201629;
+      --panel2: #30203f;
+      --border: #8b659d;
+      --muted: #c5b8d2;
+      --sky1: #63408d;
+      --sky2: #170e26;
+      --ground: #20132e;
+
+      margin: 0;
+      min-height: 100vh;
+      background: var(--background);
+      color: #f7f0ff;
+      font-family: Arial, Helvetica, sans-serif;
+      transition: background 0.3s;
+    }
+
+    /* FORGOTTEN KING THEME */
+
+    body.theme-king {
+      --accent: #eac27a;
+      --bright: #fff0be;
+      --background: #100b1a;
+      --panel: #201629;
+      --panel2: #30203f;
+      --border: #8b659d;
+      --muted: #c5b8d2;
+      --sky1: #63408d;
+      --sky2: #170e26;
+      --ground: #20132e;
+    }
+
+    /* MAIN STORY THEME */
+
+    body.theme-main {
+      --accent: #70e99a;
+      --bright: #c8ffdb;
+      --background: #06100a;
+      --panel: #101d15;
+      --panel2: #193623;
+      --border: #397c4e;
+      --muted: #adcab7;
+      --sky1: #266b43;
+      --sky2: #071a0e;
+      --ground: #091d11;
+    }
+
+    /* SPIRIT REALM THEME */
+
+    body.theme-spirit {
+      --accent: #8cdaff;
+      --bright: #dbf3ff;
+      --background: #090920;
+      --panel: #171633;
+      --panel2: #2b2654;
+      --border: #7065ce;
+      --muted: #c0bee9;
+      --sky1: #514fc5;
+      --sky2: #101035;
+      --ground: #191543;
+    }
+
+    /* LAST LIGHT THEME */
+
+    body.theme-light {
+      --accent: #ffc584;
+      --bright: #ffe9bd;
+      --background: #190f0c;
+      --panel: #2b1e19;
+      --panel2: #463027;
+      --border: #9a7650;
+      --muted: #d2bfb0;
+      --sky1: #cb7442;
+      --sky2: #372020;
+      --ground: #382217;
+    }
+
+    /* =========================================
+       WEBSITE HEADER
+       ========================================= */
+
+    .site-header {
+      background: #08090de8;
+      text-align: center;
+      padding: 30px 15px;
+      border-bottom: 2px solid var(--accent);
+    }
+
+    .site-header h1 {
+      font-size: clamp(29px, 6vw, 58px);
+      letter-spacing: 3px;
+      margin: 0;
+      color: #ffffff;
+    }
+
+    .site-header h1 span {
+      color: var(--accent);
+    }
+
+    .site-header p {
+      color: var(--muted);
+      letter-spacing: 3px;
+      font-size: 12px;
+      margin: 12px 0 0;
+    }
+
+    /* =========================================
+       LAUNCHER AREA
+       ========================================= */
+
+    .launcher {
+      max-width: 1120px;
+      margin: 25px auto 0;
+      padding: 0 12px;
+    }
+
+    .launcher-label {
+      text-align: center;
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: bold;
+      letter-spacing: 2px;
+      margin-bottom: 13px;
+    }
+
+    .launcher-card {
+      position: relative;
+      isolation: isolate;
+      overflow: hidden;
+      min-height: 470px;
+      border: 2px solid var(--accent);
+      border-radius: 15px;
+
+      background:
+        radial-gradient(
+          circle at 76% 25%,
+          var(--sky1),
+          var(--sky2) 70%
+        );
+
+      box-shadow: 0 16px 45px #0007;
+    }
+
+    /* =========================================
+       GAME SCENERY
+       ========================================= */
+
+    .scenery {
+      position: absolute;
+      inset: 0;
+      z-index: -1;
+      pointer-events: none;
+      overflow: hidden;
+    }
+
+    .moon {
+      position: absolute;
+      top: 55px;
+      right: 15%;
+      width: 145px;
+      height: 145px;
+      border-radius: 50%;
+      background: var(--bright);
+      opacity: 0.72;
+      box-shadow: 0 0 90px var(--accent);
+    }
+
+    .mountains {
+      position: absolute;
+      bottom: 0;
+      width: 100%;
+      height: 225px;
+      background: var(--ground);
+
+      clip-path: polygon(
+        0 48%,
+        8% 10%,
+        17% 51%,
+        28% 6%,
+        38% 58%,
+        48% 22%,
+        59% 55%,
+        70% 12%,
+        82% 56%,
+        93% 14%,
+        100% 46%,
+        100% 100%,
+        0 100%
+      );
+    }
+
+    /* CASTLE */
+
+    .castle {
+      position: absolute;
+      bottom: 30px;
+      right: 12%;
+      width: 230px;
+      height: 190px;
+    }
+
+    .castle-body {
+      position: absolute;
+      bottom: 0;
+      left: 40px;
+      width: 150px;
+      height: 145px;
+      background: #b99a80;
+      border: 5px solid #856781;
+    }
+
+    .castle-tower {
+      position: absolute;
+      bottom: 0;
+      width: 61px;
+      height: 190px;
+      background: #d7b88b;
+      border: 5px solid #8d708e;
+    }
+
+    .castle-tower.left {
+      left: 0;
+    }
+
+    .castle-tower.right {
+      right: 0;
+    }
+
+    .castle-tower::before {
+      content: "";
+      position: absolute;
+      top: -49px;
+      left: -6px;
+      width: 65px;
+      height: 50px;
+      background: #78469b;
+      clip-path: polygon(
+        50% 0,
+        100% 100%,
+        0 100%
+      );
+    }
+
+    .castle-door {
+      position: absolute;
+      left: 91px;
+      bottom: 0;
+      width: 52px;
+      height: 85px;
+      border-radius: 28px 28px 0 0;
+      background: #26152e;
+    }
+
+    .theme-main .castle {
+      filter: brightness(.35) hue-rotate(80deg);
+    }
+
+    .theme-spirit .castle {
+      display: none;
+    }
+
+    .theme-light .castle {
+      filter: sepia(.75);
+      opacity: .55;
+    }
+
+    /* FLOATING CRYSTAL */
+
+    .crystal {
+      position: absolute;
+      right: 34%;
+      top: 75px;
+      width: 70px;
+      height: 115px;
+
+      background: linear-gradient(
+        125deg,
+        #f8ccff,
+        #a54aeb,
+        #50148c
+      );
+
+      clip-path: polygon(
+        50% 0,
+        100% 30%,
+        84% 80%,
+        50% 100%,
+        16% 80%,
+        0 30%
+      );
+
+      filter: drop-shadow(0 0 22px #ae59ff);
+      animation: crystalFloat 3s ease-in-out infinite;
+    }
+
+    @keyframes crystalFloat {
+      50% {
+        transform: translateY(-14px);
+      }
+    }
+
+    .theme-main .crystal {
+      display: none;
+    }
+
+    .theme-light .crystal {
+      opacity: .15;
+    }
+
+    /* FLOATING SPIRIT ISLANDS */
+
+    .floating-island {
+      position: absolute;
+      background: #342b79;
+      border-top: 11px solid #a99aff;
+
+      clip-path: polygon(
+        0 0,
+        100% 0,
+        100% 35%,
+        70% 100%,
+        30% 75%,
+        0 35%
+      );
+
+      display: none;
+      animation: crystalFloat 4s ease-in-out infinite;
+    }
+
+    .island-one {
+      right: 9%;
+      bottom: 65px;
+      width: 195px;
+      height: 105px;
+    }
+
+    .island-two {
+      right: 32%;
+      bottom: 175px;
+      width: 130px;
+      height: 78px;
+      animation-delay: -2s;
+    }
+
+    .island-three {
+      right: 7%;
+      bottom: 275px;
+      width: 105px;
+      height: 64px;
+      animation-delay: -1s;
+    }
+
+    .theme-spirit .floating-island {
+      display: block;
+    }
+
+    /* =========================================
+       LEFT AND RIGHT ARROW BUTTONS
+       ========================================= */
+
+    .arrow {
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      z-index: 5;
+
+      width: 50px;
+      height: 65px;
+
+      background: #080914d9;
+      color: var(--bright);
+      border: 1px solid var(--accent);
+      border-radius: 8px;
+
+      font-size: 35px;
+      cursor: pointer;
+    }
+
+    .arrow:hover:not(:disabled) {
+      background: var(--panel2);
+    }
+
+    .arrow:disabled {
+      opacity: .23;
+      cursor: default;
+    }
+
+    .arrow.left {
+      left: 12px;
+    }
+
+    .arrow.right {
+      right: 12px;
+    }
+
+    /* =========================================
+       CURRENT GAME INFORMATION
+       ========================================= */
+
+    .hero-content {
+      position: relative;
+      z-index: 2;
+
+      min-height: 470px;
+      max-width: 720px;
+
+      padding: 60px 85px;
+
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+
+    .hero-era {
+      color: var(--bright);
+      font-size: 12px;
+      font-weight: bold;
+      letter-spacing: 2px;
+      text-shadow: 0 2px 7px black;
+    }
+
+    .hero-status {
+      align-self: flex-start;
+      display: inline-block;
+
+      background: #080817d8;
+      border: 1px solid var(--accent);
+      border-radius: 5px;
+      color: var(--bright);
+
+      padding: 8px 12px;
+      margin-top: 14px;
+
+      font-size: 11px;
+      font-weight: bold;
+    }
+
+    .hero-content h2 {
+      color: white;
+      font-size: clamp(30px, 5vw, 56px);
+      line-height: 1.1;
+      margin: 20px 0 12px;
+      text-shadow: 0 3px 15px black;
+    }
+
+    .hero-content p {
+      color: #f0eaf8;
+      font-size: 16px;
+      line-height: 1.8;
+      max-width: 510px;
+      text-shadow: 0 2px 10px black;
+    }
+
+    .play-button {
+      display: inline-block;
+      align-self: flex-start;
+
+      background: var(--accent);
+      color: #100b16;
+      border: 2px solid var(--bright);
+      border-radius: 6px;
+
+      text-decoration: none;
+      font-weight: 900;
+
+      padding: 15px 25px;
+      margin-top: 14px;
+    }
+
+    .play-button:hover {
+      filter: brightness(1.15);
+    }
+
+    .play-button.locked {
+      background: #343039;
+      color: #c4bccb;
+      border-color: #77717e;
+      pointer-events: none;
+      cursor: default;
+    }
+
+    /* DOTS UNDER LAUNCHER */
+
+    .progress {
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+      padding: 18px 0;
+    }
+
+    .progress-dot {
+      background: var(--panel2);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      width: 13px;
+      height: 13px;
+      cursor: pointer;
+      padding: 0;
+    }
+
+    .progress-dot.active {
+      background: var(--accent);
+      width: 31px;
+    }
+
+    .progress-label {
+      text-align: center;
+      color: var(--muted);
+      font-size: 12px;
+      margin: 0 0 22px;
+    }
+
+    /* =========================================
+       FOUR MAIN TABS
+       ========================================= */
+
+    nav {
+      max-width: 1100px;
+      margin: 12px auto 0;
+
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 2px;
+
+      border: 1px solid var(--border);
+      background: var(--border);
+    }
+
+    nav button {
+      background: var(--panel);
+      color: var(--muted);
+      border: none;
+      padding: 18px 7px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    nav button.active,
+    nav button:hover {
+      background: var(--panel2);
+      color: var(--bright);
+    }
+
+    main {
+      max-width: 1100px;
+      margin: auto;
+      padding: 25px 15px 65px;
+    }
+
+    .tab {
+      display: none;
+    }
+
+    .tab.active {
+      display: block;
+    }
+
+    h2, h3 {
+      color: var(--bright);
+    }
+
+    p {
+      color: var(--muted);
+      line-height: 1.75;
+    }
+
+    /* =========================================
+       CARDS
+       ========================================= */
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(
+        auto-fit,
+        minmax(240px, 1fr)
+      );
+
+      gap: 20px;
+      margin-top: 20px;
+    }
+
+    .card {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 24px;
+    }
+
+    .card h3 {
+      margin-top: 4px;
+    }
+
+    .badge {
+      display: inline-block;
+      padding: 7px 10px;
+      margin-bottom: 10px;
+
+      border: 1px solid var(--accent);
+      border-radius: 5px;
+
+      color: var(--bright);
+      font-size: 11px;
+      font-weight: bold;
+    }
+
+    .badge.planned {
+      border-color: #79717c;
+      color: #c3b8c7;
+    }
+
+    .link {
+      display: inline-block;
+      background: var(--accent);
+      color: #120c19;
+
+      padding: 12px 19px;
+      margin-top: 10px;
+      border-radius: 5px;
+
+      font-weight: bold;
+      text-decoration: none;
+    }
+
+    .link:hover {
+      filter: brightness(1.15);
+    }
+
+    /* =========================================
+       TIMELINE
+       ========================================= */
+
+    .timeline {
+      margin: 30px 0;
+      padding-left: 35px;
+      border-left: 4px solid var(--accent);
+    }
+
+    .timeline-entry {
+      position: relative;
+
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+
+      padding: 25px;
+      margin-bottom: 25px;
+    }
+
+    .timeline-entry::before {
+      content: "";
+      position: absolute;
+      left: -47px;
+      top: 28px;
+
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+
+      background: var(--accent);
+      border: 3px solid var(--background);
+    }
+
+    .timeline-era {
+      color: var(--accent);
+      font-size: 12px;
+      letter-spacing: 2px;
+      font-weight: bold;
+    }
+
+    .timeline-note {
+      background: var(--panel2);
+      border-left: 3px solid var(--accent);
+      color: var(--bright);
+
+      padding: 12px;
+      margin: 15px 0;
+
+      font-size: 13px;
+      line-height: 1.7;
+    }
+
+    /* =========================================
+       BOTTOM PIXELS
+       ========================================= */
+
+    .pixelground {
+      height: 90px;
+      opacity: .7;
+
+      background: repeating-linear-gradient(
+        90deg,
+        var(--panel2) 0 25px,
+        var(--background) 25px 45px,
+        var(--panel) 45px 65px
+      );
+    }
+
+    footer {
+      padding: 26px;
+      border-top: 1px solid var(--border);
+      color: var(--muted);
+      text-align: center;
+      font-size: 12px;
+    }
+
+    /* =========================================
+       MOBILE SUPPORT
+       ========================================= */
+
+    @media (max-width: 650px) {
+      .launcher-card,
+      .hero-content {
+        min-height: 465px;
+      }
+
+      .hero-content {
+        padding: 36px 56px;
+      }
+
+      .hero-content p {
+        font-size: 13px;
+      }
+
+      .arrow {
+        width: 35px;
+        height: 47px;
+        font-size: 25px;
+      }
+
+      .arrow.left { left: 4px; }
+      .arrow.right { right: 4px; }
+
+      .castle {
+        right: -30px;
+        opacity: .3;
+      }
+
+      .crystal {
+        right: 13%;
+      }
+
+      nav button {
+        padding: 15px 4px;
+        font-size: 11px;
+      }
+
+      .timeline-entry {
+        padding: 17px;
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *,
+      *::before,
+      *::after {
+        animation: none !important;
+        transition: none !important;
+      }
+    }
+  </style>
 </head>
 
 <body class="theme-king">
 
-<header>
-  <h1>THE<span>DARK</span>WITHIN</h1>
-  <p>THE OFFICIAL STORY LAUNCHER</p>
-</header>
+  <!-- =====================================
+       WEBSITE HEADER
+       ===================================== -->
 
-<!-- =====================================
-     GAME SELECTOR WITH ARROWS
-     ===================================== -->
+  <header class="site-header">
+    <h1>
+      THE<span>DARK</span>WITHIN
+    </h1>
+    <p>
+      THE OFFICIAL STORY LAUNCHER
+    </p>
+  </header>
 
-<section class="launcher" aria-label="Game launcher">
+  <!-- =====================================
+       GAME LAUNCHER
+       ===================================== -->
 
-  <div class="launcher-label">
-    EXPLORE THE SAGA — USE THE ARROWS
-  </div>
+  <section class="launcher" aria-label="Choose an adventure">
 
-  <div class="launcher-card">
-
-    <div class="scenery" aria-hidden="true">
-      <div class="moon"></div>
-      <div class="hills"></div>
-
-      <div class="castle">
-        <div class="castle-body"></div>
-        <div class="castle-tower left"></div>
-        <div class="castle-tower right"></div>
-        <div class="castle-door"></div>
-      </div>
-
-      <div class="crystal"></div>
-
-      <div class="floating-island island-one"></div>
-      <div class="floating-island island-two"></div>
-      <div class="floating-island island-three"></div>
+    <div class="launcher-label">
+      EXPLORE THE STORY — USE THE ARROWS
     </div>
 
-    <button class="arrow left" id="previous"
-      aria-label="Previous adventure">
-      &#10094;
-    </button>
+    <div class="launcher-card">
 
-    <div class="hero-content" aria-live="polite">
+      <!-- SCENERY -->
 
-      <div class="era" id="gameEra"></div>
+      <div class="scenery" aria-hidden="true">
 
-      <span class="status" id="gameStatus"></span>
+        <div class="moon"></div>
+        <div class="mountains"></div>
 
-      <h2 id="gameTitle"></h2>
+        <div class="castle">
+          <div class="castle-body"></div>
+          <div class="castle-tower left"></div>
+          <div class="castle-tower right"></div>
+          <div class="castle-door"></div>
+        </div>
 
-      <p id="gameDescription"></p>
+        <div class="crystal"></div>
 
-      <a class="play" id="playButton"
-        href="forgotten-king.html">
-        PLAY ADVENTURE
-      </a>
+        <div class="floating-island island-one"></div>
+        <div class="floating-island island-two"></div>
+        <div class="floating-island island-three"></div>
+
+      </div>
+
+      <!-- LEFT ARROW -->
+
+      <button
+        type="button"
+        class="arrow left"
+        id="previous"
+        aria-label="Previous adventure"
+      >
+        &#10094;
+      </button>
+
+      <!-- SELECTED GAME -->
+
+      <div class="hero-content" aria-live="polite">
+
+        <div class="hero-era" id="gameEra">
+          ERA I
+        </div>
+
+        <span class="hero-status" id="gameStatus">
+          DLC I — RELEASED
+        </span>
+
+        <h2 id="gameTitle">
+          The Forgotten King
+        </h2>
+
+        <p id="gameDescription">
+          Discover the beginning of the darkness.
+        </p>
+
+        <a
+          class="play-button"
+          id="playButton"
+          href="forgotten-king.html"
+        >
+          PLAY ADVENTURE
+        </a>
+
+      </div>
+
+      <!-- RIGHT ARROW -->
+
+      <button
+        type="button"
+        class="arrow right"
+        id="next"
+        aria-label="Next adventure"
+      >
+        &#10095;
+      </button>
 
     </div>
 
-    <button class="arrow right" id="next"
-      aria-label="Next adventure">
-      &#10095;
+    <!-- POSITION DOTS -->
+
+    <div class="progress" id="progress"></div>
+
+    <p class="progress-label" id="positionLabel">
+      ADVENTURE 1 OF 4
+    </p>
+
+  </section>
+
+  <!-- =====================================
+       FOUR TABS
+       ===================================== -->
+
+  <nav aria-label="Main navigation">
+
+    <button
+      type="button"
+      class="active"
+      data-tab="overview"
+    >
+      OVERVIEW
     </button>
 
-  </div>
+    <button
+      type="button"
+      data-tab="reviews"
+    >
+      REVIEWS
+    </button>
 
-  <div class="progress" id="progress"></div>
+    <button
+      type="button"
+      data-tab="dlc"
+    >
+      DLC
+    </button>
 
-  <p class="progress-label" id="positionLabel"></p>
+    <button
+      type="button"
+      data-tab="timeline"
+    >
+      TIMELINE
+    </button>
 
-</section>
+  </nav>
 
-<!-- =====================================
-     ONLY FOUR TABS
-     ===================================== -->
+  <main>
 
-<nav aria-label="Website sections">
-  <button class="active" data-tab="overview">
-    OVERVIEW
-  </button>
-  <button data-tab="reviews">
-    REVIEWS
-  </button>
-  <button data-tab="dlc">
-    DLC
-  </button>
-  <button data-tab="timeline">
-    TIMELINE
-  </button>
-</nav>
+    <!-- =====================================
+         OVERVIEW
+         ===================================== -->
 
-<main>
+    <section id="overview" class="tab active">
 
-<!-- OVERVIEW -->
+      <h2 id="overviewHeading">
+        The Forgotten King
+      </h2>
 
-<section id="overview" class="tab active">
-
-  <h2 id="overviewHeading">
-    Discover TheDarkWithin
-  </h2>
-
-  <p id="overviewDescription"></p>
-
-  <div class="grid">
-
-    <article class="card">
-      <span class="badge">RELEASED</span>
-      <h3>The Forgotten King</h3>
-      <p>
-        Play as Sir Aeron and witness the
-        fall of King Aldric's kingdom.
+      <p id="overviewDescription">
+        Explore the beginning of the story.
       </p>
-      <a class="link" href="forgotten-king.html">
-        PLAY PREQUEL
-      </a>
-    </article>
 
-    <article class="card">
-      <span class="badge">RELEASED</span>
-      <h3>TheDarkWithin</h3>
-      <p>
-        Rescue missing villagers and
-        confront the Purple King.
-      </p>
-      <a class="link" href="game.html">
-        PLAY MAIN STORY
-      </a>
-    </article>
+      <div class="grid">
 
-    <article class="card">
-      <span class="badge">PLAYABLE TEST BUILD</span>
-      <h3>The Spirit Realm</h3>
-      <p>
-        Jump between floating islands,
-        collect soul fragments,
-        and battle the Spirit Titan.
-      </p>
-      <a class="link" href="spirit-realm.html">
-        PLAY DLC II
-      </a>
-    </article>
+        <article class="card">
 
-  </div>
+          <span class="badge">
+            RELEASED
+          </span>
 
-</section>
+          <h3>👑 The Forgotten King</h3>
 
-<!-- REVIEWS -->
+          <p>
+            Play as Sir Aeron, explore the Golden Kingdom,
+            and discover the origin of the Purple King.
+          </p>
 
-<section id="reviews" class="tab">
-  <h2>Player Reviews</h2>
+          <a class="link" href="forgotten-king.html">
+            PLAY PREQUEL
+          </a>
 
-  <div class="card">
-    <h3>Share Your Adventure</h3>
-    <p>
-      Explore the released games and test
-      The Spirit Realm's new parkour gameplay.
-    </p>
-    <p>
-      A public review-submission system
-      is planned for a future update.
-    </p>
-  </div>
-</section>
+        </article>
 
-<!-- DLC -->
+        <article class="card">
 
-<section id="dlc" class="tab">
+          <span class="badge">
+            RELEASED
+          </span>
 
-  <h2>Downloadable Content</h2>
+          <h3>⚔️ TheDarkWithin</h3>
 
-  <div class="grid">
+          <p>
+            Rescue the missing villagers, defeat monsters,
+            and face the Purple King in the main story.
+          </p>
 
-    <article class="card">
-      <span class="badge">DLC I — RELEASED</span>
-      <h3>👑 The Forgotten King</h3>
-      <p>
-        Eight chapters, royal 8-bit music,
-        difficulty settings, and a
-        tragic battle against King Aldric.
-      </p>
-      <a class="link" href="forgotten-king.html">
-        PLAY DLC I
-      </a>
-    </article>
+          <a class="link" href="game.html">
+            PLAY MAIN STORY
+          </a>
 
-    <article class="card">
-      <span class="badge">DLC II — TEST BUILD</span>
-      <h3>💜 The Spirit Realm</h3>
-      <p>
-        A side-view parkour adventure
-        across floating spirit islands.
-        Includes double jumps, dashing,
-        checkpoints, and the Spirit Titan.
-      </p>
-      <a class="link" href="spirit-realm.html">
-        PLAY DLC II
-      </a>
-    </article>
+        </article>
 
-    <article class="card">
-      <span class="badge planned">DLC III — PLANNED</span>
-      <h3>🌅 The Last Light</h3>
-      <p>
-        The final planned adventure
-        in TheDarkWithin saga.
-      </p>
-      <p>Coming soon.</p>
-    </article>
+        <article class="card">
 
-  </div>
+          <span class="badge">
+            PLAYABLE TEST BUILD
+          </span>
 
-</section>
+          <h3>💜 The Spirit Realm</h3>
 
-<!-- TIMELINE -->
+          <p>
+            Jump between floating islands, collect
+            soul fragments, master Spirit Dash,
+            and battle the Spirit Titan.
+          </p>
 
-<section id="timeline" class="tab">
+          <a class="link" href="spirit-realm.html">
+            PLAY DLC II
+          </a>
 
-  <h2>The Chronicles of Darkness</h2>
+        </article>
 
-  <p>
-    Play through the story in chronological
-    order, from the ancient kingdom to
-    the Spirit Realm and beyond.
-  </p>
-
-  <div class="timeline">
-
-    <article class="timeline-entry">
-      <span class="timeline-era">
-        ERA I — HUNDREDS OF YEARS AGO
-      </span>
-      <h3>👑 The Forgotten King</h3>
-      <span class="badge">RELEASED</span>
-      <p>
-        King Aldric discovers an ancient
-        crystal and becomes corrupted by
-        the Black Spirit.
-      </p>
-      <div class="timeline-note">
-        The origin of the Purple King.
       </div>
-      <a class="link" href="forgotten-king.html">
-        PLAY THE FIRST STORY
-      </a>
-    </article>
 
-    <article class="timeline-entry">
-      <span class="timeline-era">
-        ERA II — CENTURIES LATER
-      </span>
-      <h3>⚔️ TheDarkWithin</h3>
-      <span class="badge">RELEASED</span>
-      <p>
-        Villagers disappear and a new hero
-        confronts the darkness left behind
-        by King Aldric.
-      </p>
-      <a class="link" href="game.html">
-        PLAY MAIN STORY
-      </a>
-    </article>
+    </section>
 
-    <article class="timeline-entry">
-      <span class="timeline-era">
-        ERA III — AFTER THE MAIN STORY
-      </span>
-      <h3>💜 The Spirit Realm</h3>
-      <span class="badge">PLAYABLE TEST BUILD</span>
-      <p>
-        After confronting the Purple King,
-        the hero discovers a broken portal
-        to a dimension of floating islands,
-        trapped souls, and ancient guardians.
-      </p>
-      <div class="timeline-note">
-        The Spirit Titan reveals that
-        a greater darkness still exists.
+    <!-- =====================================
+         REVIEWS
+         ===================================== -->
+
+    <section id="reviews" class="tab">
+
+      <h2>Player Reviews</h2>
+
+      <div class="card">
+
+        <h3>Share Your Adventure</h3>
+
+        <p>
+          Explore TheDarkWithin, The Forgotten King,
+          and the playable Spirit Realm test build.
+        </p>
+
+        <p>
+          A public player review system
+          is planned for a future website update.
+        </p>
+
       </div>
-      <a class="link" href="spirit-realm.html">
-        PLAY THE SPIRIT REALM
-      </a>
-    </article>
 
-    <article class="timeline-entry">
-      <span class="timeline-era">
-        ERA IV — FINAL PLANNED ADVENTURE
-      </span>
-      <h3>🌅 The Last Light</h3>
-      <span class="badge planned">PLANNED</span>
+    </section>
+
+    <!-- =====================================
+         DLC
+         ===================================== -->
+
+    <section id="dlc" class="tab">
+
+      <h2>Downloadable Content</h2>
+
       <p>
-        The final adventure is still
-        in development. Its exact story
-        details will be revealed later.
+        Discover new adventures across
+        TheDarkWithin universe.
       </p>
-    </article>
 
-  </div>
+      <div class="grid">
 
-</section>
+        <article class="card">
 
-</main>
+          <span class="badge">
+            DLC I — RELEASED
+          </span>
 
-<div class="pixelground"></div>
+          <h3>👑 The Forgotten King</h3>
 
-<footer>
-  THEDARKWITHIN © 2026 • OFFICIAL STORY LAUNCHER
-</footer>
+          <p>
+            Eight chapters telling the story
+            of King Aldric, Sir Aeron,
+            the ancient purple crystal,
+            and the beginning of the darkness.
+          </p>
 
-<script>
-(() => {
-  "use strict";
+          <p>
+            Includes royal chiptune music,
+            difficulty settings, fullscreen,
+            sword abilities, and boss battles.
+          </p>
 
-  const $ = id => document.getElementById(id);
+          <a class="link" href="forgotten-king.html">
+            PLAY DLC I
+          </a>
 
-  const SAVE = "tdw-launcher-v3-selection";
+        </article>
 
-  // =====================================
-  // GAMES IN STORY ORDER
-  // =====================================
+        <article class="card">
 
-  const games = [
-    {
-      id: "king",
-      theme: "theme-king",
-      name: "The Forgotten King",
-      era: "ERA I — HUNDREDS OF YEARS AGO",
-      status: "DLC I — RELEASED",
-      description:
-        "Before the darkness consumed the world, " +
-        "King Aldric discovered a mysterious " +
-        "purple crystal. Play as Sir Aeron " +
-        "and witness the birth of the Purple King.",
-      overview:
-        "The story begins in the Golden Kingdom. " +
-        "Experience eight chapters of royal " +
-        "betrayal and the Black Spirit's corruption.",
-      url: "forgotten-king.html",
-      button: "♛ PLAY THE FORGOTTEN KING",
-      playable: true
-    },
+          <span class="badge">
+            DLC II — PLAYABLE TEST BUILD
+          </span>
 
-    {
-      id: "main",
-      theme: "theme-main",
-      name: "TheDarkWithin",
-      era: "ERA II — CENTURIES LATER",
-      status: "MAIN STORY — RELEASED",
-      description:
-        "The villagers have disappeared. " +
-        "Explore dark forests, snowy mountains, " +
-        "and dangerous lands to confront " +
-        "the Purple King.",
-      overview:
-        "The original eight-chapter adventure. " +
-        "Rescue the villagers, master special " +
-        "abilities, and discover the darkness.",
-      url: "game.html",
-      button: "▶ PLAY MAIN STORY",
-      playable: true
-    },
+          <h3>💜 The Spirit Realm</h3>
 
-    {
-      id: "spirit",
-      theme: "theme-spirit",
-      name: "The Spirit Realm",
-      era: "ERA III — AFTER THE MAIN STORY",
-      status: "DLC II — PLAYABLE TEST BUILD",
-      description:
-        "A broken portal leads to a shattered " +
-        "dimension. Leap across floating islands, " +
-        "dash through dangerous gaps, and face " +
-        "the armored Spirit Titan.",
-      overview:
-        "Discover a whole new platforming " +
-        "adventure with spirit powers, moving " +
-        "platforms, checkpoints, and boss battles.",
-      url: "spirit-realm.html",
-      button: "💜 PLAY THE SPIRIT REALM",
-      playable: true
-    },
+          <p>
+            A side-scrolling platforming adventure
+            across floating islands and shattered
+            pieces of the spirit world.
+          </p>
 
-    {
-      id: "light",
-      theme: "theme-light",
-      name: "The Last Light",
-      era: "ERA IV — THE FINAL ADVENTURE",
-      status: "DLC III — PLANNED",
-      description:
-        "The final chapter of TheDarkWithin " +
-        "saga is coming. A new adventure " +
-        "will decide the fate of the darkness.",
-      overview:
-        "The Last Light is still planned. " +
-        "Its full story and gameplay " +
-        "will be revealed later.",
-      url: null,
-      button: "COMING SOON",
-      playable: false
-    }
-  ];
+          <p>
+            Includes jumping, double jumping,
+            dashing, checkpoints, spirit powers,
+            and the armored Spirit Titan.
+          </p>
 
-  let index = 0;
+          <a class="link" href="spirit-realm.html">
+            PLAY DLC II
+          </a>
 
-  // =====================================
-  // REMEMBER SELECTED GAME
-  // =====================================
+        </article>
 
-  try {
-    const saved = localStorage.getItem(SAVE);
+        <article class="card">
 
-    const found = games.findIndex(
-      game => game.id === saved
-    );
+          <span class="badge planned">
+            DLC III — PLANNED
+          </span>
 
-    if (found !== -1) {
-      index = found;
-    }
-  } catch (error) {
-    // Storage is optional.
-  }
+          <h3>🌅 The Last Light</h3>
 
-  // =====================================
-  // CHANGE THE SELECTED GAME
-  // =====================================
+          <p>
+            The final planned adventure
+            in TheDarkWithin saga.
+          </p>
 
-  function showGame(newIndex) {
-    index = Math.max(
-      0,
-      Math.min(games.length - 1, newIndex)
-    );
+          <p>
+            Coming soon.
+          </p>
 
-    const game = games[index];
+        </article>
 
-    // Entire website changes theme.
+      </div>
 
-    document.body.className = game.theme;
+    </section>
 
-    // Update launcher information.
+    <!-- =====================================
+         STORY TIMELINE
+         ===================================== -->
 
-    $("gameEra").textContent = game.era;
-    $("gameStatus").textContent = game.status;
-    $("gameTitle").textContent = game.name;
-    $("gameDescription").textContent =
-      game.description;
+    <section id="timeline" class="tab">
 
-    // Update overview.
+      <h2>The Chronicles of Darkness</h2>
 
-    $("overviewHeading").textContent = game.name;
-    $("overviewDescription").textContent =
-      game.overview;
+      <p>
+        Follow the adventures in story order,
+        beginning hundreds of years before
+        the events of the main game.
+      </p>
 
-    // Update main Play button.
+      <div class="timeline">
 
-    const playButton = $("playButton");
+        <!-- FIRST STORY -->
 
-    playButton.textContent = game.button;
-    playButton.classList.toggle(
-      "locked",
-      !game.playable
-    );
+        <article class="timeline-entry">
 
-    if (game.playable) {
-      playButton.href = game.url;
-      playButton.removeAttribute("aria-disabled");
-      playButton.removeAttribute("tabindex");
-    } else {
-      playButton.removeAttribute("href");
-      playButton.setAttribute(
-        "aria-disabled",
-        "true"
+          <span class="timeline-era">
+            ERA I — HUNDREDS OF YEARS AGO
+          </span>
+
+          <h3>👑 The Forgotten King</h3>
+
+          <span class="badge">RELEASED</span>
+
+          <p>
+            King Aldric discovers a mysterious
+            purple crystal beneath his kingdom.
+          </p>
+
+          <p>
+            As the Black Spirit corrupts him,
+            his loyal knight Sir Aeron fights
+            to save the people.
+          </p>
+
+          <div class="timeline-note">
+            The beginning of the saga
+            and the origin of the Purple King.
+          </div>
+
+          <a class="link" href="forgotten-king.html">
+            PLAY FIRST STORY
+          </a>
+
+        </article>
+
+        <!-- SECOND STORY -->
+
+        <article class="timeline-entry">
+
+          <span class="timeline-era">
+            ERA II — CENTURIES LATER
+          </span>
+
+          <h3>⚔️ TheDarkWithin</h3>
+
+          <span class="badge">RELEASED</span>
+
+          <p>
+            Villagers begin disappearing.
+            A new hero travels through dangerous
+            lands to rescue them and confront
+            the darkness left behind by Aldric.
+          </p>
+
+          <div class="timeline-note">
+            The main story continues
+            the conflict from The Forgotten King.
+          </div>
+
+          <a class="link" href="game.html">
+            PLAY MAIN STORY
+          </a>
+
+        </article>
+
+        <!-- THIRD STORY -->
+
+        <article class="timeline-entry">
+
+          <span class="timeline-era">
+            ERA III — AFTER THE MAIN STORY
+          </span>
+
+          <h3>💜 The Spirit Realm</h3>
+
+          <span class="badge">
+            PLAYABLE TEST BUILD
+          </span>
+
+          <p>
+            After the Purple King's defeat,
+            a mysterious portal opens into
+            a world of floating islands,
+            lost souls, and ancient guardians.
+          </p>
+
+          <p>
+            The hero must master new abilities
+            and face the Spirit Titan to uncover
+            the realm's secrets.
+          </p>
+
+          <div class="timeline-note">
+            The Spirit Titan reveals that
+            a greater darkness still exists.
+          </div>
+
+          <a class="link" href="spirit-realm.html">
+            PLAY THE SPIRIT REALM
+          </a>
+
+        </article>
+
+        <!-- FINAL STORY -->
+
+        <article class="timeline-entry">
+
+          <span class="timeline-era">
+            ERA IV — FINAL PLANNED ADVENTURE
+          </span>
+
+          <h3>🌅 The Last Light</h3>
+
+          <span class="badge planned">
+            PLANNED
+          </span>
+
+          <p>
+            The final chapter of TheDarkWithin
+            saga is still in development.
+          </p>
+
+          <p>
+            Its full story and final timeline
+            details will be revealed later.
+          </p>
+
+        </article>
+
+      </div>
+
+    </section>
+
+  </main>
+
+  <!-- BOTTOM PIXELS -->
+
+  <div class="pixelground"></div>
+
+  <!-- FOOTER -->
+
+  <footer>
+    THEDARKWITHIN © 2026
+    • OFFICIAL STORY LAUNCHER
+  </footer>
+
+  <!-- =====================================
+       JAVASCRIPT — LAUNCHER CONTROLS
+       ===================================== -->
+
+  <script>
+    (() => {
+      "use strict";
+
+      const $ = id => document.getElementById(id);
+
+      const SAVE_KEY = "tdw-launcher-selected-v4";
+
+      // ===================================
+      // ALL FOUR ADVENTURES
+      // ===================================
+
+      const games = [
+
+        {
+          id: "king",
+          theme: "theme-king",
+          title: "The Forgotten King",
+          era: "ERA I — HUNDREDS OF YEARS AGO",
+          status: "DLC I — RELEASED",
+
+          description:
+            "Before TheDarkWithin, King Aldric " +
+            "discovered a mysterious purple crystal. " +
+            "Play as Sir Aeron and witness the fall " +
+            "of the Golden Kingdom.",
+
+          overview:
+            "The story begins in the Golden Kingdom. " +
+            "Discover the ancient crystal and learn " +
+            "how the Purple King was born.",
+
+          url: "forgotten-king.html",
+          button: "♛ PLAY THE FORGOTTEN KING",
+          playable: true
+        },
+
+        {
+          id: "main",
+          theme: "theme-main",
+          title: "TheDarkWithin",
+          era: "ERA II — CENTURIES LATER",
+          status: "MAIN STORY — RELEASED",
+
+          description:
+            "Villagers have disappeared. Explore " +
+            "dark forests, snowy mountains, and " +
+            "dangerous lands to defeat monsters " +
+            "and confront the Purple King.",
+
+          overview:
+            "Play the original eight-chapter story. " +
+            "Rescue the missing villagers, unlock " +
+            "special abilities, and face the darkness.",
+
+          url: "game.html",
+          button: "▶ PLAY MAIN STORY",
+          playable: true
+        },
+
+        {
+          id: "spirit",
+          theme: "theme-spirit",
+          title: "The Spirit Realm",
+          era: "ERA III — AFTER THE MAIN STORY",
+          status: "DLC II — PLAYABLE TEST BUILD",
+
+          description:
+            "Enter a shattered dimension of floating " +
+            "islands. Double jump across the void, " +
+            "dash between platforms, collect lost souls, " +
+            "and fight the armored Spirit Titan.",
+
+          overview:
+            "Experience a new side-scrolling " +
+            "platforming adventure with jumping, " +
+            "Spirit Dash, checkpoints, floating " +
+            "islands, and an epic final boss.",
+
+          url: "spirit-realm.html",
+          button: "💜 PLAY THE SPIRIT REALM",
+          playable: true
+        },
+
+        {
+          id: "light",
+          theme: "theme-light",
+          title: "The Last Light",
+          era: "ERA IV — FINAL PLANNED ADVENTURE",
+          status: "DLC III — PLANNED",
+
+          description:
+            "The final planned adventure in the " +
+            "TheDarkWithin saga. The fate of the " +
+            "darkness will be decided in an " +
+            "upcoming chapter of the story.",
+
+          overview:
+            "The Last Light is currently planned. " +
+            "More story details and gameplay " +
+            "information will be revealed later.",
+
+          url: null,
+          button: "COMING SOON",
+          playable: false
+        }
+
+      ];
+
+      // ===================================
+      // CURRENT SELECTION
+      // ===================================
+
+      let currentIndex = 0;
+
+      try {
+        const saved = localStorage.getItem(
+          SAVE_KEY
+        );
+
+        const found = games.findIndex(
+          game => game.id === saved
+        );
+
+        if (found >= 0) {
+          currentIndex = found;
+        }
+
+      } catch (error) {
+        // Browser storage is optional.
+      }
+
+      // ===================================
+      // CHANGE THE SELECTED GAME
+      // ===================================
+
+      function showGame(index) {
+
+        currentIndex = Math.max(
+          0,
+          Math.min(games.length - 1, index)
+        );
+
+        const game = games[currentIndex];
+
+        // Change background theme.
+
+        document.body.className = game.theme;
+
+        // Update launcher text.
+
+        $("gameEra").textContent = game.era;
+
+        $("gameStatus").textContent =
+          game.status;
+
+        $("gameTitle").textContent =
+          game.title;
+
+        $("gameDescription").textContent =
+          game.description;
+
+        // Update overview section.
+
+        $("overviewHeading").textContent =
+          game.title;
+
+        $("overviewDescription").textContent =
+          game.overview;
+
+        // Update Play button.
+
+        const play = $("playButton");
+
+        play.textContent = game.button;
+
+        play.classList.toggle(
+          "locked",
+          !game.playable
+        );
+
+        if (game.playable) {
+
+          play.href = game.url;
+
+          play.removeAttribute(
+            "aria-disabled"
+          );
+
+          play.removeAttribute(
+            "tabindex"
+          );
+
+        } else {
+
+          play.removeAttribute("href");
+
+          play.setAttribute(
+            "aria-disabled",
+            "true"
+          );
+
+          play.setAttribute(
+            "tabindex",
+            "-1"
+          );
+
+        }
+
+        // Stop arrows at both ends.
+
+        $("previous").disabled =
+          currentIndex === 0;
+
+        $("next").disabled =
+          currentIndex === games.length - 1;
+
+        // Update progress indicator.
+
+        $("positionLabel").textContent =
+          "ADVENTURE " + (currentIndex + 1) +
+          " OF " + games.length;
+
+        document.querySelectorAll(
+          ".progress-dot"
+        ).forEach((dot, i) => {
+
+          const active = i === currentIndex;
+
+          dot.classList.toggle(
+            "active",
+            active
+          );
+
+          dot.setAttribute(
+            "aria-current",
+            active ? "true" : "false"
+          );
+
+        });
+
+        // Remember selected adventure.
+
+        try {
+
+          localStorage.setItem(
+            SAVE_KEY,
+            game.id
+          );
+
+        } catch (error) {}
+
+      }
+
+      // ===================================
+      // LEFT AND RIGHT ARROWS
+      // ===================================
+
+      $("previous").addEventListener(
+        "click",
+        () => showGame(currentIndex - 1)
       );
-      playButton.setAttribute(
-        "tabindex",
-        "-1"
+
+      $("next").addEventListener(
+        "click",
+        () => showGame(currentIndex + 1)
       );
-    }
 
-    // Enable/disable arrows at the ends.
+      // ===================================
+      // FOUR PROGRESS DOTS
+      // ===================================
 
-    $("previous").disabled = index === 0;
-    $("next").disabled =
-      index === games.length - 1;
+      const progress = $("progress");
 
-    // Progress display.
+      games.forEach((game, index) => {
 
-    $("positionLabel").textContent =
-      "ADVENTURE " + (index + 1) +
-      " OF " + games.length;
+        const dot = document.createElement(
+          "button"
+        );
 
-    document.querySelectorAll(
-      ".progress-dot"
-    ).forEach((dot, i) => {
-      dot.classList.toggle(
-        "active",
-        i === index
+        dot.type = "button";
+
+        dot.className = "progress-dot";
+
+        dot.title = game.title;
+
+        dot.setAttribute(
+          "aria-label",
+          "Select " + game.title
+        );
+
+        dot.addEventListener(
+          "click",
+          () => showGame(index)
+        );
+
+        progress.appendChild(dot);
+
+      });
+
+      // ===================================
+      // KEYBOARD LEFT / RIGHT ARROWS
+      // ===================================
+
+      document.addEventListener(
+        "keydown",
+        event => {
+
+          const tag = document.activeElement.tagName;
+
+          if (
+            ["INPUT", "TEXTAREA", "SELECT"].includes(tag)
+          ) {
+            return;
+          }
+
+          if (event.key === "ArrowRight") {
+            showGame(currentIndex + 1);
+          }
+
+          if (event.key === "ArrowLeft") {
+            showGame(currentIndex - 1);
+          }
+
+        }
       );
-    });
 
-    // Save the current selection.
+      // ===================================
+      // WEBSITE TABS
+      // ===================================
 
-    try {
-      localStorage.setItem(SAVE, game.id);
-    } catch (error) {}
-  }
+      const tabNames = [
+        "overview",
+        "reviews",
+        "dlc",
+        "timeline"
+      ];
 
-  // =====================================
-  // LEFT AND RIGHT BUTTONS
-  // =====================================
+      const tabButtons =
+        document.querySelectorAll(
+          "nav button[data-tab]"
+        );
 
-  $("previous").onclick = () => {
-    showGame(index - 1);
-  };
+      const tabs =
+        document.querySelectorAll(".tab");
 
-  $("next").onclick = () => {
-    showGame(index + 1);
-  };
+      function openTab(name) {
 
-  // =====================================
-  // PROGRESS DOTS
-  // =====================================
+        if (!tabNames.includes(name)) {
+          return;
+        }
 
-  games.forEach((game, i) => {
-    const dot = document.createElement("button");
+        tabButtons.forEach(button => {
 
-    dot.type = "button";
-    dot.className = "progress-dot";
-    dot.title = game.name;
+          const active =
+            button.dataset.tab === name;
 
-    dot.setAttribute(
-      "aria-label",
-      "Show " + game.name
-    );
+          button.classList.toggle(
+            "active",
+            active
+          );
 
-    dot.onclick = () => showGame(i);
+        });
 
-    $("progress").appendChild(dot);
-  });
+        tabs.forEach(tab => {
 
-  // =====================================
-  // OPTIONAL KEYBOARD NAVIGATION
-  // =====================================
+          tab.classList.toggle(
+            "active",
+            tab.id === name
+          );
 
-  document.addEventListener("keydown", e => {
-    const tag = document.activeElement.tagName;
+        });
 
-    if (
-      ["INPUT", "SELECT", "TEXTAREA"].includes(tag)
-    ) {
-      return;
-    }
+      }
 
-    if (e.key === "ArrowRight") {
-      showGame(index + 1);
-    }
+      tabButtons.forEach(button => {
 
-    if (e.key === "ArrowLeft") {
-      showGame(index - 1);
-    }
-  });
+        button.addEventListener(
+          "click",
+          () => {
 
-  // =====================================
-  // FOUR WEBSITE TABS
-  // =====================================
+            const tabName =
+              button.dataset.tab;
 
-  const tabNames = [
-    "overview",
-    "reviews",
-    "dlc",
-    "timeline"
-  ];
+            openTab(tabName);
 
-  const tabButtons =
-    document.querySelectorAll(
-      "nav button[data-tab]"
-    );
+            history.replaceState(
+              null,
+              "",
+              "#" + tabName
+            );
 
-  const tabs =
-    document.querySelectorAll(".tab");
+          }
+        );
 
-  function openTab(name) {
-    if (!tabNames.includes(name)) {
-      return;
-    }
+      });
 
-    tabButtons.forEach(button => {
-      button.classList.toggle(
-        "active",
-        button.dataset.tab === name
+      // ===================================
+      // OPEN DIRECT TAB LINKS
+      // ===================================
+
+      function checkHash() {
+
+        const hash =
+          window.location.hash.slice(1);
+
+        if (tabNames.includes(hash)) {
+
+          openTab(hash);
+
+        } else if (hash === "versions") {
+
+          // Old Versions links now open Overview.
+
+          openTab("overview");
+
+        }
+
+      }
+
+      window.addEventListener(
+        "hashchange",
+        checkHash
       );
-    });
 
-    tabs.forEach(tab => {
-      tab.classList.toggle(
-        "active",
-        tab.id === name
-      );
-    });
-  }
+      // ===================================
+      // LAUNCH
+      // ===================================
 
-  tabButtons.forEach(button => {
-    button.onclick = () => {
-      const name = button.dataset.tab;
+      showGame(currentIndex);
 
-      openTab(name);
+      checkHash();
 
-      history.replaceState(
-        null,
-        "",
-        "#" + name
-      );
-    };
-  });
-
-  // Handle direct links to tabs.
-
-  function checkHash() {
-    const hash = location.hash.slice(1);
-
-    if (tabNames.includes(hash)) {
-      openTab(hash);
-    } else if (hash === "versions") {
-      // Old Versions links open Overview.
-      openTab("overview");
-    }
-  }
-
-  window.addEventListener(
-    "hashchange",
-    checkHash
-  );
-
-  // =====================================
-  // START LAUNCHER
-  // =====================================
-
-  showGame(index);
-  checkHash();
-
-})();
-</script>
+    })();
+  </script>
 
 </body>
 </html>
