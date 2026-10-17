@@ -2,1103 +2,341 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-
-  <title>TheDarkWithin | Official Game</title>
-
-  <style>
-    :root {
-      --bg: #080a0d;
-      --panel: #10151a;
-      --panel2: #171e24;
-      --green: #70f0a0;
-      --green-dark: #1d6744;
-      --text: #f1f5f3;
-      --muted: #9caaa6;
-      --border: #304039;
-    }
-
-    * {
-      box-sizing: border-box;
-    }
-
-    body {
-      margin: 0;
-      min-height: 100vh;
-      background: var(--bg);
-      color: var(--text);
-      font-family: Arial, Helvetica, sans-serif;
-    }
-
-    button {
-      font: inherit;
-      cursor: pointer;
-    }
-
-    .site {
-      min-height: 100vh;
-      position: relative;
-      overflow: hidden;
-      background:
-        radial-gradient(
-          ellipse at 50% 18%,
-          rgba(35, 108, 82, 0.22),
-          transparent 48%
-        ),
-        linear-gradient(
-          180deg,
-          #0a1013 0%,
-          #0b0c11 60%,
-          #050608 100%
-        );
-    }
-
-    .site::before {
-      content: "";
-      position: absolute;
-      inset: 0;
-      pointer-events: none;
-      opacity: 0.18;
-
-      background-image:
-        linear-gradient(
-          rgba(132, 227, 166, 0.12) 1px,
-          transparent 1px
-        ),
-        linear-gradient(
-          90deg,
-          rgba(132, 227, 166, 0.12) 1px,
-          transparent 1px
-        );
-
-      background-size: 42px 42px;
-
-      mask-image:
-        linear-gradient(
-          transparent 5%,
-          black 100%
-        );
-    }
-
-    .content {
-      position: relative;
-      z-index: 1;
-      width: min(1160px, calc(100% - 32px));
-      margin: auto;
-    }
-
-    /* HEADER */
-
-    header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 20px;
-      padding: 28px 0;
-      border-bottom: 1px solid var(--border);
-    }
-
-    .brand {
-      font-size: 21px;
-      font-weight: 900;
-      letter-spacing: 2px;
-    }
-
-    .brand span {
-      color: var(--green);
-    }
-
-    .release-label {
-      font-size: 12px;
-      letter-spacing: 2px;
-      color: var(--green);
-      text-transform: uppercase;
-    }
-
-    /* HERO */
-
-    .hero {
-      text-align: center;
-      padding: 55px 16px 26px;
-    }
-
-    .eyebrow {
-      color: var(--green);
-      text-transform: uppercase;
-      letter-spacing: 4px;
-      font-size: 12px;
-      font-weight: bold;
-    }
-
-    h1 {
-      margin: 18px 0 12px;
-      font-size: clamp(43px, 8vw, 94px);
-      line-height: 1;
-      letter-spacing: -4px;
-      text-shadow: 0 10px 40px #000;
-    }
-
-    .hero-description {
-      color: var(--muted);
-      max-width: 650px;
-      margin: 22px auto;
-      font-size: 16px;
-      line-height: 1.7;
-    }
-
-    /* STORY SELECTOR */
-
-    .section-label {
-      text-align: center;
-      font-size: 12px;
-      color: var(--muted);
-      letter-spacing: 3px;
-      text-transform: uppercase;
-      margin: 25px 0 18px;
-    }
-
-    .selector {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 16px;
-    }
-
-    .arrow {
-      flex: 0 0 50px;
-      width: 50px;
-      height: 60px;
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      background: rgba(18, 28, 26, 0.9);
-      color: var(--green);
-      font-size: 30px;
-      transition: 0.2s;
-    }
-
-    .arrow:hover,
-    .arrow:focus-visible {
-      border-color: var(--green);
-      background: var(--green-dark);
-      color: white;
-    }
-
-    .story-card {
-      position: relative;
-      width: min(820px, 100%);
-      min-height: 390px;
-      border: 1px solid #416050;
-      border-radius: 20px;
-      overflow: hidden;
-      background: #101d1c;
-      box-shadow:
-        0 25px 100px rgba(0, 0, 0, 0.45),
-        0 0 60px rgba(40, 156, 88, 0.08);
-      display: flex;
-      align-items: flex-end;
-    }
-
-    .story-art {
-      position: absolute;
-      inset: 0;
-      transition: background 0.3s;
-    }
-
-    .story-art::before {
-      content: "";
-      position: absolute;
-      width: 150%;
-      height: 100%;
-      left: -25%;
-      bottom: -30%;
-      background:
-        repeating-linear-gradient(
-          120deg,
-          rgba(0, 0, 0, 0.28) 0 15px,
-          transparent 15px 80px
-        );
-      transform: skewY(-9deg);
-    }
-
-    .story-art::after {
-      content: "";
-      position: absolute;
-      inset: 0;
-      background:
-        linear-gradient(
-          0deg,
-          #080b0c 0%,
-          rgba(5, 8, 8, 0.8) 36%,
-          transparent 100%
-        );
-    }
-
-    .story-main {
-      background:
-        radial-gradient(
-          circle at 50% 30%,
-          rgba(95, 233, 135, 0.25),
-          transparent 40%
-        ),
-        linear-gradient(
-          140deg,
-          #10352b,
-          #13202b 50%,
-          #050a0e
-        );
-    }
-
-    .story-dlc1 {
-      background:
-        radial-gradient(
-          circle at 50% 25%,
-          rgba(139, 106, 244, 0.3),
-          transparent 45%
-        ),
-        linear-gradient(
-          135deg,
-          #282043,
-          #0a1022
-        );
-    }
-
-    .story-dlc2 {
-      background:
-        radial-gradient(
-          circle at 55% 25%,
-          rgba(238, 91, 80, 0.25),
-          transparent 45%
-        ),
-        linear-gradient(
-          135deg,
-          #462025,
-          #110b12
-        );
-    }
-
-    .story-dlc3 {
-      background:
-        radial-gradient(
-          circle at 45% 25%,
-          rgba(76, 163, 243, 0.25),
-          transparent 45%
-        ),
-        linear-gradient(
-          135deg,
-          #173848,
-          #080e1f
-        );
-    }
-
-    .story-info {
-      position: relative;
-      z-index: 1;
-      padding: 35px;
-      width: 100%;
-    }
-
-    .story-tag {
-      display: inline-block;
-      padding: 7px 11px;
-      border-radius: 5px;
-      background: rgba(104, 241, 160, 0.14);
-      color: var(--green);
-      border: 1px solid rgba(104, 241, 160, 0.35);
-      text-transform: uppercase;
-      letter-spacing: 2px;
-      font-size: 11px;
-      font-weight: bold;
-    }
-
-    .story-title {
-      font-size: clamp(30px, 5vw, 52px);
-      margin: 18px 0 12px;
-      letter-spacing: -1px;
-    }
-
-    .story-description {
-      color: #c5d1cd;
-      line-height: 1.6;
-      max-width: 580px;
-      min-height: 48px;
-    }
-
-    .story-actions {
-      display: flex;
-      flex-wrap: wrap;
-      align-items: center;
-      gap: 12px;
-      margin-top: 25px;
-    }
-
-    .play-button {
-      display: inline-block;
-      padding: 15px 30px;
-      background: var(--green);
-      color: #06150e;
-      border: none;
-      border-radius: 8px;
-      text-decoration: none;
-      font-size: 15px;
-      font-weight: 900;
-      letter-spacing: 1px;
-      transition: 0.2s;
-    }
-
-    .play-button:hover {
-      background: #b3ffcc;
-      transform: translateY(-2px);
-    }
-
-    .unavailable {
-      background: #27312d;
-      color: #a5b4ab;
-      cursor: not-allowed;
-    }
-
-    .unavailable:hover {
-      background: #27312d;
-      transform: none;
-    }
-
-    .small-note {
-      color: #b4c3ba;
-      font-size: 13px;
-    }
-
-    /* STORY DOTS */
-
-    .dots {
-      display: flex;
-      justify-content: center;
-      gap: 10px;
-      padding: 20px;
-    }
-
-    .dot {
-      width: 11px;
-      height: 11px;
-      border: 1px solid #64736b;
-      border-radius: 50%;
-      background: #25332c;
-      padding: 0;
-    }
-
-    .dot.active {
-      width: 30px;
-      border-radius: 20px;
-      border-color: var(--green);
-      background: var(--green);
-    }
-
-    /* BOTTOM NAVIGATION */
-
-    .bottom-area {
-      margin-top: 42px;
-      margin-bottom: 60px;
-      background: rgba(12, 17, 20, 0.96);
-      border: 1px solid var(--border);
-      border-radius: 16px;
-      overflow: hidden;
-    }
-
-    .tabs {
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      border-bottom: 1px solid var(--border);
-    }
-
-    .tab {
-      padding: 20px 10px;
-      background: transparent;
-      color: #afbbb4;
-      border: none;
-      border-bottom: 3px solid transparent;
-      font-weight: bold;
-      transition: 0.2s;
-    }
-
-    .tab:hover {
-      color: white;
-      background: #16231c;
-    }
-
-    .tab.active {
-      color: var(--green);
-      border-bottom-color: var(--green);
-      background: #14231c;
-    }
-
-    .tab-content {
-      padding: 35px;
-      min-height: 220px;
-      animation: appear 0.25s ease;
-    }
-
-    .tab-content h2 {
-      margin: 0 0 15px;
-      font-size: 27px;
-    }
-
-    .tab-content p {
-      color: var(--muted);
-      line-height: 1.8;
-      max-width: 800px;
-    }
-
-    .feature-row {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 10px;
-      margin-top: 25px;
-    }
-
-    .feature {
-      border: 1px solid var(--border);
-      background: #16221c;
-      color: #bde3cb;
-      padding: 10px 15px;
-      border-radius: 7px;
-      font-size: 13px;
-    }
-
-    .dlc-list {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 14px;
-      margin-top: 22px;
-    }
-
-    .dlc-card {
-      text-align: left;
-      background: #151b20;
-      color: white;
-      border: 1px solid #36433c;
-      border-radius: 10px;
-      padding: 20px;
-    }
-
-    .dlc-card:hover {
-      border-color: var(--green);
-    }
-
-    .dlc-card strong {
-      display: block;
-      margin-bottom: 9px;
-      font-size: 17px;
-    }
-
-    .dlc-card span {
-      color: var(--muted);
-      font-size: 13px;
-    }
-
-    footer {
-      color: #66766d;
-      text-align: center;
-      padding: 0 0 35px;
-      font-size: 12px;
-    }
-
-    @keyframes appear {
-      from {
-        opacity: 0;
-        transform: translateY(6px);
-      }
-      to {
-        opacity: 1;
-        transform: translateY(0);
-      }
-    }
-
-    @media (max-width: 700px) {
-      header {
-        flex-direction: column;
-        text-align: center;
-      }
-
-      .hero {
-        padding-top: 35px;
-      }
-
-      h1 {
-        letter-spacing: -2px;
-      }
-
-      .selector {
-        gap: 6px;
-      }
-
-      .arrow {
-        width: 36px;
-        flex-basis: 36px;
-        font-size: 23px;
-      }
-
-      .story-card {
-        min-height: 440px;
-      }
-
-      .story-info {
-        padding: 20px;
-      }
-
-      .story-title {
-        font-size: 31px;
-      }
-
-      .tabs {
-        grid-template-columns: repeat(2, 1fr);
-      }
-
-      .tab-content {
-        padding: 22px;
-      }
-
-      .dlc-list {
-        grid-template-columns: 1fr;
-      }
-    }
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>TheDarkWithin | Official Game Website</title>
+
+<style>
+*{box-sizing:border-box}
+body{
+ margin:0;
+ background:#070a09;
+ color:#ecf8ed;
+ font-family:Arial,Helvetica,sans-serif;
+ min-height:100vh;
+}
+header{
+ padding:35px 20px;
+ text-align:center;
+ background:linear-gradient(135deg,#101b14,#060808);
+ border-bottom:2px solid #2f8c52;
+}
+header h1{
+ margin:0;
+ font-size:clamp(32px,7vw,64px);
+ letter-spacing:3px;
+}
+header h1 span{color:#69ee98}
+header p{color:#a2b9a9;margin-bottom:0}
+nav{
+ display:grid;
+ grid-template-columns:repeat(4,1fr);
+ gap:2px;
+ background:#215b36;
+ max-width:1050px;
+ margin:30px auto 0;
+ border:1px solid #397e4d;
+}
+nav button{
+ padding:17px 5px;
+ background:#101b15;
+ color:#b8c9ba;
+ border:0;
+ font-weight:bold;
+ cursor:pointer;
+}
+nav button:hover,nav button.active{
+ background:#226a3f;
+ color:white;
+}
+main{
+ max-width:1050px;
+ margin:auto;
+ padding:25px 15px 70px;
+}
+.tab{display:none}
+.tab.active{display:block}
+h2{color:#a4ffc2;font-size:27px}
+h3{margin-top:0}
+p{line-height:1.7;color:#b4c3b8}
+.hero{
+ background:linear-gradient(140deg,#193825,#101218 68%);
+ border:1px solid #3f8e57;
+ border-radius:12px;
+ padding:clamp(25px,5vw,50px);
+ margin-bottom:25px;
+}
+.hero h2{font-size:clamp(29px,5vw,46px);margin:0 0 15px}
+.grid{
+ display:grid;
+ grid-template-columns:repeat(auto-fit,minmax(255px,1fr));
+ gap:20px;
+}
+.card{
+ border:1px solid #3c6d49;
+ background:#131a16;
+ padding:24px;
+ border-radius:10px;
+}
+.card h3{color:#e8f7e8;font-size:22px}
+.card.king{
+ border-color:#d6ae69;
+ background:linear-gradient(155deg,#332839,#15141b 75%);
+}
+.card.king h3{color:#ffdd9b}
+.badge{
+ display:inline-block;
+ font-size:11px;
+ font-weight:bold;
+ letter-spacing:1px;
+ padding:7px 10px;
+ background:#2b673e;
+ color:#b9ffce;
+ border:1px solid #63d987;
+ border-radius:5px;
+ margin-bottom:12px;
+}
+.badge.planned{
+ background:#27282c;
+ color:#bcbcc4;
+ border-color:#55545c;
+}
+.badge.gold{
+ background:#5b4524;
+ border-color:#e5b96b;
+ color:#ffe7b1;
+}
+.linkbutton{
+ display:inline-block;
+ padding:13px 22px;
+ background:#25804a;
+ color:white;
+ text-decoration:none;
+ font-weight:bold;
+ border:1px solid #79e6a0;
+ border-radius:6px;
+ margin-top:12px;
+}
+.linkbutton:hover{background:#39a861}
+.linkbutton.gold{
+ background:#80602f;
+ border-color:#f4c67c;
+ color:#fff3d4;
+}
+.linkbutton.gold:hover{background:#a27b3d}
+.small{color:#8ca396;font-size:13px}
+section{animation:appear .2s ease-out}
+@keyframes appear{
+ from{opacity:.5;transform:translateY(5px)}
+ to{opacity:1;transform:translateY(0)}
+}
+.pixelground{
+ height:95px;
+ background:
+ linear-gradient(to top,#1f4d31 0 20%,transparent 20%),
+ repeating-linear-gradient(90deg,
+   transparent 0 25px,#244b31 25px 43px,
+   transparent 43px 60px);
+ opacity:.7;
+}
+footer{
+ border-top:1px solid #2d5639;
+ padding:25px;
+ text-align:center;
+ color:#819589;
+ font-size:12px;
+}
+@media(max-width:550px){
+ nav button{font-size:11px;padding:14px 3px}
+}
+</style>
 </head>
-
 <body>
 
-<div class="site">
-  <div class="content">
+<header>
+<h1>THE<span>DARK</span>WITHIN</h1>
+<p>A pixel-fantasy adventure into a forgotten darkness</p>
+</header>
 
-    <!-- TOP HEADER -->
-    <header>
-      <div class="brand">
-        THE<span>DARK</span>WITHIN
-      </div>
+<nav>
+<button class="active" data-tab="overview">OVERVIEW</button>
+<button data-tab="reviews">REVIEWS</button>
+<button data-tab="versions">VERSIONS</button>
+<button data-tab="dlc">DLC</button>
+</nav>
 
-      <div class="release-label">
-        THE FULL GAME
-      </div>
-    </header>
+<main>
 
-    <!-- MAIN TITLE -->
-    <section class="hero">
-      <div class="eyebrow">
-        Enter the darkness
-      </div>
-
-      <h1>
-        TheDarkWithin
-      </h1>
-
-      <p class="hero-description">
-        The villagers have vanished.
-        An ancient darkness is spreading.
-        Journey through forgotten lands,
-        battle terrifying creatures,
-        and uncover the power hidden within you.
-      </p>
-    </section>
-
-    <!-- STORY SELECTOR -->
-    <div class="section-label">
-      Choose Your Story
-    </div>
-
-    <section class="selector"
-      aria-label="Choose a story">
-
-      <button
-        class="arrow"
-        id="previousStory"
-        aria-label="Previous story">
-        &#10094;
-      </button>
-
-      <article class="story-card">
-        <div
-          id="storyArt"
-          class="story-art story-main">
-        </div>
-
-        <div class="story-info">
-
-          <div
-            class="story-tag"
-            id="storyTag">
-            MAIN STORY
-          </div>
-
-          <h2
-            class="story-title"
-            id="storyTitle">
-            TheDarkWithin
-          </h2>
-
-          <p
-            class="story-description"
-            id="storyDescription">
-            Search for the missing villagers
-            and face the darkness that took them.
-          </p>
-
-          <div
-            class="story-actions"
-            id="storyActions">
-          </div>
-
-        </div>
-      </article>
-
-      <button
-        class="arrow"
-        id="nextStory"
-        aria-label="Next story">
-        &#10095;
-      </button>
-
-    </section>
-
-    <!-- SLIDER DOTS -->
-    <div
-      class="dots"
-      id="storyDots"
-      aria-label="Story selection">
-    </div>
-
-    <!-- BOTTOM TABS -->
-    <section class="bottom-area">
-
-      <nav class="tabs"
-        aria-label="Game information">
-
-        <button
-          class="tab active"
-          data-tab="overview">
-          Overview
-        </button>
-
-        <button
-          class="tab"
-          data-tab="reviews">
-          Reviews
-        </button>
-
-        <button
-          class="tab"
-          data-tab="versions">
-          Versions
-        </button>
-
-        <button
-          class="tab"
-          data-tab="dlc">
-          DLC
-        </button>
-
-      </nav>
-
-      <div
-        id="tabContent"
-        class="tab-content">
-      </div>
-
-    </section>
-
-    <footer>
-      TheDarkWithin — Official Game Website
-    </footer>
-
-  </div>
+<section id="overview" class="tab active">
+<div class="hero">
+<div class="badge">MAIN STORY AVAILABLE</div>
+<h2>Enter TheDarkWithin</h2>
+<p>
+Villagers have disappeared without a trace.
+Journey through dangerous forests, snowy mountains,
+forgotten ruins, and dark kingdoms.
+Master powerful abilities and face the Purple King
+across eight story chapters.
+</p>
+<a class="linkbutton" href="game.html">
+▶ PLAY MAIN STORY
+</a>
 </div>
 
+<h2>Two adventures. One darkness.</h2>
+<div class="grid">
+
+<div class="card">
+<div class="badge">AVAILABLE</div>
+<h3>TheDarkWithin</h3>
+<p>
+The original eight-chapter adventure.
+Rescue the missing villagers and confront
+the darkness threatening their world.
+</p>
+<a class="linkbutton" href="game.html">
+PLAY GAME →
+</a>
+</div>
+
+<div class="card king">
+<div class="badge gold">♛ DLC 1 — RELEASED</div>
+<h3>The Forgotten King</h3>
+<p>
+Hundreds of years before the main story,
+a noble king discovers an ancient crystal.
+Play as Sir Aeron and witness the birth
+of the Purple King.
+</p>
+<p><strong>8 Chapters • Royal 8-bit Soundtrack • Boss Battles</strong></p>
+<a class="linkbutton gold" href="forgotten-king.html">
+♛ PLAY THE FORGOTTEN KING →
+</a>
+</div>
+
+</div>
+</section>
+
+<section id="reviews" class="tab">
+<h2>Player Reviews</h2>
+<div class="card">
+<h3>Share your adventure</h3>
+<p>
+TheDarkWithin and The Forgotten King are
+available to play in your browser.
+</p>
+<p class="small">
+Player reviews and a public review-submission
+system are not available on this page yet.
+</p>
+</div>
+</section>
+
+<section id="versions" class="tab">
+<h2>Game Versions</h2>
+
+<div class="grid">
+<div class="card">
+<div class="badge">PLAYABLE</div>
+<h3>TheDarkWithin — Main Story</h3>
+<p>Eight chapters with abilities, combat, bosses, and a retro soundtrack.</p>
+<a class="linkbutton" href="game.html">PLAY NOW</a>
+</div>
+
+<div class="card king">
+<div class="badge gold">RELEASED</div>
+<h3>The Forgotten King — DLC I</h3>
+<p>Eight-chapter prequel with a royal chiptune soundtrack.</p>
+<a class="linkbutton gold" href="forgotten-king.html">PLAY DLC</a>
+</div>
+</div>
+
+<p class="small">
+Current versions run in a web browser.
+Desktop downloads are not available yet.
+</p>
+</section>
+
+<section id="dlc" class="tab">
+<h2>Downloadable Content</h2>
+<p>
+Discover stories beyond the main adventure.
+One DLC has now been released!
+</p>
+
+<div class="grid">
+
+<div class="card king">
+<div class="badge gold">♛ OFFICIALLY RELEASED</div>
+<h3>DLC I: The Forgotten King</h3>
+<p>
+Long before the missing villagers,
+King Aldric ruled a prosperous kingdom.
+But an ancient crystal offered him
+a terrible bargain.
+</p>
+<p>
+Play as Sir Aeron across eight chapters
+of exploration, royal betrayal, corrupted
+knights, dramatic battles, and a tragic finale.
+</p>
+<p><strong>Includes:</strong> Royal 8-bit trumpets,
+marching drums, chapter music,
+sword combat, special abilities,
+and a two-stage final boss.</p>
+<a class="linkbutton gold" href="forgotten-king.html">
+▶ PLAY DLC I NOW
+</a>
+</div>
+
+<div class="card">
+<div class="badge planned">PLANNED</div>
+<h3>DLC II: The Spirit Realm</h3>
+<p>
+Venture into the mysterious realm
+connected to the Black Spirit and
+discover secrets hidden beyond the living world.
+</p>
+<p class="small">Not released yet.</p>
+</div>
+
+<div class="card">
+<div class="badge planned">PLANNED</div>
+<h3>DLC III: The Last Light</h3>
+<p>
+The final DLC adventure is still
+in development. Its story will
+bring the larger saga toward its conclusion.
+</p>
+<p class="small">Not released yet.</p>
+</div>
+
+</div>
+</section>
+
+</main>
+
+<div class="pixelground"></div>
+
+<footer>
+THEDARKWITHIN © 2026 • MAIN STORY + THE FORGOTTEN KING
+</footer>
+
 <script>
-  "use strict";
-
-  // ===================================
-  // STORY SELECTOR
-  // ===================================
-
-  // Replace the DLC descriptions later
-  // when the official stories are ready.
-
-  const stories = [
-    {
-      title: "TheDarkWithin",
-      tag: "MAIN STORY",
-      description:
-        "The villagers have disappeared. " +
-        "Travel through forests, snowy mountains, " +
-        "deserts, and the darkness below. " +
-        "Defeat the monsters, challenge the Purple King, " +
-        "and discover the truth about the Black Spirit.",
-      art: "story-main",
-      available: true,
-      link: "game.html"
-    },
-
-    {
-      title: "DLC 1",
-      tag: "EXPANSION 01",
-      description:
-        "A new chapter of TheDarkWithin universe. " +
-        "The official story description will be revealed soon.",
-      art: "story-dlc1",
-      available: false,
-      link: null
-    },
-
-    {
-      title: "DLC 2",
-      tag: "EXPANSION 02",
-      description:
-        "A new adventure awaits. " +
-        "More information about this expansion is coming soon.",
-      art: "story-dlc2",
-      available: false,
-      link: null
-    },
-
-    {
-      title: "DLC 3",
-      tag: "EXPANSION 03",
-      description:
-        "The world of TheDarkWithin continues to grow. " +
-        "The official DLC story will be announced soon.",
-      art: "story-dlc3",
-      available: false,
-      link: null
-    }
-  ];
-
-  let currentStory = 0;
-
-  const storyArt =
-    document.getElementById("storyArt");
-
-  const storyTag =
-    document.getElementById("storyTag");
-
-  const storyTitle =
-    document.getElementById("storyTitle");
-
-  const storyDescription =
-    document.getElementById("storyDescription");
-
-  const storyActions =
-    document.getElementById("storyActions");
-
-  const storyDots =
-    document.getElementById("storyDots");
-
-  function showStory(index) {
-    currentStory =
-      (index + stories.length) %
-      stories.length;
-
-    const story = stories[currentStory];
-
-    storyArt.className =
-      "story-art " + story.art;
-
-    storyTag.textContent = story.tag;
-
-    storyTitle.textContent =
-      story.title;
-
-    storyDescription.textContent =
-      story.description;
-
-    // Remove old Play button.
-    storyActions.replaceChildren();
-
-    if (story.available && story.link) {
-      const play = document.createElement("a");
-
-      play.className = "play-button";
-      play.href = story.link;
-      play.textContent = "▶ PLAY GAME";
-
-      storyActions.appendChild(play);
-
-      const note =
-        document.createElement("span");
-
-      note.className = "small-note";
-      note.textContent = "Full Game";
-
-      storyActions.appendChild(note);
-    } else {
-      const unavailable =
-        document.createElement("button");
-
-      unavailable.className =
-        "play-button unavailable";
-
-      unavailable.textContent =
-        "COMING SOON";
-
-      unavailable.disabled = true;
-
-      storyActions.appendChild(
-        unavailable
-      );
-    }
-
-    // Rebuild slider dots.
-    storyDots.replaceChildren();
-
-    stories.forEach((item, i) => {
-      const dot =
-        document.createElement("button");
-
-      dot.className =
-        "dot" +
-        (i === currentStory
-          ? " active"
-          : "");
-
-      dot.setAttribute(
-        "aria-label",
-        "Select " + item.title
-      );
-
-      dot.setAttribute(
-        "aria-pressed",
-        i === currentStory
-          ? "true"
-          : "false"
-      );
-
-      dot.addEventListener(
-        "click",
-        () => showStory(i)
-      );
-
-      storyDots.appendChild(dot);
-    });
-  }
-
-  document
-    .getElementById("previousStory")
-    .addEventListener("click", () => {
-      showStory(currentStory - 1);
-    });
-
-  document
-    .getElementById("nextStory")
-    .addEventListener("click", () => {
-      showStory(currentStory + 1);
-    });
-
-  // Keyboard navigation for slider.
-  document.addEventListener(
-    "keydown",
-    event => {
-      if (
-        event.target.tagName === "INPUT" ||
-        event.target.tagName === "TEXTAREA"
-      ) {
-        return;
-      }
-
-      if (event.key === "ArrowLeft") {
-        showStory(currentStory - 1);
-      }
-
-      if (event.key === "ArrowRight") {
-        showStory(currentStory + 1);
-      }
-    }
-  );
-
-  // ===================================
-  // INFORMATION TABS
-  // ===================================
-
-  const tabs =
-    document.querySelectorAll(".tab");
-
-  const tabContent =
-    document.getElementById("tabContent");
-
-  function createParagraph(text) {
-    const p =
-      document.createElement("p");
-
-    p.textContent = text;
-    return p;
-  }
-
-  function createHeading(text) {
-    const h =
-      document.createElement("h2");
-
-    h.textContent = text;
-    return h;
-  }
-
-  function showTab(tabName) {
-    tabs.forEach(tab => {
-      const active =
-        tab.dataset.tab === tabName;
-
-      tab.classList.toggle(
-        "active",
-        active
-      );
-
-      tab.setAttribute(
-        "aria-pressed",
-        String(active)
-      );
-    });
-
-    tabContent.replaceChildren();
-
-    if (tabName === "overview") {
-      tabContent.appendChild(
-        createHeading("About TheDarkWithin")
-      );
-
-      tabContent.appendChild(
-        createParagraph(
-          "TheDarkWithin is a fantasy adventure game " +
-          "about missing villagers, mysterious monsters, " +
-          "and an evil force hidden deep beneath the world. " +
-          "Explore eight chapters, unlock special powers, " +
-          "and face the Purple King in the final battle."
-        )
-      );
-
-      const features =
-        document.createElement("div");
-
-      features.className = "feature-row";
-
-      [
-        "8 Story Chapters",
-        "4 Difficulty Modes",
-        "Sword Combat",
-        "Elemental Powers",
-        "Boss Battles",
-        "3 Planned DLCs"
-      ].forEach(text => {
-        const feature =
-          document.createElement("span");
-
-        feature.className = "feature";
-        feature.textContent = text;
-
-        features.appendChild(feature);
-      });
-
-      tabContent.appendChild(features);
-    }
-
-    if (tabName === "reviews") {
-      tabContent.appendChild(
-        createHeading("Player Reviews")
-      );
-
-      tabContent.appendChild(
-        createParagraph(
-          "Player reviews will appear here. " +
-          "There are no published reviews yet."
-        )
-      );
-    }
-
-    if (tabName === "versions") {
-      tabContent.appendChild(
-        createHeading("Game Versions")
-      );
-
-      tabContent.appendChild(
-        createParagraph(
-          "TheDarkWithin is now presented as " +
-          "the full game rather than a demo. " +
-          "Version information and update notes " +
-          "will be added here."
-        )
-      );
-    }
-
-    if (tabName === "dlc") {
-      tabContent.appendChild(
-        createHeading("Story Expansions")
-      );
-
-      tabContent.appendChild(
-        createParagraph(
-          "Three additional stories are planned " +
-          "for TheDarkWithin. " +
-          "Select an expansion below to view it " +
-          "in the story slider."
-        )
-      );
-
-      const dlcList =
-        document.createElement("div");
-
-      dlcList.className = "dlc-list";
-
-      for (let i = 1; i <= 3; i++) {
-        const card =
-          document.createElement("button");
-
-        card.className = "dlc-card";
-
-        const name =
-          document.createElement("strong");
-
-        name.textContent = "DLC " + i;
-
-        const status =
-          document.createElement("span");
-
-        status.textContent =
-          "Story details coming soon";
-
-        card.append(
-          name,
-          status
-        );
-
-        card.addEventListener(
-          "click",
-          () => {
-            showStory(i);
-
-            document
-              .querySelector(".selector")
-              .scrollIntoView({
-                behavior: "smooth",
-                block: "center"
-              });
-          }
-        );
-
-        dlcList.appendChild(card);
-      }
-
-      tabContent.appendChild(dlcList);
-    }
-  }
-
-  tabs.forEach(tab => {
-    tab.addEventListener(
-      "click",
-      () => {
-        showTab(tab.dataset.tab);
-      }
-    );
-  });
-
-  // ===================================
-  // INITIAL LOAD
-  // ===================================
-
-  showStory(0);
-  showTab("overview");
+const buttons=document.querySelectorAll("nav button");
+const tabs=document.querySelectorAll(".tab");
+
+buttons.forEach(button=>{
+ button.addEventListener("click",()=>{
+   const target=button.dataset.tab;
+   buttons.forEach(b=>b.classList.toggle(
+     "active",b===button
+   ));
+   tabs.forEach(tab=>tab.classList.toggle(
+     "active",tab.id===target
+   ));
+ });
+});
 </script>
 
 </body>
