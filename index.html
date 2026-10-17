@@ -2,342 +2,1056 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>TheDarkWithin | Official Game Website</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TheDarkWithin | Official Game Website</title>
 
-<style>
-*{box-sizing:border-box}
-body{
- margin:0;
- background:#070a09;
- color:#ecf8ed;
- font-family:Arial,Helvetica,sans-serif;
- min-height:100vh;
-}
-header{
- padding:35px 20px;
- text-align:center;
- background:linear-gradient(135deg,#101b14,#060808);
- border-bottom:2px solid #2f8c52;
-}
-header h1{
- margin:0;
- font-size:clamp(32px,7vw,64px);
- letter-spacing:3px;
-}
-header h1 span{color:#69ee98}
-header p{color:#a2b9a9;margin-bottom:0}
-nav{
- display:grid;
- grid-template-columns:repeat(4,1fr);
- gap:2px;
- background:#215b36;
- max-width:1050px;
- margin:30px auto 0;
- border:1px solid #397e4d;
-}
-nav button{
- padding:17px 5px;
- background:#101b15;
- color:#b8c9ba;
- border:0;
- font-weight:bold;
- cursor:pointer;
-}
-nav button:hover,nav button.active{
- background:#226a3f;
- color:white;
-}
-main{
- max-width:1050px;
- margin:auto;
- padding:25px 15px 70px;
-}
-.tab{display:none}
-.tab.active{display:block}
-h2{color:#a4ffc2;font-size:27px}
-h3{margin-top:0}
-p{line-height:1.7;color:#b4c3b8}
-.hero{
- background:linear-gradient(140deg,#193825,#101218 68%);
- border:1px solid #3f8e57;
- border-radius:12px;
- padding:clamp(25px,5vw,50px);
- margin-bottom:25px;
-}
-.hero h2{font-size:clamp(29px,5vw,46px);margin:0 0 15px}
-.grid{
- display:grid;
- grid-template-columns:repeat(auto-fit,minmax(255px,1fr));
- gap:20px;
-}
-.card{
- border:1px solid #3c6d49;
- background:#131a16;
- padding:24px;
- border-radius:10px;
-}
-.card h3{color:#e8f7e8;font-size:22px}
-.card.king{
- border-color:#d6ae69;
- background:linear-gradient(155deg,#332839,#15141b 75%);
-}
-.card.king h3{color:#ffdd9b}
-.badge{
- display:inline-block;
- font-size:11px;
- font-weight:bold;
- letter-spacing:1px;
- padding:7px 10px;
- background:#2b673e;
- color:#b9ffce;
- border:1px solid #63d987;
- border-radius:5px;
- margin-bottom:12px;
-}
-.badge.planned{
- background:#27282c;
- color:#bcbcc4;
- border-color:#55545c;
-}
-.badge.gold{
- background:#5b4524;
- border-color:#e5b96b;
- color:#ffe7b1;
-}
-.linkbutton{
- display:inline-block;
- padding:13px 22px;
- background:#25804a;
- color:white;
- text-decoration:none;
- font-weight:bold;
- border:1px solid #79e6a0;
- border-radius:6px;
- margin-top:12px;
-}
-.linkbutton:hover{background:#39a861}
-.linkbutton.gold{
- background:#80602f;
- border-color:#f4c67c;
- color:#fff3d4;
-}
-.linkbutton.gold:hover{background:#a27b3d}
-.small{color:#8ca396;font-size:13px}
-section{animation:appear .2s ease-out}
-@keyframes appear{
- from{opacity:.5;transform:translateY(5px)}
- to{opacity:1;transform:translateY(0)}
-}
-.pixelground{
- height:95px;
- background:
- linear-gradient(to top,#1f4d31 0 20%,transparent 20%),
- repeating-linear-gradient(90deg,
-   transparent 0 25px,#244b31 25px 43px,
-   transparent 43px 60px);
- opacity:.7;
-}
-footer{
- border-top:1px solid #2d5639;
- padding:25px;
- text-align:center;
- color:#819589;
- font-size:12px;
-}
-@media(max-width:550px){
- nav button{font-size:11px;padding:14px 3px}
-}
-</style>
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    html {
+      background: #070a09;
+      scroll-behavior: smooth;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background: #070a09;
+      color: #ecf8ed;
+      font-family: Arial, Helvetica, sans-serif;
+    }
+
+    header {
+      padding: 35px 20px;
+      text-align: center;
+      background: linear-gradient(135deg, #101b14, #060808);
+      border-bottom: 2px solid #2f8c52;
+    }
+
+    header h1 {
+      margin: 0;
+      font-size: clamp(32px, 7vw, 64px);
+      letter-spacing: 3px;
+    }
+
+    header h1 span {
+      color: #69ee98;
+    }
+
+    header p {
+      color: #a2b9a9;
+      margin-bottom: 0;
+    }
+
+    /* FIVE TABS */
+
+    nav {
+      display: grid;
+      grid-template-columns: repeat(5, minmax(0, 1fr));
+      gap: 2px;
+      background: #215b36;
+      max-width: 1050px;
+      margin: 30px auto 0;
+      border: 1px solid #397e4d;
+    }
+
+    nav button {
+      padding: 17px 4px;
+      background: #101b15;
+      color: #b8c9ba;
+      border: 0;
+      font-weight: bold;
+      font-size: 13px;
+      cursor: pointer;
+    }
+
+    nav button:hover,
+    nav button.active {
+      background: #226a3f;
+      color: white;
+    }
+
+    main {
+      max-width: 1050px;
+      margin: auto;
+      padding: 25px 15px 70px;
+    }
+
+    .tab {
+      display: none;
+    }
+
+    .tab.active {
+      display: block;
+      animation: appear 0.2s ease-out;
+    }
+
+    @keyframes appear {
+      from {
+        opacity: 0.5;
+        transform: translateY(5px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    h2 {
+      color: #a4ffc2;
+      font-size: 27px;
+    }
+
+    h3 {
+      margin-top: 0;
+    }
+
+    p {
+      line-height: 1.7;
+      color: #b4c3b8;
+    }
+
+    /* HERO */
+
+    .hero {
+      background: linear-gradient(140deg, #193825, #101218 68%);
+      border: 1px solid #3f8e57;
+      border-radius: 12px;
+      padding: clamp(25px, 5vw, 50px);
+      margin-bottom: 25px;
+    }
+
+    .hero h2 {
+      font-size: clamp(29px, 5vw, 46px);
+      margin: 0 0 15px;
+    }
+
+    /* GAME CARDS */
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(255px, 1fr));
+      gap: 20px;
+    }
+
+    .card {
+      border: 1px solid #3c6d49;
+      background: #131a16;
+      padding: 24px;
+      border-radius: 10px;
+    }
+
+    .card h3 {
+      color: #e8f7e8;
+      font-size: 22px;
+    }
+
+    .card.king {
+      border-color: #d6ae69;
+      background: linear-gradient(155deg, #332839, #15141b 75%);
+    }
+
+    .card.king h3 {
+      color: #ffdd9b;
+    }
+
+    /* STATUS LABELS */
+
+    .badge {
+      display: inline-block;
+      font-size: 11px;
+      font-weight: bold;
+      letter-spacing: 1px;
+      padding: 7px 10px;
+      background: #2b673e;
+      color: #b9ffce;
+      border: 1px solid #63d987;
+      border-radius: 5px;
+      margin-bottom: 12px;
+    }
+
+    .badge.planned {
+      background: #27282c;
+      color: #bcbcc4;
+      border-color: #55545c;
+    }
+
+    .badge.gold {
+      background: #5b4524;
+      border-color: #e5b96b;
+      color: #ffe7b1;
+    }
+
+    /* PLAY BUTTONS */
+
+    .linkbutton {
+      display: inline-block;
+      padding: 13px 22px;
+      background: #25804a;
+      color: white;
+      text-decoration: none;
+      font-weight: bold;
+      border: 1px solid #79e6a0;
+      border-radius: 6px;
+      margin-top: 12px;
+      transition: 0.2s;
+    }
+
+    .linkbutton:hover {
+      background: #39a861;
+      transform: translateY(-2px);
+    }
+
+    .linkbutton.gold {
+      background: #80602f;
+      border-color: #f4c67c;
+      color: #fff3d4;
+    }
+
+    .linkbutton.gold:hover {
+      background: #a27b3d;
+    }
+
+    .small {
+      color: #8ca396;
+      font-size: 13px;
+    }
+
+    /* =====================================
+       NEW STORY TIMELINE
+       ===================================== */
+
+    .timeline-intro {
+      padding: 30px;
+      border: 1px solid #376949;
+      background: linear-gradient(135deg, #162b1d, #11131a);
+      border-radius: 12px;
+      margin-bottom: 35px;
+      text-align: center;
+    }
+
+    .timeline-intro h2 {
+      margin-top: 0;
+      font-size: clamp(26px, 5vw, 38px);
+    }
+
+    .timeline-intro p {
+      max-width: 700px;
+      margin: 0 auto;
+    }
+
+    .timeline {
+      position: relative;
+      padding-left: 55px;
+      margin: 25px 0 40px;
+    }
+
+    .timeline::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      left: 18px;
+      width: 4px;
+      border-radius: 10px;
+      background: linear-gradient(
+        to bottom,
+        #d5aa65 0%,
+        #46aa6e 48%,
+        #793ba5 75%,
+        #d7c27a 100%
+      );
+    }
+
+    .timeline-entry {
+      position: relative;
+      margin-bottom: 30px;
+    }
+
+    .timeline-dot {
+      position: absolute;
+      top: 25px;
+      left: -50px;
+      width: 30px;
+      height: 30px;
+      background: #1b2320;
+      border: 4px solid #65d98d;
+      border-radius: 50%;
+      box-shadow: 0 0 15px #3cbd6755;
+    }
+
+    .timeline-entry.first .timeline-dot {
+      border-color: #f1c77e;
+      box-shadow: 0 0 16px #f1c77e66;
+    }
+
+    .timeline-entry.future .timeline-dot {
+      border-color: #a371c7;
+      box-shadow: 0 0 16px #7d4ca855;
+    }
+
+    .timeline-entry.last .timeline-dot {
+      border-color: #e6dbac;
+    }
+
+    .timeline-card {
+      background: #121a16;
+      border: 1px solid #3c6d49;
+      border-radius: 10px;
+      padding: 26px;
+    }
+
+    .timeline-entry.first .timeline-card {
+      background: linear-gradient(145deg, #38293a, #17151e);
+      border-color: #d6ae69;
+    }
+
+    .timeline-entry.future .timeline-card {
+      background: linear-gradient(145deg, #211a2b, #14131b);
+      border-color: #67457f;
+    }
+
+    .timeline-entry.last .timeline-card {
+      border-color: #777251;
+    }
+
+    .timeline-era {
+      display: block;
+      color: #b0bbaf;
+      font-size: 12px;
+      font-weight: bold;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      margin-bottom: 12px;
+    }
+
+    .timeline-entry.first .timeline-era {
+      color: #f4ca84;
+    }
+
+    .timeline-card h3 {
+      color: #f2f8ee;
+      font-size: clamp(22px, 4vw, 29px);
+      margin: 8px 0;
+    }
+
+    .timeline-entry.first .timeline-card h3 {
+      color: #ffdda1;
+    }
+
+    .chapter-tag {
+      color: #c4c9c2;
+      font-size: 13px;
+      font-weight: bold;
+      margin: 10px 0;
+    }
+
+    .timeline-note {
+      color: #d8c99f;
+      background: #b58a4720;
+      border-left: 3px solid #c7a66c;
+      padding: 12px 15px;
+      margin: 18px 0;
+      font-size: 13px;
+      line-height: 1.6;
+    }
+
+    .timeline-unknown {
+      color: #c4b2d5;
+      font-style: italic;
+      font-size: 13px;
+    }
+
+    /* WEBSITE FOOTER */
+
+    .pixelground {
+      height: 95px;
+      background:
+        linear-gradient(to top, #1f4d31 0 20%, transparent 20%),
+        repeating-linear-gradient(
+          90deg,
+          transparent 0 25px,
+          #244b31 25px 43px,
+          transparent 43px 60px
+        );
+      opacity: 0.7;
+    }
+
+    footer {
+      border-top: 1px solid #2d5639;
+      padding: 25px;
+      text-align: center;
+      color: #819589;
+      font-size: 12px;
+    }
+
+    /* MOBILE SUPPORT */
+
+    @media (max-width: 550px) {
+      nav button {
+        font-size: 10px;
+        padding: 14px 2px;
+      }
+
+      .timeline {
+        padding-left: 42px;
+      }
+
+      .timeline::before {
+        left: 12px;
+      }
+
+      .timeline-dot {
+        left: -41px;
+        width: 26px;
+        height: 26px;
+      }
+
+      .timeline-card {
+        padding: 17px;
+      }
+
+      .timeline-intro {
+        padding: 20px;
+      }
+    }
+  </style>
 </head>
+
 <body>
 
-<header>
-<h1>THE<span>DARK</span>WITHIN</h1>
-<p>A pixel-fantasy adventure into a forgotten darkness</p>
-</header>
+  <!-- WEBSITE TITLE -->
 
-<nav>
-<button class="active" data-tab="overview">OVERVIEW</button>
-<button data-tab="reviews">REVIEWS</button>
-<button data-tab="versions">VERSIONS</button>
-<button data-tab="dlc">DLC</button>
-</nav>
+  <header>
+    <h1>
+      THE<span>DARK</span>WITHIN
+    </h1>
+    <p>
+      A pixel-fantasy adventure into a forgotten darkness
+    </p>
+  </header>
 
-<main>
+  <!-- FIVE MAIN TABS -->
 
-<section id="overview" class="tab active">
-<div class="hero">
-<div class="badge">MAIN STORY AVAILABLE</div>
-<h2>Enter TheDarkWithin</h2>
-<p>
-Villagers have disappeared without a trace.
-Journey through dangerous forests, snowy mountains,
-forgotten ruins, and dark kingdoms.
-Master powerful abilities and face the Purple King
-across eight story chapters.
-</p>
-<a class="linkbutton" href="game.html">
-▶ PLAY MAIN STORY
-</a>
-</div>
+  <nav aria-label="Main navigation">
+    <button class="active" data-tab="overview">
+      OVERVIEW
+    </button>
 
-<h2>Two adventures. One darkness.</h2>
-<div class="grid">
+    <button data-tab="reviews">
+      REVIEWS
+    </button>
 
-<div class="card">
-<div class="badge">AVAILABLE</div>
-<h3>TheDarkWithin</h3>
-<p>
-The original eight-chapter adventure.
-Rescue the missing villagers and confront
-the darkness threatening their world.
-</p>
-<a class="linkbutton" href="game.html">
-PLAY GAME →
-</a>
-</div>
+    <button data-tab="versions">
+      VERSIONS
+    </button>
 
-<div class="card king">
-<div class="badge gold">♛ DLC 1 — RELEASED</div>
-<h3>The Forgotten King</h3>
-<p>
-Hundreds of years before the main story,
-a noble king discovers an ancient crystal.
-Play as Sir Aeron and witness the birth
-of the Purple King.
-</p>
-<p><strong>8 Chapters • Royal 8-bit Soundtrack • Boss Battles</strong></p>
-<a class="linkbutton gold" href="forgotten-king.html">
-♛ PLAY THE FORGOTTEN KING →
-</a>
-</div>
+    <button data-tab="dlc">
+      DLC
+    </button>
 
-</div>
-</section>
+    <button data-tab="timeline">
+      TIMELINE
+    </button>
+  </nav>
 
-<section id="reviews" class="tab">
-<h2>Player Reviews</h2>
-<div class="card">
-<h3>Share your adventure</h3>
-<p>
-TheDarkWithin and The Forgotten King are
-available to play in your browser.
-</p>
-<p class="small">
-Player reviews and a public review-submission
-system are not available on this page yet.
-</p>
-</div>
-</section>
+  <main>
 
-<section id="versions" class="tab">
-<h2>Game Versions</h2>
+    <!-- =====================================
+         TAB 1: OVERVIEW
+         ===================================== -->
 
-<div class="grid">
-<div class="card">
-<div class="badge">PLAYABLE</div>
-<h3>TheDarkWithin — Main Story</h3>
-<p>Eight chapters with abilities, combat, bosses, and a retro soundtrack.</p>
-<a class="linkbutton" href="game.html">PLAY NOW</a>
-</div>
+    <section id="overview" class="tab active">
 
-<div class="card king">
-<div class="badge gold">RELEASED</div>
-<h3>The Forgotten King — DLC I</h3>
-<p>Eight-chapter prequel with a royal chiptune soundtrack.</p>
-<a class="linkbutton gold" href="forgotten-king.html">PLAY DLC</a>
-</div>
-</div>
+      <div class="hero">
 
-<p class="small">
-Current versions run in a web browser.
-Desktop downloads are not available yet.
-</p>
-</section>
+        <div class="badge">
+          MAIN STORY AVAILABLE
+        </div>
 
-<section id="dlc" class="tab">
-<h2>Downloadable Content</h2>
-<p>
-Discover stories beyond the main adventure.
-One DLC has now been released!
-</p>
+        <h2>Enter TheDarkWithin</h2>
 
-<div class="grid">
+        <p>
+          Villagers have disappeared without a trace.
+          Journey through dangerous forests,
+          snowy mountains, forgotten ruins,
+          and dark kingdoms.
+        </p>
 
-<div class="card king">
-<div class="badge gold">♛ OFFICIALLY RELEASED</div>
-<h3>DLC I: The Forgotten King</h3>
-<p>
-Long before the missing villagers,
-King Aldric ruled a prosperous kingdom.
-But an ancient crystal offered him
-a terrible bargain.
-</p>
-<p>
-Play as Sir Aeron across eight chapters
-of exploration, royal betrayal, corrupted
-knights, dramatic battles, and a tragic finale.
-</p>
-<p><strong>Includes:</strong> Royal 8-bit trumpets,
-marching drums, chapter music,
-sword combat, special abilities,
-and a two-stage final boss.</p>
-<a class="linkbutton gold" href="forgotten-king.html">
-▶ PLAY DLC I NOW
-</a>
-</div>
+        <p>
+          Master powerful abilities and face
+          the Purple King across eight story chapters.
+        </p>
 
-<div class="card">
-<div class="badge planned">PLANNED</div>
-<h3>DLC II: The Spirit Realm</h3>
-<p>
-Venture into the mysterious realm
-connected to the Black Spirit and
-discover secrets hidden beyond the living world.
-</p>
-<p class="small">Not released yet.</p>
-</div>
+        <a class="linkbutton" href="game.html">
+          ▶ PLAY MAIN STORY
+        </a>
 
-<div class="card">
-<div class="badge planned">PLANNED</div>
-<h3>DLC III: The Last Light</h3>
-<p>
-The final DLC adventure is still
-in development. Its story will
-bring the larger saga toward its conclusion.
-</p>
-<p class="small">Not released yet.</p>
-</div>
+      </div>
 
-</div>
-</section>
+      <h2>Two Adventures. One Darkness.</h2>
 
-</main>
+      <div class="grid">
 
-<div class="pixelground"></div>
+        <div class="card">
 
-<footer>
-THEDARKWITHIN © 2026 • MAIN STORY + THE FORGOTTEN KING
-</footer>
+          <div class="badge">AVAILABLE</div>
 
-<script>
-const buttons=document.querySelectorAll("nav button");
-const tabs=document.querySelectorAll(".tab");
+          <h3>TheDarkWithin</h3>
 
-buttons.forEach(button=>{
- button.addEventListener("click",()=>{
-   const target=button.dataset.tab;
-   buttons.forEach(b=>b.classList.toggle(
-     "active",b===button
-   ));
-   tabs.forEach(tab=>tab.classList.toggle(
-     "active",tab.id===target
-   ));
- });
-});
-</script>
+          <p>
+            The original eight-chapter adventure.
+            Rescue the missing villagers and confront
+            the darkness threatening their world.
+          </p>
+
+          <a class="linkbutton" href="game.html">
+            PLAY GAME →
+          </a>
+
+        </div>
+
+        <div class="card king">
+
+          <div class="badge gold">
+            ♛ DLC 1 — RELEASED
+          </div>
+
+          <h3>The Forgotten King</h3>
+
+          <p>
+            Hundreds of years before the main story,
+            a noble king discovers an ancient crystal.
+            Play as Sir Aeron and witness the birth
+            of the Purple King.
+          </p>
+
+          <p>
+            <strong>
+              8 Chapters • Royal 8-bit Soundtrack • Boss Battles
+            </strong>
+          </p>
+
+          <a class="linkbutton gold" href="forgotten-king.html">
+            ♛ PLAY THE FORGOTTEN KING →
+          </a>
+
+        </div>
+
+      </div>
+
+    </section>
+
+    <!-- =====================================
+         TAB 2: REVIEWS
+         ===================================== -->
+
+    <section id="reviews" class="tab">
+
+      <h2>Player Reviews</h2>
+
+      <div class="card">
+
+        <h3>Share Your Adventure</h3>
+
+        <p>
+          TheDarkWithin and The Forgotten King
+          are available to play in your browser.
+        </p>
+
+        <p class="small">
+          A public player review-submission system
+          is not available yet.
+        </p>
+
+      </div>
+
+    </section>
+
+    <!-- =====================================
+         TAB 3: VERSIONS
+         ===================================== -->
+
+    <section id="versions" class="tab">
+
+      <h2>Game Versions</h2>
+
+      <div class="grid">
+
+        <div class="card">
+
+          <div class="badge">PLAYABLE</div>
+
+          <h3>
+            TheDarkWithin — Main Story
+          </h3>
+
+          <p>
+            Eight chapters with abilities,
+            combat, bosses, and a retro soundtrack.
+          </p>
+
+          <a class="linkbutton" href="game.html">
+            PLAY NOW
+          </a>
+
+        </div>
+
+        <div class="card king">
+
+          <div class="badge gold">
+            RELEASED
+          </div>
+
+          <h3>
+            The Forgotten King — DLC I
+          </h3>
+
+          <p>
+            Eight-chapter prequel with royal
+            8-bit music, cinematic dialogue,
+            difficulty selection, and boss battles.
+          </p>
+
+          <a class="linkbutton gold" href="forgotten-king.html">
+            PLAY DLC
+          </a>
+
+        </div>
+
+      </div>
+
+      <p class="small">
+        Both versions run in a web browser.
+        Desktop downloads are not available yet.
+      </p>
+
+    </section>
+
+    <!-- =====================================
+         TAB 4: DLC
+         ===================================== -->
+
+    <section id="dlc" class="tab">
+
+      <h2>Downloadable Content</h2>
+
+      <p>
+        Discover stories beyond the main adventure.
+        The first DLC has been released!
+      </p>
+
+      <div class="grid">
+
+        <div class="card king">
+
+          <div class="badge gold">
+            ♛ OFFICIALLY RELEASED
+          </div>
+
+          <h3>
+            DLC I: The Forgotten King
+          </h3>
+
+          <p>
+            Long before the missing villagers,
+            King Aldric ruled a prosperous kingdom.
+            But an ancient crystal offered him
+            a terrible bargain.
+          </p>
+
+          <p>
+            Play as Sir Aeron across eight chapters
+            of exploration, royal betrayal,
+            corrupted knights, dramatic battles,
+            and a tragic finale.
+          </p>
+
+          <p>
+            <strong>Includes:</strong>
+            Royal 8-bit music, marching drums,
+            sword combat, special abilities,
+            difficulty selection, fullscreen,
+            and a two-stage final boss.
+          </p>
+
+          <a class="linkbutton gold" href="forgotten-king.html">
+            ▶ PLAY DLC I NOW
+          </a>
+
+        </div>
+
+        <div class="card">
+
+          <div class="badge planned">
+            PLANNED
+          </div>
+
+          <h3>
+            DLC II: The Spirit Realm
+          </h3>
+
+          <p>
+            Venture into the mysterious realm
+            connected to the Black Spirit
+            and discover secrets hidden
+            beyond the living world.
+          </p>
+
+          <p class="small">
+            Not released yet.
+          </p>
+
+        </div>
+
+        <div class="card">
+
+          <div class="badge planned">
+            PLANNED
+          </div>
+
+          <h3>
+            DLC III: The Last Light
+          </h3>
+
+          <p>
+            The final DLC adventure is still
+            in development. Its story will bring
+            the larger saga toward its conclusion.
+          </p>
+
+          <p class="small">
+            Not released yet.
+          </p>
+
+        </div>
+
+      </div>
+
+    </section>
+
+    <!-- =====================================
+         TAB 5: STORY TIMELINE
+         ===================================== -->
+
+    <section id="timeline" class="tab">
+
+      <div class="timeline-intro">
+
+        <h2>
+          ⚔️ THE CHRONICLES OF DARKNESS
+        </h2>
+
+        <p>
+          Every legend has a beginning.
+          Explore the history of TheDarkWithin
+          and discover when each adventure
+          takes place in the story.
+        </p>
+
+        <p>
+          <strong style="color:#ffe2a2">
+            Story order is different from release order.
+          </strong>
+        </p>
+
+      </div>
+
+      <div class="timeline">
+
+        <!-- TIMELINE PART 1 -->
+
+        <article class="timeline-entry first">
+
+          <div class="timeline-dot"></div>
+
+          <div class="timeline-card">
+
+            <span class="timeline-era">
+              ERA I — HUNDREDS OF YEARS AGO
+            </span>
+
+            <div class="badge gold">
+              ♛ RELEASED — FIRST IN STORY
+            </div>
+
+            <h3>
+              👑 The Forgotten King
+            </h3>
+
+            <p class="chapter-tag">
+              DLC I • Eight Chapters • Prequel
+            </p>
+
+            <p>
+              Before the darkness consumed
+              the world, there was a peaceful
+              kingdom ruled by King Aldric.
+            </p>
+
+            <p>
+              When an ancient purple crystal
+              is discovered beneath the castle,
+              the king becomes obsessed
+              with its promise of power.
+            </p>
+
+            <p>
+              Play as Sir Aeron, Aldric's loyal
+              knight, and witness the tragedy
+              that creates the Purple King.
+            </p>
+
+            <div class="timeline-note">
+              <strong>Timeline importance:</strong>
+              This is where the Black Spirit's
+              influence over King Aldric begins.
+              It explains the origin of the Purple King.
+            </div>
+
+            <a class="linkbutton gold" href="forgotten-king.html">
+              ▶ PLAY THE FIRST STORY
+            </a>
+
+          </div>
+
+        </article>
+
+        <!-- TIMELINE PART 2 -->
+
+        <article class="timeline-entry">
+
+          <div class="timeline-dot"></div>
+
+          <div class="timeline-card">
+
+            <span class="timeline-era">
+              ERA II — CENTURIES LATER
+            </span>
+
+            <div class="badge">
+              RELEASED — SECOND IN STORY
+            </div>
+
+            <h3>
+              ⚔️ TheDarkWithin
+            </h3>
+
+            <p class="chapter-tag">
+              Main Story • Eight Chapters
+            </p>
+
+            <p>
+              Centuries after the fall of
+              King Aldric's kingdom,
+              villagers begin disappearing
+              under mysterious circumstances.
+            </p>
+
+            <p>
+              A new hero must journey through
+              forests, frozen mountains,
+              dangerous lands, and the
+              darkness below.
+            </p>
+
+            <p>
+              The adventure eventually leads
+              to a confrontation with
+              the Purple King.
+            </p>
+
+            <div class="timeline-note">
+              <strong>Timeline importance:</strong>
+              The events of The Forgotten King
+              explain where the darkness
+              and the Purple King came from.
+            </div>
+
+            <a class="linkbutton" href="game.html">
+              ▶ PLAY MAIN STORY
+            </a>
+
+          </div>
+
+        </article>
+
+        <!-- TIMELINE PART 3 -->
+
+        <article class="timeline-entry future">
+
+          <div class="timeline-dot"></div>
+
+          <div class="timeline-card">
+
+            <span class="timeline-era">
+              ERA UNKNOWN — TO BE REVEALED
+            </span>
+
+            <div class="badge planned">
+              PLANNED
+            </div>
+
+            <h3>
+              💜 The Spirit Realm
+            </h3>
+
+            <p class="chapter-tag">
+              DLC II • In Development
+            </p>
+
+            <p>
+              A mysterious dimension exists
+              beyond the world of the living.
+              Its secrets are connected
+              to the Black Spirit and
+              the darkness spreading
+              through the kingdom.
+            </p>
+
+            <p class="timeline-unknown">
+              Exact placement in the
+              story timeline has not
+              been revealed yet.
+            </p>
+
+          </div>
+
+        </article>
+
+        <!-- TIMELINE PART 4 -->
+
+        <article class="timeline-entry last">
+
+          <div class="timeline-dot"></div>
+
+          <div class="timeline-card">
+
+            <span class="timeline-era">
+              ERA UNKNOWN — FINAL DLC
+            </span>
+
+            <div class="badge planned">
+              PLANNED
+            </div>
+
+            <h3>
+              🌅 The Last Light
+            </h3>
+
+            <p class="chapter-tag">
+              DLC III • In Development
+            </p>
+
+            <p>
+              The final planned DLC will
+              bring the larger saga
+              toward its conclusion.
+            </p>
+
+            <p>
+              Its story and place in the
+              chronology will be revealed
+              as development continues.
+            </p>
+
+            <p class="timeline-unknown">
+              The final chapter of the saga
+              is still to come.
+            </p>
+
+          </div>
+
+        </article>
+
+      </div>
+
+      <div class="hero">
+
+        <h2>
+          👑 Where Should You Start?
+        </h2>
+
+        <p>
+          Want to experience the events
+          in chronological order?
+          Begin with The Forgotten King
+          to learn the origin of the Purple King.
+        </p>
+
+        <p>
+          Want to uncover the mystery
+          as it was originally introduced?
+          Begin with TheDarkWithin's main story.
+        </p>
+
+        <a class="linkbutton gold" href="forgotten-king.html">
+          BEGIN CHRONOLOGICAL STORY →
+        </a>
+
+      </div>
+
+    </section>
+
+  </main>
+
+  <!-- PIXEL BACKGROUND -->
+
+  <div class="pixelground"></div>
+
+  <!-- FOOTER -->
+
+  <footer>
+    THEDARKWITHIN © 2026
+    • MAIN STORY + THE FORGOTTEN KING
+  </footer>
+
+  <script>
+    // =====================================
+    // TAB SWITCHING
+    // =====================================
+
+    const buttons = document.querySelectorAll(
+      "nav button"
+    );
+
+    const tabs = document.querySelectorAll(
+      ".tab"
+    );
+
+    function openTab(tabName) {
+      buttons.forEach(button => {
+        button.classList.toggle(
+          "active",
+          button.dataset.tab === tabName
+        );
+      });
+
+      tabs.forEach(tab => {
+        tab.classList.toggle(
+          "active",
+          tab.id === tabName
+        );
+      });
+    }
+
+    buttons.forEach(button => {
+      button.addEventListener("click", () => {
+        openTab(button.dataset.tab);
+      });
+    });
+
+    // Allow direct links like index.html#timeline
+    const requestedTab = window.location.hash.slice(1);
+
+    if (document.getElementById(requestedTab)) {
+      openTab(requestedTab);
+    }
+  </script>
 
 </body>
 </html>
