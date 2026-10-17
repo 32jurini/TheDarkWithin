@@ -10,162 +10,289 @@
     content="width=device-width, initial-scale=1.0"
   >
 
-  <title>TheDarkWithin — Play Game</title>
+  <title>TheDarkWithin — Main Story</title>
 
   <style>
+
+    /* =====================================
+       THEDARKWITHIN — NEW GAME PAGE
+       ===================================== */
+
     * {
       box-sizing: border-box;
     }
 
     html {
       min-height: 100%;
-      background: #080a0d;
+      background: #070a09;
     }
 
     body {
       margin: 0;
+      padding: 0;
       min-height: 100vh;
+
       background:
         radial-gradient(
-          circle at 50% 0%,
-          #173429 0%,
-          #080a0d 55%
+          ellipse at top,
+          #153327 0%,
+          #080c0a 50%,
+          #050607 100%
         );
-      color: #ffffff;
-      font-family: Arial, sans-serif;
+
+      color: #f0fff4;
+      font-family: Arial, Helvetica, sans-serif;
+      overflow-x: hidden;
     }
 
-    /* TOP BAR */
+    /* =====================================
+       TOP HEADER
+       ===================================== */
 
     .game-header {
       width: 100%;
-      min-height: 75px;
-      padding: 15px 25px;
+      padding: 20px 30px;
 
       display: flex;
-      justify-content: space-between;
       align-items: center;
+      justify-content: space-between;
+      gap: 20px;
       flex-wrap: wrap;
-      gap: 15px;
 
-      background: rgba(5, 10, 8, 0.95);
-      border-bottom: 2px solid #285f3c;
+      background: rgba(5, 10, 8, 0.96);
+      border-bottom: 2px solid #286b43;
     }
 
     .game-logo {
-      color: #ffffff;
-      font-size: 24px;
+      font-size: 26px;
       font-weight: 900;
       letter-spacing: 2px;
+      color: #ffffff;
     }
 
     .game-logo span {
-      color: #76f2a1;
+      color: #70ef9d;
     }
 
-    .home-button {
-      padding: 11px 18px;
+    .back-button {
+      display: inline-block;
 
-      background: #173e28;
-      color: #b3ffca;
+      padding: 12px 20px;
 
-      text-decoration: none;
-      font-weight: bold;
+      color: #c9ffd6;
+      background: #173c29;
+
+      border: 1px solid #5dbe7e;
+      border-radius: 7px;
+
       font-size: 14px;
-
-      border: 1px solid #68d68d;
-      border-radius: 6px;
+      font-weight: bold;
+      text-decoration: none;
 
       transition: 0.2s;
     }
 
-    .home-button:hover {
-      background: #276b42;
-      color: white;
+    .back-button:hover {
+      color: #ffffff;
+      background: #286e48;
+      transform: translateY(-2px);
     }
 
-    /* INTRODUCTION */
+    /* =====================================
+       GAME HEADING
+       ===================================== */
 
     .game-intro {
+      padding: 36px 20px 15px;
       text-align: center;
-      padding: 28px 15px 8px;
     }
 
     .game-intro h1 {
-      font-size: clamp(26px, 5vw, 42px);
-      margin: 0 0 10px;
-      color: #c0ffd2;
+      margin: 0 0 12px;
+
+      color: #afffc6;
+
+      font-size: clamp(
+        28px,
+        5vw,
+        46px
+      );
+
+      font-weight: 900;
+      letter-spacing: 1px;
+
+      text-shadow:
+        0 0 35px rgba(69, 230, 125, 0.2);
     }
 
     .game-intro p {
-      color: #a9bcb0;
-      font-size: 14px;
-      line-height: 1.7;
-      max-width: 650px;
-      margin: auto;
+      max-width: 680px;
+      margin: 0 auto;
+
+      color: #a6b9ae;
+
+      font-size: 15px;
+      line-height: 1.8;
     }
 
-    /* GAME CONTAINER */
+    /* =====================================
+       GAME AREA
+       ===================================== */
 
-    #gameContainer {
-      width: min(1000px, 100%);
-      margin: 20px auto 35px;
-      padding: 0 12px;
+    .game-area {
+      width: min(1040px, 100%);
+      margin: 20px auto 45px;
+      padding: 0 15px;
     }
 
-    /* Existing game.js creates
-       the actual canvas and controls. */
+    /* =====================================
+       MODERN GAME ENGINE
+       ===================================== */
 
     #dwGameFrame {
       max-width: 100%;
+      margin: 12px auto;
     }
 
     #darkWithinCanvas {
       display: block;
+
       width: 100%;
       height: auto;
+
       image-rendering: pixelated;
+
+      border-radius: 8px;
+      border: 2px solid #3b7750;
+
+      box-shadow:
+        0 0 45px rgba(30, 120, 55, 0.12);
     }
 
     #darkWithinUI {
-      max-width: 100%;
+      width: 100%;
+      max-width: 960px;
+
+      margin: 16px auto;
+      padding: 18px;
+
       border-radius: 10px;
+      border: 1px solid #426a50;
+
+      background: #101814;
+
+      color: #f0fff4;
     }
 
-    /* BOTTOM FOOTER */
+    #darkWithinUI button {
+      border-radius: 6px;
+      transition: 0.15s;
+    }
+
+    #darkWithinUI button:hover:not(:disabled) {
+      filter: brightness(1.3);
+    }
+
+    #darkWithinUI button:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    #darkWithinUI select {
+      background: #19251e;
+      color: #e9fff0;
+      border: 1px solid #54735e;
+      padding: 9px;
+      border-radius: 6px;
+    }
+
+    /* =====================================
+       OLD GAME INTERFACE CLEANUP
+       ===================================== */
+
+    /*
+      These selectors only target possible
+      legacy interface elements.
+
+      The new game is created by game.js,
+      using darkWithinCanvas and dwGameFrame.
+    */
+
+    #gameCanvas,
+    #gameScreen,
+    #gameWorld,
+    #oldGame,
+    #oldGameContainer,
+    #gameContainerOld,
+    #gameHUD,
+    #gameHud,
+    #gameControls,
+    #messageBox {
+      display: none !important;
+    }
+
+    /* =====================================
+       FOOTER
+       ===================================== */
 
     .game-footer {
+      padding: 28px 15px;
+
+      background: #080c0a;
+      border-top: 1px solid #234e33;
+
+      color: #849b89;
+
       text-align: center;
-      padding: 25px 15px;
-      margin-top: 25px;
-
-      border-top: 1px solid #234632;
-
-      color: #738879;
       font-size: 12px;
-      letter-spacing: 1px;
+      letter-spacing: 2px;
     }
 
-    @media (max-width: 600px) {
+    .footer-highlight {
+      color: #70ef9d;
+    }
+
+    /* =====================================
+       MOBILE ADJUSTMENTS
+       ===================================== */
+
+    @media (max-width: 650px) {
+
       .game-header {
         justify-content: center;
         text-align: center;
       }
 
       .game-logo {
-        font-size: 20px;
+        font-size: 21px;
       }
 
-      #gameContainer {
+      .game-intro {
+        padding-top: 25px;
+      }
+
+      .game-area {
         padding: 0 6px;
       }
+
+      #darkWithinUI {
+        padding: 12px;
+      }
+
+      .game-footer {
+        font-size: 10px;
+      }
+
     }
+
   </style>
 </head>
 
 <body>
 
-  <!-- MAIN HEADER -->
+  <!-- =====================================
+       WEBSITE HEADER
+       ===================================== -->
 
   <header class="game-header">
 
@@ -175,53 +302,95 @@
 
     <a
       href="index.html"
-      class="home-button"
+      class="back-button"
     >
-      ← Back to Main Menu
+      ← EXIT TO MENU
     </a>
 
   </header>
 
-  <!-- GAME TITLE -->
+  <!-- =====================================
+       MAIN STORY TITLE
+       ===================================== -->
 
   <section class="game-intro">
 
     <h1>
-      Enter TheDarkWithin
+      TheDarkWithin
     </h1>
 
     <p>
-      Eight chapters. One dark adventure.
-      Rescue the missing villagers,
+      The villagers have disappeared.
+      Journey through forests,
+      frozen mountains and dark kingdoms.
+
+      Discover the Black Spirit,
       master powerful abilities,
-      and face the Purple King.
+      and defeat the Purple King.
     </p>
 
   </section>
 
-  <!-- GAME INSERTION AREA -->
+  <!-- =====================================
+       MAIN GAME AREA
+       ===================================== -->
 
-  <main id="gameContainer">
+  <main
+    class="game-area"
+    id="gameArea"
+  >
 
     <!--
-      Your game.js creates its own game
-      canvas, difficulty selector,
-      attacks, music controls,
-      fullscreen button and HUD.
+      IMPORTANT:
 
-      Do not add another canvas here.
+      There is NO old green game
+      screen in this file.
+
+      There is NO old punch system.
+
+      There is NO extra game canvas.
+
+      The new game.js automatically
+      creates and displays the real game,
+      including:
+
+      - Eight chapters
+      - Difficulty selection
+      - Sword combat
+      - Water Wheel
+      - Black Flash
+      - Divergent Fist
+      - Flame Arrow
+      - Fullscreen
+      - Music controls
+      - Original 8-bit soundtrack
+
+      Don't add the old game HTML
+      back into this section.
     -->
 
   </main>
 
-  <!-- FOOTER -->
+  <!-- =====================================
+       FOOTER
+       ===================================== -->
 
   <footer class="game-footer">
-    THEDARKWITHIN
-    — A DARK FANTASY ADVENTURE
+
+    <span class="footer-highlight">
+      THEDARKWITHIN
+    </span>
+
+    — THE MAIN STORY
+
   </footer>
 
-  <!-- LOAD THE MAIN GAME -->
+  <!-- =====================================
+       LOAD THE ACTUAL GAME
+
+       IMPORTANT:
+       ONLY LOAD GAME.JS ONCE!
+       ===================================== -->
 
   <script src="game.js"></script>
 
