@@ -4,303 +4,219 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>TheDarkWithin — 2.5D Main Story</title>
+<title>TheDarkWithin — Main Story</title>
 
 <style>
-:root{
- --green:#78f5ac;
- --green2:#39a96b;
- --dark:#070b0d;
- --panel:#101b19;
- --border:#396e55;
- --text:#effff5;
-}
-
 *{box-sizing:border-box}
 
 html{
- min-height:100%;
- background:#050907;
+ background:#050a07;
+ scroll-behavior:smooth;
 }
 
 body{
  margin:0;
  min-height:100vh;
- overflow-x:hidden;
- color:var(--text);
- font-family:Arial,Helvetica,sans-serif;
  background:
- radial-gradient(ellipse at 50% 0%,#204933 0%,transparent 42%),
- linear-gradient(180deg,#0a1913,#060a09 65%,#050609);
-}
-
-body::before{
- content:"";
- position:fixed;
- inset:0;
- pointer-events:none;
- background-image:
- radial-gradient(circle at 20% 20%,#8cf5ac12,transparent 35%),
- radial-gradient(circle at 80% 80%,#36754e19,transparent 40%);
- z-index:-1;
+ radial-gradient(ellipse at top,#173b28,#07110c 50%,#050806);
+ color:#f0fff4;
+ font-family:Arial,Helvetica,sans-serif;
+ overflow-x:hidden;
 }
 
 header{
  display:flex;
- align-items:center;
  justify-content:space-between;
+ align-items:center;
+ gap:15px;
  flex-wrap:wrap;
- gap:16px;
- padding:20px 5%;
- background:#07110fef;
- border-bottom:1px solid #3b8e64;
- box-shadow:0 15px 40px #0009;
+ padding:22px 5%;
+ background:#08110cec;
+ border-bottom:1px solid #397c50;
+ box-shadow:0 15px 40px #0008;
 }
 
 .logo{
- font-size:clamp(23px,4vw,35px);
+ color:#fff;
+ font-size:clamp(23px,4vw,36px);
  font-weight:900;
  letter-spacing:3px;
- color:#fff;
 }
 
 .logo span{
- color:var(--green);
- text-shadow:0 0 20px #70ff9c55;
+ color:#7af0a2;
+ text-shadow:0 0 25px #65ed9166;
 }
 
 .back{
  text-decoration:none;
- color:#d8ffe5;
- border:1px solid #4a9267;
- padding:11px 16px;
+ color:#d7ffe3;
+ padding:12px 18px;
+ background:#183827;
+ border:1px solid #55986a;
  border-radius:9px;
- background:#12302399;
- font-size:13px;
  font-weight:bold;
- transition:.2s;
+ font-size:12px;
 }
 
 .back:hover{
- background:#235b3c;
- transform:translateY(-2px);
+ background:#286644;
 }
 
 .intro{
- max-width:1060px;
- margin:35px auto 20px;
+ max-width:1000px;
+ margin:35px auto 25px;
  padding:0 20px;
  text-align:center;
 }
 
 .eyebrow{
- color:var(--green);
- font-size:12px;
+ color:#8df4aa;
  letter-spacing:4px;
- font-weight:900;
+ font-size:12px;
+ font-weight:bold;
 }
 
 .intro h1{
- font-size:clamp(38px,7vw,76px);
- line-height:1;
- margin:13px 0;
+ font-size:clamp(36px,7vw,76px);
+ margin:15px 0;
  letter-spacing:2px;
- text-shadow:0 10px 35px #000d;
+ text-shadow:0 10px 35px #000a;
 }
 
 .intro h1 span{
- color:var(--green);
- text-shadow:0 0 45px #4ef28a5b;
+ color:#7df0a5;
 }
 
 .intro p{
- color:#bacdc1;
+ color:#b8cfc0;
+ max-width:720px;
+ margin:0 auto;
  font-size:15px;
  line-height:1.85;
- max-width:740px;
- margin:15px auto;
 }
 
-.game-shell{
- position:relative;
- max-width:1150px;
- margin:30px auto;
- padding:0 15px;
+#gameMount{
+ width:min(1100px,calc(100% - 24px));
+ margin:25px auto;
 }
 
-.game-frame{
- position:relative;
- overflow:hidden;
- border-radius:16px;
- padding:5px;
- background:
- linear-gradient(125deg,#94ffc2,#315943 25%,#172a25 55%,#90e9ad);
- box-shadow:
- 0 30px 85px #000b,
- 0 0 70px #58ef9520;
-}
+/*
+ The real game.js creates #dwGameFrame.
+ This is the ONLY game screen.
+*/
 
-#gameArea{
- position:relative;
- width:100%;
- min-height:400px;
- overflow:hidden;
+#dwGameFrame{
+ position:relative!important;
+ width:min(960px,100%)!important;
+ margin:12px auto!important;
+ background:#07110d!important;
  border-radius:12px;
- background:#081410;
- isolation:isolate;
-}
-
-#gameArea canvas{
- display:block;
- max-width:100%;
- image-rendering:auto!important;
- border-radius:9px;
+ overflow:hidden;
+ box-shadow:
+ 0 25px 75px #000c,
+ 0 0 55px #5cf59a26;
+ border:2px solid #478661;
 }
 
 #darkWithinCanvas{
+ display:block!important;
+ width:100%!important;
+ height:auto!important;
+ max-width:100%;
+ border:0!important;
+ border-radius:9px;
  image-rendering:auto!important;
  filter:
- saturate(1.18)
- contrast(1.08)
- brightness(1.03);
+ saturate(1.12)
+ contrast(1.06)
+ brightness(1.04);
 }
 
-.game-frame:fullscreen{
- width:100vw;
- height:100vh;
- padding:0;
- border-radius:0;
- display:flex;
- justify-content:center;
- align-items:center;
- background:#030705;
+#darkWithinUI{
+ width:min(960px,100%)!important;
+ margin:14px auto!important;
+ padding:17px!important;
+ border:1px solid #3c7654!important;
+ border-radius:12px;
+ background:#0f1c15!important;
+ box-shadow:0 18px 45px #0006;
+ color:#eaffef!important;
+ font-family:Arial,sans-serif!important;
 }
 
-.game-frame:fullscreen #gameArea{
- height:100%;
- display:flex;
- align-items:center;
- justify-content:center;
+#darkWithinUI button{
+ cursor:pointer;
 }
 
-.graphics-label{
- position:absolute;
- top:10px;
- right:12px;
- z-index:4;
- background:#07140bd9;
- color:#baffd1;
- padding:8px 12px;
- border:1px solid #79d39d;
- border-radius:999px;
- font-size:10px;
- letter-spacing:2px;
- font-weight:bold;
- pointer-events:none;
+#darkWithinUI button:hover{
+ filter:brightness(1.18);
 }
 
-#visualEffects{
- position:absolute;
- pointer-events:none;
- inset:0;
- width:100%;
- height:100%;
- z-index:2;
- border-radius:10px;
-}
-
-.game-info{
- max-width:1150px;
- margin:20px auto;
+.info{
+ max-width:1000px;
  padding:0 15px;
+ margin:25px auto;
  display:grid;
  grid-template-columns:repeat(3,1fr);
  gap:14px;
 }
 
-.info-card{
- background:linear-gradient(145deg,#12261d,#0a1410);
- border:1px solid #2b5e42;
- border-radius:14px;
+.card{
+ background:linear-gradient(145deg,#14291d,#0b1710);
+ border:1px solid #315e42;
+ border-radius:12px;
  padding:18px;
- box-shadow:0 15px 35px #0004;
 }
 
-.info-card strong{
+.card strong{
+ color:#8ff2ac;
  display:block;
- font-size:13px;
- color:var(--green);
  margin-bottom:8px;
- letter-spacing:1px;
-}
-
-.info-card p{
- margin:0;
- color:#b4c9b9;
  font-size:13px;
- line-height:1.6;
 }
 
-.visual-options{
- max-width:1150px;
- margin:12px auto;
- padding:0 15px;
- display:flex;
- align-items:center;
- justify-content:center;
- gap:10px;
- flex-wrap:wrap;
-}
-
-.visual-options button{
- cursor:pointer;
- background:linear-gradient(#245239,#102b1d);
- border:1px solid #66bd86;
- border-radius:9px;
- color:#eaffef;
- font:bold 12px Arial;
- padding:12px 17px;
-}
-
-.visual-options button:hover{
- background:#316e4b;
-}
-
-.visual-options button.active{
- background:#70e99c;
- color:#07150c;
-}
-
-.visual-options label{
- color:#cdebd5;
- font-size:12px;
-}
-
-.visual-options input{
- accent-color:#7afaab;
+.card p{
+ color:#b5cbbb;
+ font-size:13px;
+ line-height:1.7;
+ margin:0;
 }
 
 footer{
- padding:35px 15px;
+ margin-top:45px;
+ padding:30px;
+ border-top:1px solid #265138;
  text-align:center;
- border-top:1px solid #153c29;
- color:#82998a;
+ color:#839a88;
  font-size:12px;
  letter-spacing:2px;
- margin-top:40px;
 }
 
 @media(max-width:750px){
- .game-info{
-  grid-template-columns:1fr;
- }
- .graphics-label{
-  font-size:8px;
-  padding:5px;
- }
- #gameArea{
-  min-height:270px;
- }
+ .info{grid-template-columns:1fr}
+ header{padding:17px}
+}
+
+/* Fullscreen gameplay */
+
+#dwGameFrame:fullscreen{
+ width:100vw!important;
+ height:100vh!important;
+ margin:0!important;
+ border:0!important;
+ border-radius:0!important;
+ background:#050906!important;
+ display:flex!important;
+ align-items:center!important;
+ justify-content:center!important;
+}
+
+#dwGameFrame:fullscreen #darkWithinCanvas{
+ max-height:100vh;
+ width:100%!important;
+ height:auto!important;
+ object-fit:contain;
 }
 </style>
 </head>
@@ -308,442 +224,92 @@ footer{
 <body>
 
 <header>
-<div class="logo">
-THE<span>DARK</span>WITHIN
-</div>
-
-<a class="back" href="index.html">
-← RETURN TO LAUNCHER
-</a>
+<div class="logo">THE<span>DARK</span>WITHIN</div>
+<a class="back" href="index.html">← BACK TO LAUNCHER</a>
 </header>
 
 <section class="intro">
-<div class="eyebrow">
-THE ORIGINAL STORY — CINEMATIC EDITION
-</div>
-
-<h1>
-THE<span>DARK</span>WITHIN
-</h1>
-
+<div class="eyebrow">THE ORIGINAL STORY</div>
+<h1>THE<span>DARK</span>WITHIN</h1>
 <p>
-The villagers have vanished. Journey through ancient forests,
-snowy mountains, forbidden deserts, and cursed ruins.
-
-Discover the Black Spirit, master devastating abilities,
-and face the Purple King in the final battle.
+The villagers have vanished. Travel through dark forests,
+snowy mountains, deserts, and cursed kingdoms.
+Master powerful abilities, uncover the Black Spirit's
+secrets, and confront the Purple King.
 </p>
 </section>
 
-<main class="game-shell">
+<!-- ONE REAL GAME LOCATION -->
+<main id="gameMount"></main>
 
-<div class="game-frame" id="cinematicFrame">
-
-<div id="gameArea"></div>
-
-<div class="graphics-label">
-2.5D VISUAL MODE
-</div>
-
-</div>
-
-</main>
-
-<div class="visual-options">
-<button id="cinematicToggle" class="active">
-CINEMATIC EFFECTS: ON
-</button>
-
-<label>
-ATMOSPHERE
-<input id="atmosphere" type="range"
-min="0" max="100" value="75">
-</label>
-</div>
-
-<div class="game-info">
-
-<div class="info-card">
+<section class="info">
+<div class="card">
 <strong>🌲 EIGHT CHAPTERS</strong>
-<p>
-Explore forests, mountains, deserts, caves,
-dark kingdoms, and the final Purple King arena.
-</p>
+<p>Explore the full original story across dangerous lands and mysterious realms.</p>
 </div>
 
-<div class="info-card">
-<strong>⚔️ COMBAT ABILITIES</strong>
-<p>
-Sword attacks, Water Wheel, Flame Arrow,
-Black Flash, and Divergent Fist remain part
-of the original game.
-</p>
+<div class="card">
+<strong>⚔️ ORIGINAL COMBAT</strong>
+<p>Keep your sword, special attacks, Black Flash, Divergent Fist, and other abilities.</p>
 </div>
 
-<div class="info-card">
-<strong>✨ CINEMATIC ATMOSPHERE</strong>
-<p>
-Enhanced lighting, soft mist, animated
-particles, environmental depth, and
-post-processing effects.
-</p>
+<div class="card">
+<strong>🎵 MUSIC & DIFFICULTY</strong>
+<p>Your existing soundtrack, controls, difficulty modes, and fullscreen remain available.</p>
 </div>
+</section>
 
-</div>
+<footer>THEDARKWITHIN © 2026 — MAIN STORY</footer>
 
-<footer>
-THEDARKWITHIN © 2026 — MAIN STORY
-</footer>
-
-<!-- ORIGINAL COMPLETE GAME ENGINE -->
+<!-- LOAD THE ACTUAL GAME ONCE -->
 <script src="game.js"></script>
 
-<!-- NEW 2.5D GRAPHICS EFFECTS -->
 <script>
 (()=>{
 "use strict";
 
-const area=document.getElementById("gameArea");
-const toggle=document.getElementById("cinematicToggle");
-const slider=document.getElementById("atmosphere");
+/*
+ FIX:
+ game.js creates its game frame and control panel
+ directly inside document.body.
 
-let enabled=true;
-let strength=.75;
-let clock=0;
-let last=0;
-let overlay=null;
-let fx=null;
-let gameCanvas=null;
+ Move those existing elements into the correct
+ location instead of creating another game.
+*/
 
-const W=960;
-const H=540;
+function positionGame(){
+ const mount=document.getElementById("gameMount");
+ const frame=document.getElementById("dwGameFrame");
+ const ui=document.getElementById("darkWithinUI");
 
-const motes=[];
+ if(!mount||!frame||!ui)return false;
 
-for(let i=0;i<90;i++){
- motes.push({
-  x:Math.random()*W,
-  y:Math.random()*H,
-  speed:4+Math.random()*18,
-  radius:.5+Math.random()*2,
-  phase:Math.random()*Math.PI*2,
-  layer:Math.random(),
-  drift:Math.random()*12-6
+ if(frame.parentElement!==mount){
+  mount.appendChild(frame);
+ }
+
+ if(ui.parentElement!==mount){
+  mount.appendChild(ui);
+ }
+
+ return true;
+}
+
+/*
+ The current game.js creates the elements
+ synchronously, so this should succeed immediately.
+*/
+
+if(!positionGame()){
+ const observer=new MutationObserver(()=>{
+  if(positionGame())observer.disconnect();
+ });
+
+ observer.observe(document.body,{
+  childList:true,
+  subtree:true
  });
 }
-
-function clamp(v,a,b){
- return Math.max(a,Math.min(b,v));
-}
-
-function rgba(r,g,b,a){
- return "rgba("+r+","+g+","+b+","+a+")";
-}
-
-function createOverlay(){
- gameCanvas=document.getElementById("darkWithinCanvas");
-
- if(!gameCanvas){
-  requestAnimationFrame(createOverlay);
-  return;
- }
-
- if(overlay)return;
-
- overlay=document.createElement("canvas");
- overlay.id="visualEffects";
- overlay.width=W;
- overlay.height=H;
-
- /*
- The original engine places its canvas inside a frame.
- We place our graphics layer on top of that same frame.
- Pointer events are disabled so clicks still reach
- the actual game underneath.
- */
-
- const parent=gameCanvas.parentElement;
-
- if(parent){
-  const style=getComputedStyle(parent);
-
-  if(style.position==="static"){
-   parent.style.position="relative";
-  }
-
-  parent.appendChild(overlay);
-  overlay.style.position="absolute";
-  overlay.style.left="0";
-  overlay.style.top="0";
-  overlay.style.width="100%";
-  overlay.style.height="100%";
-  overlay.style.zIndex="2";
-  overlay.style.pointerEvents="none";
- }
-
- fx=overlay.getContext("2d");
-
- requestAnimationFrame(renderEffects);
-}
-
-function softGlow(x,y,r,color){
- const g=fx.createRadialGradient(x,y,0,x,y,r);
- g.addColorStop(0,color);
- g.addColorStop(1,"rgba(0,0,0,0)");
-
- fx.fillStyle=g;
- fx.fillRect(x-r,y-r,r*2,r*2);
-}
-
-function skyHaze(){
- const haze=fx.createLinearGradient(0,0,0,H);
-
- haze.addColorStop(0,rgba(125,210,180,.035*strength));
- haze.addColorStop(.45,rgba(130,170,145,.018*strength));
- haze.addColorStop(.8,rgba(0,10,10,.035*strength));
- haze.addColorStop(1,rgba(0,0,0,.18*strength));
-
- fx.fillStyle=haze;
- fx.fillRect(0,0,W,H);
-}
-
-function volumetricRays(){
- fx.save();
-
- const originX=720+Math.sin(clock*.18)*55;
- const originY=60;
-
- fx.globalCompositeOperation="screen";
-
- for(let i=0;i<9;i++){
-  const angle=(-.85+i*.19)+Math.sin(clock*.14+i)*.02;
-  const spread=45+i*6;
-  const length=620;
-
-  const g=fx.createLinearGradient(
-   originX,originY,
-   originX+Math.sin(angle)*length,
-   originY+Math.cos(angle)*length
-  );
-
-  g.addColorStop(0,rgba(160,255,195,.032*strength));
-  g.addColorStop(1,rgba(160,255,195,0));
-
-  fx.fillStyle=g;
-  fx.beginPath();
-  fx.moveTo(originX,originY);
-  fx.lineTo(
-   originX+Math.sin(angle-.11)*length-spread,
-   originY+length
-  );
-  fx.lineTo(
-   originX+Math.sin(angle+.11)*length+spread,
-   originY+length
-  );
-  fx.closePath();
-  fx.fill();
- }
-
- fx.restore();
-}
-
-function floatingParticles(dt){
- fx.save();
- fx.globalCompositeOperation="screen";
-
- for(const p of motes){
-  p.y-=p.speed*dt*(.35+p.layer);
-  p.x+=Math.sin(clock+p.phase)*dt*3+p.drift*dt*.25;
-
-  if(p.y<-12){
-   p.y=H+12;
-   p.x=Math.random()*W;
-  }
-
-  if(p.x>W+10)p.x=-10;
-  if(p.x<-10)p.x=W+10;
-
-  const opacity=(.12+p.layer*.32)*
-  strength*
-  (.65+.35*Math.sin(clock*2+p.phase));
-
-  fx.fillStyle=rgba(174,255,197,opacity);
-
-  fx.beginPath();
-  fx.arc(p.x,p.y,p.radius,0,Math.PI*2);
-  fx.fill();
-
-  if(p.layer>.84){
-   softGlow(
-    p.x,p.y,9,
-    rgba(130,255,169,.055*strength)
-   );
-  }
- }
-
- fx.restore();
-}
-
-function driftingFog(){
- fx.save();
-
- const fogY=365;
- const offset=Math.sin(clock*.16)*90;
-
- for(let i=0;i<5;i++){
-  const x=i*265-150+offset;
-
-  const g=fx.createRadialGradient(
-   x,fogY+40,0,
-   x,fogY+40,230
-  );
-
-  g.addColorStop(0,rgba(160,220,190,.075*strength));
-  g.addColorStop(.5,rgba(130,185,165,.028*strength));
-  g.addColorStop(1,rgba(160,220,190,0));
-
-  fx.fillStyle=g;
-  fx.beginPath();
-  fx.ellipse(
-   x,fogY+40,
-   230,70,0,0,Math.PI*2
-  );
-  fx.fill();
- }
-
- fx.restore();
-}
-
-function floorDepth(){
- fx.save();
-
- /*
- Soft highlights follow the perspective of the
- ground, giving the surface a subtle sense of depth.
- */
-
- const horizon=350;
-
- const g=fx.createLinearGradient(0,horizon,0,H);
- g.addColorStop(0,rgba(190,255,211,.08*strength));
- g.addColorStop(.12,rgba(0,0,0,0));
- g.addColorStop(1,rgba(0,0,0,.26*strength));
-
- fx.fillStyle=g;
- fx.fillRect(0,horizon,W,H-horizon);
-
- fx.strokeStyle=rgba(187,237,206,.035*strength);
- fx.lineWidth=1;
-
- for(let y=horizon+18;y<H;y+=18+(y-horizon)*.09){
-  fx.beginPath();
-  fx.moveTo(0,y);
-  fx.lineTo(W,y);
-  fx.stroke();
- }
-
- for(let x=-500;x<=1450;x+=120){
-  fx.beginPath();
-  fx.moveTo(W/2,horizon);
-  fx.lineTo(x,H);
-  fx.stroke();
- }
-
- fx.restore();
-}
-
-function cinematicVignette(){
- const g=fx.createRadialGradient(
-  W/2,H*.45,150,
-  W/2,H*.45,630
- );
-
- g.addColorStop(0,rgba(0,0,0,0));
- g.addColorStop(.7,rgba(0,0,0,.015*strength));
- g.addColorStop(1,rgba(0,0,0,.49*strength));
-
- fx.fillStyle=g;
- fx.fillRect(0,0,W,H);
-}
-
-function lightSweep(){
- const x=360+Math.sin(clock*.35)*200;
-
- softGlow(
-  x,140,270,
-  rgba(95,255,160,.065*strength)
- );
-
- softGlow(
-  670,360,195,
-  rgba(149,130,255,.027*strength)
- );
-}
-
-function foregroundDust(){
- /*
- Very subtle foreground particles move faster
- than background particles to suggest layering.
- */
-
- for(let i=0;i<14;i++){
-  const x=((i*119+clock*(15+i%4*8))%1100+1100)%1100-65;
-  const y=395+(i*37)%145;
-  const size=1+i%3;
-
-  fx.fillStyle=rgba(
-   206,255,222,
-   (.06+i%4*.012)*strength
-  );
-
-  fx.beginPath();
-  fx.arc(x,y,size,0,Math.PI*2);
-  fx.fill();
- }
-}
-
-function renderEffects(timestamp){
- if(!overlay||!fx)return;
-
- const dt=last?clamp((timestamp-last)/1000,0,.05):0;
- last=timestamp;
- clock+=dt;
-
- fx.clearRect(0,0,W,H);
-
- if(enabled&&strength>0){
-  skyHaze();
-  volumetricRays();
-  lightSweep();
-  driftingFog();
-  floorDepth();
-  floatingParticles(dt);
-  foregroundDust();
-  cinematicVignette();
- }
-
- requestAnimationFrame(renderEffects);
-}
-
-toggle.addEventListener("click",()=>{
- enabled=!enabled;
-
- toggle.textContent=enabled?
- "CINEMATIC EFFECTS: ON":
- "CINEMATIC EFFECTS: OFF";
-
- toggle.classList.toggle("active",enabled);
-
- if(overlay&&!enabled){
-  fx.clearRect(0,0,W,H);
- }
-});
-
-slider.addEventListener("input",()=>{
- strength=Number(slider.value)/100;
-});
-
-createOverlay();
 
 })();
 </script>
