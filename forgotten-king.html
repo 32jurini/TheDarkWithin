@@ -3,69 +3,222 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>The Forgotten King — TheDarkWithin</title>
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>The Forgotten King — 2.5D Edition</title>
 <style>
 *{box-sizing:border-box}
-html{background:#07060c}
-body{margin:0;background:#07060c;color:#f7e5c5;font-family:Georgia,serif}
-header{padding:17px 5%;background:#15101d;border-bottom:2px solid #aa8555;display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}
-header strong{font-size:clamp(19px,3vw,30px);color:#ffe0a3}
-a{color:#f5d097;text-decoration:none}
-main{max-width:1080px;margin:22px auto;padding:0 12px}
-button,select{background:#34253c;color:#ffedc9;border:1px solid #ba955f;border-radius:6px;padding:11px 13px;font-family:Arial;cursor:pointer}
-button:hover{background:#68456d}
-button:disabled{opacity:.4;cursor:default}
-#settings{background:#16121e;border:1px solid #6b526f;border-radius:8px;padding:15px;display:flex;align-items:center;justify-content:center;flex-wrap:wrap;gap:13px;margin-bottom:14px;font:14px Arial}
-#settings label{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
-#game{position:relative;background:#090812;border:2px solid #b38a52;overflow:hidden}
-canvas{display:block;width:100%;height:auto;image-rendering:pixelated}
-#hud{display:none;position:absolute;top:12px;left:12px;max-width:70%;background:#090811e9;border-left:4px solid #e7bd76;padding:12px;font:13px Arial}
-#chapterName{font-weight:bold;color:#f8d797;margin-bottom:7px}
-#healthBack{margin-top:9px;width:170px;height:12px;background:#55222f;border:1px solid #c48e87}
-#healthFill{background:#f25468;height:100%;width:100%}
-#prompt{position:absolute;right:12px;bottom:12px;display:none}
-#dialogue{display:none;position:absolute;left:3%;bottom:3%;width:94%;background:#090b17f5;border:2px solid #e8bc76;padding:16px;min-height:123px;cursor:pointer;z-index:6}
-#speaker{font-weight:bold;color:#ffe1a3;font-size:19px}
-#speech{line-height:1.5;margin-top:12px}
-#dialogue small{display:block;text-align:right;color:#aea9b5;margin-top:8px}
-#overlay{position:absolute;inset:0;z-index:10;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;background:radial-gradient(circle,#342440,#040409 83%);padding:22px}
-#overlayLabel{font:12px Arial;letter-spacing:3px;color:#d9b780}
-#overlayTitle{font-size:clamp(26px,5vw,53px);color:#ffdda0;margin:17px 0}
-#overlayText{white-space:pre-line;line-height:1.75;max-width:730px;font-size:clamp(13px,2vw,19px)}
-#overlayButtons{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;margin-top:15px}
-#toolbar{display:flex;justify-content:center;gap:8px;flex-wrap:wrap;background:#17101d;padding:13px}
-#toolbar button{font-size:12px}
-#musicTools{display:flex;align-items:center;justify-content:center;gap:15px;flex-wrap:wrap;margin:18px 0;font:13px Arial}
-#musicTools label{display:flex;align-items:center;gap:8px}
-input[type=range]{accent-color:#e0b36c}
-#instructions{text-align:center;font:12px/1.9 Arial;color:#bcb0bd;padding:10px}
-footer{padding:25px;text-align:center;color:#8f8494;font:12px Arial}
-#game:fullscreen{width:100vw;height:100vh;display:flex;align-items:center;justify-content:center;background:#050409;border:0}
-#game:fullscreen canvas{width:100%;height:100%;object-fit:contain}
-#game:fullscreen #overlay{background:#080611f5}
-@media(max-width:600px){
-#hud{font-size:10px;padding:8px}
-#healthBack{width:105px}
-#dialogue{min-height:100px;padding:10px}
-#speaker{font-size:15px}
-#speech{font-size:12px}
-#toolbar button{padding:9px}
+body{
+ margin:0;
+ color:#fff0dc;
+ background:radial-gradient(ellipse at top,#392441,#090711 75%);
+ font-family:Georgia,serif;
+ min-height:100vh;
+}
+header{
+ padding:17px 5%;
+ display:flex;
+ justify-content:space-between;
+ align-items:center;
+ gap:15px;
+ flex-wrap:wrap;
+ background:#120e1be8;
+ border-bottom:1px solid #b48d67;
+ box-shadow:0 8px 35px #0008;
+}
+header h1{
+ margin:0;
+ color:#ffe2a8;
+ font-size:clamp(20px,4vw,34px);
+ letter-spacing:2px;
+}
+a{color:#ffdaa0;text-decoration:none;font:13px Arial}
+main{max-width:1130px;margin:24px auto;padding:0 14px}
+.controls{
+ display:flex;
+ justify-content:center;
+ align-items:center;
+ flex-wrap:wrap;
+ gap:10px;
+ padding:13px;
+ margin:12px 0;
+ background:#201727d9;
+ border:1px solid #8b6885;
+ border-radius:12px;
+}
+button,select{
+ cursor:pointer;
+ border-radius:8px;
+ border:1px solid #cb9d6f;
+ background:linear-gradient(#60475d,#302238);
+ color:#fff0d6;
+ font-weight:bold;
+ padding:12px 15px;
+ font-family:Arial;
+ transition:.2s;
+}
+button:hover{
+ background:linear-gradient(#86617d,#4b3052);
+ transform:translateY(-1px);
+}
+label{font:13px Arial}
+#stage{
+ position:relative;
+ overflow:hidden;
+ background:#0c0a19;
+ border:2px solid #d2aa75;
+ border-radius:10px;
+ box-shadow:0 0 50px #b56dca27,0 25px 70px #0009;
+}
+canvas{
+ display:block;
+ width:100%;
+ height:auto;
+ image-rendering:auto;
+}
+#hud{
+ position:absolute;
+ top:12px;
+ left:12px;
+ z-index:3;
+ display:none;
+ padding:12px;
+ background:#100c1cd9;
+ border:1px solid #cda679;
+ border-radius:10px;
+ backdrop-filter:blur(10px);
+ font:13px Arial;
+ max-width:65%;
+}
+#hudTitle{color:#ffdda0;font-weight:bold}
+#objective{margin:7px 0}
+#health{
+ background:#3b2537;
+ width:185px;
+ height:13px;
+ border-radius:15px;
+ overflow:hidden;
+ border:1px solid #ae6e71;
+}
+#healthFill{
+ background:linear-gradient(90deg,#f25273,#ffb781);
+ height:100%;
+ width:100%;
+ transition:width .2s;
+}
+#bossHud{
+ display:none;
+ position:absolute;
+ top:12px;
+ right:12px;
+ width:32%;
+ z-index:3;
+ background:#100c1cdd;
+ border:1px solid #b77bd7;
+ padding:12px;
+ border-radius:10px;
+ text-align:center;
+ font:12px Arial;
+}
+#bossBar{
+ height:13px;
+ background:#2b1736;
+ margin-top:8px;
+ border-radius:10px;
+ overflow:hidden;
+}
+#bossFill{
+ width:100%;
+ height:100%;
+ background:linear-gradient(90deg,#963edf,#ff77bb);
+}
+#overlay{
+ position:absolute;
+ inset:0;
+ display:flex;
+ flex-direction:column;
+ align-items:center;
+ justify-content:center;
+ text-align:center;
+ z-index:10;
+ padding:25px;
+ background:radial-gradient(ellipse at center,#44284af1,#080711f9 80%);
+ backdrop-filter:blur(7px);
+}
+#smallTitle{
+ color:#dcb781;
+ letter-spacing:3px;
+ font:12px Arial;
+}
+#bigTitle{
+ font-size:clamp(29px,5vw,59px);
+ color:#ffe3ad;
+ text-shadow:0 0 32px #f6b96d77;
+ margin:17px 0;
+}
+#story{
+ max-width:740px;
+ white-space:pre-line;
+ line-height:1.75;
+ font-size:clamp(14px,2vw,19px);
+}
+#notice{
+ display:none;
+ position:absolute;
+ bottom:20px;
+ left:50%;
+ transform:translateX(-50%);
+ padding:11px 18px;
+ background:#181024e8;
+ border:1px solid #e5b77d;
+ border-radius:7px;
+ text-align:center;
+ font:bold 13px Arial;
+ z-index:5;
+}
+.help{
+ text-align:center;
+ color:#bcaebf;
+ font:12px/2 Arial;
+ margin:15px;
+}
+#stage:fullscreen{
+ width:100vw;
+ height:100vh;
+ border:0;
+ display:flex;
+ align-items:center;
+ background:#080710;
+}
+#stage:fullscreen canvas{
+ width:100%;
+ height:100%;
+ object-fit:contain;
+}
+footer{
+ text-align:center;
+ color:#a797ad;
+ font:12px Arial;
+ padding:27px;
+}
+@media(max-width:650px){
+ #hud{font-size:10px;padding:7px}
+ #health{width:105px}
+ #bossHud{font-size:9px;padding:7px}
+ button{font-size:11px;padding:9px}
 }
 </style>
 </head>
 <body>
 
 <header>
-<strong>♛ THE FORGOTTEN KING</strong>
-<a href="index.html">← BACK TO MAIN WEBSITE</a>
+<h1>♛ THE FORGOTTEN KING</h1>
+<a href="index.html">← BACK TO THE DARK WITHIN</a>
 </header>
 
 <main>
 
-<div id="settings">
-<label>
-<strong>DIFFICULTY:</strong>
+<div class="controls">
+<label>DIFFICULTY
 <select id="difficulty">
 <option value="easy">Easy</option>
 <option value="medium" selected>Medium</option>
@@ -73,65 +226,66 @@ footer{padding:25px;text-align:center;color:#8f8494;font:12px Arial}
 <option value="extreme">Extreme</option>
 </select>
 </label>
-<button id="fullscreenButton">⛶ FULLSCREEN</button>
-<span id="difficultyInfo">Balanced combat</span>
+<button id="fullButton">⛶ FULLSCREEN</button>
+<button id="restartButton">↻ RESTART CHAPTER</button>
+<button id="menuButton">☰ MENU</button>
 </div>
 
-<div id="game">
+<div id="stage">
 <canvas id="canvas" width="960" height="540"></canvas>
 
 <div id="hud">
-<div id="chapterName"></div>
+<div id="hudTitle"></div>
 <div id="objective"></div>
-<div id="healthBack"><div id="healthFill"></div></div>
+<div id="health"><div id="healthFill"></div></div>
 </div>
 
-<button id="prompt">E — INTERACT</button>
-
-<div id="dialogue">
-<div id="speaker"></div>
-<div id="speech"></div>
-<small>E / ENTER / CLICK — Continue</small>
+<div id="bossHud">
+<strong id="bossName">THE CORRUPTED KING</strong>
+<div id="bossBar"><div id="bossFill"></div></div>
 </div>
+
+<div id="notice"></div>
 
 <div id="overlay">
-<div id="overlayLabel">THEDARKWITHIN — DLC I</div>
-<h1 id="overlayTitle">THE FORGOTTEN KING</h1>
-<p id="overlayText"></p>
-<div id="overlayButtons">
+<div id="smallTitle">THEDARKWITHIN — DLC I</div>
+<h2 id="bigTitle">THE FORGOTTEN KING</h2>
+<p id="story"></p>
+<div class="controls">
 <button id="continueButton">BEGIN STORY</button>
 <button id="newButton">NEW GAME</button>
 </div>
 </div>
 </div>
 
-<div id="toolbar">
+<div class="controls">
 <button id="swordButton">SPACE / J — SWORD</button>
 <button id="goldButton">M — GOLDEN SLASH</button>
 <button id="shieldButton">N — KING'S SHIELD</button>
 <button id="flameButton">K — SACRED FLAME</button>
+<button id="interactButton">E — INTERACT</button>
 </div>
 
-<div id="musicTools">
+<div class="controls">
 <button id="musicButton">♫ MUSIC: ON</button>
-<label>VOLUME:
+<label>VOLUME
 <input id="volume" type="range" min="0" max="100" value="35">
 </label>
-<span id="trackLabel">Royal soundtrack ready</span>
 </div>
 
-<div id="instructions">
+<p class="help">
 WASD / ARROWS — MOVE |
 E — INTERACT |
 SPACE / J — SWORD |
 M — GOLDEN SLASH |
 N — SHIELD |
 K — SACRED FLAME
-</div>
+</p>
+
 </main>
 
 <footer>
-THE FORGOTTEN KING — EIGHT-CHAPTER PREQUEL
+THE FORGOTTEN KING — CINEMATIC 2.5D EDITION
 </footer>
 
 <script>
@@ -141,1401 +295,1400 @@ THE FORGOTTEN KING — EIGHT-CHAPTER PREQUEL
 const $=id=>document.getElementById(id);
 const canvas=$("canvas");
 const ctx=canvas.getContext("2d");
-ctx.imageSmoothingEnabled=false;
+ctx.imageSmoothingEnabled=true;
 
 const W=960,H=540;
-const clamp=(n,a,b)=>Math.max(a,Math.min(b,n));
-const dist=(x,y,a,b)=>Math.hypot(x-a,y-b);
+const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
+const dist=(a,b,c,d)=>Math.hypot(a-c,b-d);
 const keys={};
-const SAVE="tdw-fk-chapter-complete-v3";
-
-let chapter=0,stage=0,mode="menu";
-let time=0,last=0;
-let enemies=[],shots=[],particles=[];
-let talking=false,dialogue=[],dialogueIndex=0,dialogueDone=null;
-let slides=[],slideIndex=0,slideDone=null;
-let battleDone=false;
-
-const player={
-x:480,y:445,r:17,facing:1,
-hp:120,maxHp:120,speed:200,
-sword:0,gold:0,shield:0,fire:0,
-shieldTime:0,invincible:0,slashTime:0
-};
-
-// =====================================
-// DIFFICULTY SYSTEM
-// =====================================
+const SAVE="tdw-fk-25d-save";
 
 const difficulties={
-easy:{
-label:"Easy",
-health:.65,
-damage:.45,
-speed:.85,
-description:"Relaxed story mode"
-},
-medium:{
-label:"Medium",
-health:1,
-damage:1,
-speed:1,
-description:"Balanced combat"
-},
-hard:{
-label:"Hard",
-health:1.45,
-damage:1.65,
-speed:1.18,
-description:"Stronger, faster enemies"
-},
-extreme:{
-label:"Extreme",
-health:2,
-damage:2.5,
-speed:1.4,
-description:"Survive the darkness"
-}
+ easy:{hp:180,enemy:.65,damage:.5,speed:.8},
+ medium:{hp:120,enemy:1,damage:1,speed:1},
+ hard:{hp:85,enemy:1.5,damage:1.5,speed:1.2},
+ extreme:{hp:60,enemy:2,damage:2.3,speed:1.45}
 };
-
-let difficulty="medium";
-
-function changeDifficulty(){
-difficulty=$("difficulty").value;
-$("difficultyInfo").textContent=
-difficulties[difficulty].description;
-
-// Changing difficulty during a battle
-// restarts that battle fairly.
-if(mode==="playing" && step()?.type==="fight"){
-player.hp=player.maxHp;
-player.invincible=1.5;
-spawnBattle(step());
-}
-}
-
-$("difficulty").addEventListener(
-"change",changeDifficulty
-);
-
-// =====================================
-// FULLSCREEN
-// =====================================
-
-$("fullscreenButton").onclick=async()=>{
-try{
-if(document.fullscreenElement){
-await document.exitFullscreen();
-}else{
-await $("game").requestFullscreen();
-}
-}catch(err){
-alert("Fullscreen is not supported in this browser.");
-}
-};
-
-document.addEventListener("fullscreenchange",()=>{
-$("fullscreenButton").textContent=
-document.fullscreenElement
-?"⛶ EXIT FULLSCREEN"
-:"⛶ FULLSCREEN";
-});
-
-// =====================================
-// STORY DATA
-// =====================================
-
-const L=(who,text)=>[who,text];
-const S=(label,title,text)=>({label,title,text});
-const T=(name,x,y,character,lines)=>({
-type:"talk",name,x,y,character,lines
-});
-const F=(name,count,kind)=>({
-type:"fight",name,count,kind
-});
 
 const chapters=[
 {
-name:"The Golden Kingdom",
-theme:"kingdom",
-intro:[
-S("CHAPTER I","THE GOLDEN KINGDOM",
-"Hundreds of years ago, King Aldric ruled a peaceful kingdom.\nSir Aeron was his most loyal knight.")
-],
-steps:[
-T("Speak with the Royal Guard",235,415,"Royal Guard",[
-L("Royal Guard","Sir Aeron! The miners have uncovered an ancient chamber."),
-L("Sir Aeron","Has anyone been hurt?"),
-L("Royal Guard","Some claim to hear voices beneath the castle.")
-]),
-T("Speak with the Villager",735,415,"Villager",[
-L("Villager","My brother found a strange purple light."),
-L("Villager","He has not returned from the mines."),
-L("Sir Aeron","I will find him.")
-]),
-T("Report to King Aldric",480,245,"King Aldric",[
-L("King Aldric","Aeron, a discovery could change our kingdom forever."),
-L("Sir Aeron","Your Majesty, it sounds dangerous."),
-L("King Aldric","Then we shall investigate together.")
-])
-],
-ending:[
-S("CHAPTER I COMPLETE","THE DESCENT",
-"Beneath the peaceful kingdom, something ancient waits.")
-]
+ name:"The Golden Kingdom",
+ theme:"kingdom",
+ intro:[
+ "NARRATOR: Hundreds of years before TheDarkWithin, King Aldric ruled a peaceful kingdom.",
+ "SIR AERON: Your Majesty, strange discoveries have been reported beneath the castle.",
+ "KING ALDRIC: Then we shall investigate them together."
+ ],
+ tasks:[
+ ["Speak to the Royal Guard","talk","ROYAL GUARD: Miners have discovered an ancient chamber beneath the castle."],
+ ["Speak to the Villager","talk","VILLAGER: My brother disappeared after seeing a strange purple crystal."],
+ ["Report to King Aldric","talk","KING ALDRIC: This discovery could change our kingdom forever."]
+ ],
+ ending:"Deep beneath the golden kingdom, something ancient waits."
 },
 {
-name:"Beneath the Castle",
-theme:"mines",
-intro:[
-S("CHAPTER II","BENEATH THE CASTLE",
-"Aeron and Aldric descend into forgotten mines.")
-],
-steps:[
-T("Speak with King Aldric",290,370,"King Aldric",[
-L("King Aldric","These tunnels were sealed centuries ago."),
-L("Sir Aeron","We should find the missing miners first.")
-]),
-T("Rescue the Injured Miner",755,420,"Injured Miner",[
-L("Injured Miner","The crystal spoke to us!"),
-L("Injured Miner","It knew the king's name."),
-L("Sir Aeron","Get to safety.")
-]),
-T("Examine the Purple Crystal",510,280,"Crystal",[
-L("Black Spirit","At last... the king has come."),
-L("Sir Aeron","Who are you?"),
-L("Black Spirit","The power to protect everything he loves.")
-]),
-T("Warn King Aldric",290,370,"King Aldric",[
-L("Sir Aeron","We must destroy the crystal."),
-L("King Aldric","It promised a kingdom without suffering."),
-L("Sir Aeron","Do not trust it!"),
-L("King Aldric","I will pay whatever price is necessary.")
-])
-],
-ending:[
-S("THE FIRST TOUCH","THE CRYSTAL AWAKENS",
-"Aldric places his hand upon the crystal."),
-S("AN ANCIENT VOICE","AN ETERNAL KING",
-"\"Together, we will create a kingdom that can never fall.\"")
-]
+ name:"Beneath the Castle",
+ theme:"mines",
+ intro:[
+ "NARRATOR: Aeron and Aldric descend into forgotten tunnels.",
+ "SIR AERON: These tunnels were sealed centuries ago.",
+ "KING ALDRIC: Something down here is calling to me."
+ ],
+ tasks:[
+ ["Find the Injured Miner","talk","MINER: The crystal speaks! It knows the king's name!"],
+ ["Examine the Purple Crystal","talk","BLACK SPIRIT: At last... the king has come."],
+ ["Warn King Aldric","talk","SIR AERON: Your Majesty, we must destroy this crystal!"],
+ ["Confront the Crystal Guardians","fight",3,"spirit"]
+ ],
+ ending:"King Aldric reaches toward the crystal, and purple light consumes the chamber."
 },
 {
-name:"The King's Secret",
-theme:"castle",
-intro:[
-S("CHAPTER III","THE KING'S SECRET",
-"The king withdraws from his people.\nPurple shadows spread throughout the castle.")
-],
-steps:[
-T("Question the Royal Steward",195,420,"Royal Steward",[
-L("Royal Steward","The king speaks to someone in his empty chambers."),
-L("Sir Aeron","I must discover who.")
-]),
-T("Visit the Royal Physician",750,420,"Royal Physician",[
-L("Royal Physician","Purple marks cover his skin."),
-L("Royal Physician","There is a forbidden journal in the records hall.")
-]),
-T("Read the Forbidden Journal",465,330,"Journal",[
-L("Journal","The crystal contains an entity called the Black Spirit."),
-L("Journal","It offers protection but seeks control."),
-L("Sir Aeron","Aldric must know the truth.")
-]),
-T("Confront King Aldric",480,245,"King Aldric",[
-L("Sir Aeron","The Black Spirit is using you!"),
-L("King Aldric","You do not understand my duty."),
-L("Sir Aeron","We have been friends since childhood."),
-L("King Aldric","Then stop questioning me. Leave!")
-])
-],
-ending:[
-S("THE BLACK SPIRIT","A TEST OF LOYALTY",
-"\"Give Aeron an order he cannot obey.\""),
-S("THE NEXT MORNING","THE CORRUPTION",
-"The royal guards begin to change.")
-]
+ name:"The King's Secret",
+ theme:"castle",
+ intro:[
+ "NARRATOR: King Aldric has begun to change.",
+ "ROYAL STEWARD: His Majesty spends every night speaking to an unseen voice.",
+ "SIR AERON: I will discover the truth."
+ ],
+ tasks:[
+ ["Question the Royal Steward","talk","STEWARD: The king has forbidden anyone from entering his chambers."],
+ ["Read the Forbidden Journal","talk","JOURNAL: The crystal contains an entity called the Black Spirit."],
+ ["Confront King Aldric","talk","KING ALDRIC: You question my loyalty to this kingdom? Leave!"],
+ ["Defeat the Corrupted Guards","fight",4,"guard"]
+ ],
+ ending:"Aeron learns that the Black Spirit is slowly taking control of his oldest friend."
 },
 {
-name:"The Corrupted Guard",
-theme:"corrupted",
-intro:[
-S("CHAPTER IV","THE CORRUPTED GUARD",
-"The king orders innocent villagers arrested.\nSir Aeron refuses.")
-],
-steps:[
-T("Speak with Captain Rowan",255,380,"Captain Rowan",[
-L("Captain Rowan","The royal guards have turned against the people."),
-L("Sir Aeron","Then we stop them.")
-]),
-F("Defend the Courtyard",4,"guard"),
-F("Defeat the Corrupted Captain",1,"captain"),
-T("Speak with Captain Rowan",720,385,"Captain Rowan",[
-L("Captain Rowan","The soldiers were not themselves."),
-L("Captain Rowan","Smoke is rising from the eastern village."),
-L("Sir Aeron","We leave at once.")
-])
-],
-ending:[
-S("CHAPTER IV COMPLETE","BROKEN BROTHERHOOD",
-"Aeron defeats the soldiers he once commanded.")
-]
+ name:"The Corrupted Guard",
+ theme:"corrupted",
+ intro:[
+ "NARRATOR: The king orders innocent villagers imprisoned.",
+ "SIR AERON: I will not harm the people I swore to protect.",
+ "CAPTAIN ROWAN: Then we must stand against the corrupted guards."
+ ],
+ tasks:[
+ ["Speak to Captain Rowan","talk","CAPTAIN ROWAN: The soldiers are not themselves!"],
+ ["Defend the Courtyard","fight",5,"guard"],
+ ["Defeat the Corrupted Captain","fight",1,"captain"]
+ ],
+ ending:"The corrupted guards fall. Smoke rises from the eastern village."
 },
 {
-name:"The Fallen Village",
-theme:"village",
-intro:[
-S("CHAPTER V","THE FALLEN VILLAGE",
-"A village burns as shadows advance.\nSurvivors desperately await rescue.")
-],
-steps:[
-T("Find the Village Elder",210,395,"Village Elder",[
-L("Village Elder","Our families are trapped along the eastern road!"),
-L("Sir Aeron","I will clear a path.")
-]),
-F("Protect the Villagers",5,"beast"),
-T("Rescue the Survivors",745,390,"Survivor",[
-L("Survivor","Thank you, Sir Aeron!"),
-L("Sir Aeron","Follow the western road. Do not look back.")
-]),
-F("Defeat the Shadow Beast",1,"beastBoss")
-],
-ending:[
-S("CHAPTER V COMPLETE","A KINGDOM IN ASHES",
-"The people survive, but their homes are gone.\nAeron knows the king must be stopped.")
-]
+ name:"The Fallen Village",
+ theme:"village",
+ intro:[
+ "NARRATOR: The eastern village burns beneath a blood-red sky.",
+ "VILLAGE ELDER: Our families are trapped!",
+ "SIR AERON: I will clear a path."
+ ],
+ tasks:[
+ ["Find the Village Elder","talk","VILLAGE ELDER: Please save our people!"],
+ ["Protect the Villagers","fight",5,"beast"],
+ ["Rescue the Survivors","talk","SURVIVOR: Thank you, Sir Aeron!"],
+ ["Defeat the Shadow Beast","fight",1,"beastBoss"]
+ ],
+ ending:"The villagers survive, but Aeron knows the king must be stopped."
 },
 {
-name:"The Forbidden Ritual",
-theme:"ritual",
-intro:[
-S("CHAPTER VI","THE FORBIDDEN RITUAL",
-"A hidden chamber reveals the Black Spirit's true intentions.")
-],
-steps:[
-T("Examine the Ancient Altar",480,280,"Ancient Altar",[
-L("Black Spirit","You cannot undo what your king has chosen."),
-L("Sir Aeron","You deceived him."),
-L("Black Spirit","He wanted an immortal kingdom. I offered him one.")
-]),
-F("Destroy the Ritual Guardians",5,"spirit"),
-F("Defeat the Shadow Herald",1,"herald"),
-T("Examine the Broken Seal",710,320,"Broken Seal",[
-L("Sir Aeron","The ritual is broken, but the crystal remains."),
-L("Black Spirit","Aldric's transformation is almost complete.")
-])
-],
-ending:[
-S("CHAPTER VI COMPLETE","THE LAST WARNING",
-"When the last light fades, Aldric will be reborn.")
-]
+ name:"The Forbidden Ritual",
+ theme:"ritual",
+ intro:[
+ "NARRATOR: An ancient altar reveals the Black Spirit's true intentions.",
+ "BLACK SPIRIT: Your king desired immortality. I merely gave him what he wanted.",
+ "SIR AERON: You deceived him!"
+ ],
+ tasks:[
+ ["Examine the Ancient Altar","talk","BLACK SPIRIT: Nothing can undo the king's choice."],
+ ["Destroy the Ritual Guardians","fight",5,"spirit"],
+ ["Defeat the Shadow Herald","fight",1,"herald"]
+ ],
+ ending:"The ritual is broken, but Aldric's transformation is almost complete."
 },
 {
-name:"The Last Loyal Knight",
-theme:"ruins",
-intro:[
-S("CHAPTER VII","THE LAST LOYAL KNIGHT",
-"The castle collapses.\nAeron makes one final attempt to save his friend.")
-],
-steps:[
-T("Speak with Captain Rowan",245,385,"Captain Rowan",[
-L("Captain Rowan","The throne room is almost unreachable."),
-L("Sir Aeron","I promised to protect my king."),
-L("Sir Aeron","Now I must protect the world from him.")
-]),
-F("Break Through the Royal Guard",6,"guard"),
-F("Defeat the Throne Guardian",1,"guardian"),
-T("Open the Throne Room",480,270,"Throne Door",[
-L("Black Spirit","Your loyalty will destroy you."),
-L("Sir Aeron","Then let this be my final act.")
-])
-],
-ending:[
-S("CHAPTER VII COMPLETE","THE FINAL DOOR",
-"Beyond the ruined doors, King Aldric waits.")
-]
+ name:"The Last Loyal Knight",
+ theme:"ruins",
+ intro:[
+ "NARRATOR: The castle falls into ruin.",
+ "CAPTAIN ROWAN: The throne room is almost unreachable!",
+ "SIR AERON: I made a promise to protect my king. Now I must protect the world."
+ ],
+ tasks:[
+ ["Speak to Captain Rowan","talk","CAPTAIN ROWAN: This may be our final battle."],
+ ["Break Through the Royal Guard","fight",6,"guard"],
+ ["Defeat the Throne Guardian","fight",1,"guardian"],
+ ["Open the Throne Room","talk","BLACK SPIRIT: Your loyalty will destroy you."]
+ ],
+ ending:"Aeron stands before the final door. Beyond it, his friend awaits."
 },
 {
-name:"Birth of the Purple King",
-theme:"final",
-intro:[
-S("CHAPTER VIII","BIRTH OF THE PURPLE KING",
-"The kingdom's fate rests inside its ruined throne room."),
-S("KING ALDRIC","ONE FINAL OFFER",
-"\"Join me, Aeron. We can save everyone.\""),
-S("SIR AERON","THE LAST REFUSAL",
-"\"I came to save you, not serve the darkness.\"")
-],
-steps:[
-T("Confront King Aldric",480,240,"King Aldric",[
-L("King Aldric","I offered you a place beside me."),
-L("Sir Aeron","And I offered you a way back."),
-L("King Aldric","There is no going back."),
-L("Sir Aeron","Then forgive me, old friend.")
-]),
-F("Defeat King Aldric",1,"aldric"),
-F("Defeat the Purple King",1,"purpleKing")
-],
-ending:[
-S("THE FINAL BLOW","THE KING FALLS",
-"Aeron shatters Aldric's corrupted crown."),
-S("KING ALDRIC","A MOMENT OF CLARITY",
-"\"Aeron... did I save them?\""),
-S("SIR AERON","GOODBYE, OLD FRIEND",
-"\"I wish I could tell you yes.\""),
-S("THE COLLAPSE","THE CASTLE FALLS",
-"Aeron escapes as the castle falls into darkness."),
-S("BENEATH THE RUINS","SOMETHING SURVIVES",
-"Deep beneath the rubble, the crystal pulses."),
-S("THE BLACK SPIRIT","NOT YET...",
-"\"A king cannot die so easily.\""),
-S("THE FORGOTTEN KING","THE END",
-"The kingdom was lost.\nThe Purple King was born.\nCenturies later, TheDarkWithin would begin.")
-]
+ name:"Birth of the Purple King",
+ theme:"final",
+ intro:[
+ "NARRATOR: The ruined throne room trembles beneath an unnatural eclipse.",
+ "KING ALDRIC: Join me, Aeron. Together we can save everyone.",
+ "SIR AERON: I came to save you, not serve the darkness.",
+ "KING ALDRIC: Then you leave me no choice."
+ ],
+ tasks:[
+ ["Confront King Aldric","talk","SIR AERON: Forgive me, old friend."],
+ ["Defeat King Aldric","fight",1,"aldric"],
+ ["Defeat the Purple King","fight",1,"purpleKing"]
+ ],
+ ending:"The kingdom is lost. The Purple King is born. Centuries later, TheDarkWithin will begin."
 }
 ];
 
-// =====================================
-// ROYAL SOUNDTRACK
-// =====================================
-
-const Music=(()=>{
-let audio=null,master=null,noise=null,timer=null;
-let enabled=true,volume=.35;
-let current=-1,cursor=0,nextTime=0;
-
-const BPM=[104,84,90,116,123,100,136,158];
-const SEMI={C:0,D:2,E:4,F:5,G:7,A:9,B:11};
-
-const songs=[
-{
-name:"Golden Kingdom — Royal Fanfare",
-melody:["C5","E5","G5","C6","G5","E5","D5","G5",
-"E5","G5","A5","G5","E5","D5","C5","R"],
-bass:["C3","G3","A3","G3"]
-},
-{
-name:"Beneath the Castle — Whispers",
-melody:["C5","R","B4","G4","R","D5","C5","R",
-"G4","A4","C5","B4","G4","R","F#4","R"],
-bass:["C3","G2","A#2","F#2"]
-},
-{
-name:"King's Secret — Uneasy Crown",
-melody:["E5","D5","C5","R","G4","B4","C5","R",
-"E5","F5","D5","B4","C5","R","G4","R"],
-bass:["A2","F2","G2","E2"]
-},
-{
-name:"Corrupted Guard — March to War",
-melody:["A4","C5","D5","E5","D5","C5","A4","R",
-"G4","A4","C5","D5","E5","G5","E5","R"],
-bass:["A2","A2","F2","G2"]
-},
-{
-name:"Fallen Village — Ashes and Steel",
-melody:["D5","F5","A5","G5","F5","D5","C5","R",
-"D5","E5","F5","A5","G5","F5","D5","R"],
-bass:["D3","A2","C3","A2"]
-},
-{
-name:"Forbidden Ritual — Dark Magic",
-melody:["C5","R","D#5","F#5","G5","R","F#5","D#5",
-"C5","R","B4","F#4","G4","R","C5","R"],
-bass:["C2","F#2","G2","C2"]
-},
-{
-name:"Last Loyal Knight — Final March",
-melody:["A4","C5","E5","A5","G5","E5","D5","C5",
-"A4","C5","D5","F5","E5","D5","C5","R"],
-bass:["A2","F2","D2","E2"]
-},
-{
-name:"Purple King — Battle of the Crown",
-melody:["C6","G5","E5","G5","A5","G5","E5","D5",
-"C6","B5","A5","G5","E5","G5","C6","R"],
-bass:["C3","G2","A#2","F#2"]
-}
-];
-
-function frequency(note){
-if(note==="R")return 0;
-const m=/^([A-G])(#?)(\d)$/.exec(note);
-if(!m)return 0;
-const midi=(Number(m[3])+1)*12+SEMI[m[1]]+(m[2]?1:0);
-return 440*Math.pow(2,(midi-69)/12);
-}
-
-function setup(){
-if(audio)return;
-const AC=window.AudioContext||window.webkitAudioContext;
-if(!AC)return;
-audio=new AC();
-master=audio.createGain();
-master.gain.value=volume*.5;
-master.connect(audio.destination);
-noise=audio.createBuffer(1,audio.sampleRate,audio.sampleRate);
-const samples=noise.getChannelData(0);
-for(let i=0;i<samples.length;i++)samples[i]=Math.random()*2-1;
-}
-
-function tone(note,at,duration,type="brass",level=.18){
-if(!audio||!enabled)return;
-const freq=frequency(note);
-if(!freq)return;
-const oscillator=audio.createOscillator();
-const gain=audio.createGain();
-const end=at+duration;
-oscillator.type=type==="bass"?"triangle":"sawtooth";
-oscillator.frequency.setValueAtTime(freq,at);
-
-if(type==="brass"){
-const filter=audio.createBiquadFilter();
-filter.type="lowpass";
-filter.frequency.setValueAtTime(800,at);
-filter.frequency.linearRampToValueAtTime(2200,at+.07);
-filter.frequency.linearRampToValueAtTime(650,end);
-oscillator.connect(filter);
-filter.connect(gain);
-}else oscillator.connect(gain);
-
-gain.gain.setValueAtTime(.0001,at);
-gain.gain.linearRampToValueAtTime(level,at+.03);
-gain.gain.setTargetAtTime(.0001,Math.max(at+.04,end-.07),.035);
-gain.connect(master);
-oscillator.start(at);
-oscillator.stop(end+.1);
-}
-
-function drum(at,type){
-if(!audio||!enabled)return;
-if(type==="kick"){
-const osc=audio.createOscillator();
-const gain=audio.createGain();
-osc.frequency.setValueAtTime(150,at);
-osc.frequency.exponentialRampToValueAtTime(45,at+.16);
-gain.gain.setValueAtTime(.4,at);
-gain.gain.exponentialRampToValueAtTime(.001,at+.2);
-osc.connect(gain);gain.connect(master);
-osc.start(at);osc.stop(at+.21);
-}else{
-const source=audio.createBufferSource();
-source.buffer=noise;
-const filter=audio.createBiquadFilter();
-filter.type="highpass";
-filter.frequency.value=type==="snare"?1200:4700;
-const gain=audio.createGain();
-const length=type==="snare"?.13:.055;
-gain.gain.setValueAtTime(type==="snare"?.16:.045,at);
-gain.gain.exponentialRampToValueAtTime(.001,at+length);
-source.connect(filter);filter.connect(gain);
-gain.connect(master);
-source.start(at);source.stop(at+length+.01);
-}
-}
-
-function schedule(){
-if(!audio||!enabled||audio.state!=="running")return;
-
-const index=clamp(chapter,0,7);
-const song=songs[index];
-
-if(current!==index){
-current=index;
-cursor=0;
-nextTime=audio.currentTime+.06;
-$("trackLabel").textContent="♫ "+song.name;
-}
-
-const duration=30/BPM[index];
-
-while(nextTime<audio.currentTime+.2){
-const i=cursor%16;
-tone(song.melody[i],nextTime,duration*.83,"brass",
-index>=6?.23:.17);
-
-if(i%4===0){
-tone(song.bass[(i/4)%4],nextTime,duration*3.4,"bass",.23);
-drum(nextTime,"kick");
-}
-if(i%4===2)drum(nextTime,"snare");
-if(index>=3||i%2===0)drum(nextTime,"hat");
-if(index>=6&&i%4===3)drum(nextTime,"snare");
-
-cursor++;
-nextTime+=duration;
-}
-}
-
-async function start(){
-setup();
-if(!audio)return;
-try{await audio.resume();}catch(e){}
-if(!timer)timer=setInterval(schedule,55);
-}
-
-function toggle(){
-enabled=!enabled;
-$("musicButton").textContent=enabled?"♫ MUSIC: ON":"♫ MUSIC: OFF";
-if(master&&audio){
-master.gain.setTargetAtTime(enabled?volume*.5:0,audio.currentTime,.025);
-}
-if(enabled){
-current=-1;
-start();
-}
-}
-
-function setVolume(n){
-volume=Number(n)/100;
-if(master&&audio)
-master.gain.setTargetAtTime(enabled?volume*.5:0,audio.currentTime,.025);
-}
-
-return{
-start,toggle,setVolume,
-change:()=>{current=-1}
+const palettes={
+ kingdom:["#e4a97a","#ad7593","#403052","#ffe0a2"],
+ mines:["#4b365d","#22213c","#101323","#cc91ff"],
+ castle:["#a28ca8","#504567","#201a31","#f4c885"],
+ corrupted:["#91426a","#47244b","#1b112c","#ea79f7"],
+ village:["#e49b67","#88516a","#382439","#ffc58a"],
+ ritual:["#684280","#30203f","#160e27","#e27bff"],
+ ruins:["#ba6d72","#593747","#271a2d","#ffb09a"],
+ final:["#674581","#351f4e","#140d23","#f19aff"]
 };
-})();
 
-$("musicButton").onclick=()=>Music.toggle();
-$("volume").oninput=e=>Music.setVolume(e.target.value);
+let chapter=0;
+let stage=0;
+let mode="menu";
+let difficulty="medium";
+let time=0;
+let previousTime=0;
+let storyLines=[];
+let storyIndex=0;
+let onSceneEnd=null;
+let enemies=[];
+let projectiles=[];
+let particles=[];
+let noticeTime=0;
+let battleStarted=false;
 
-// =====================================
-// CUTSCENES
-// =====================================
+const player={
+ x:480,y:420,r:17,
+ dir:1,hp:120,maxHp:120,
+ swordCd:0,goldCd:0,
+ shieldCd:0,shield:0,
+ flameCd:0,slash:0,
+ inv:0
+};
 
-function showSlide(){
-const s=slides[slideIndex];
-$("overlayLabel").textContent=s.label;
-$("overlayTitle").textContent=s.title;
-$("overlayText").textContent=s.text;
+function save(){
+ try{
+ const old=Number(localStorage.getItem(SAVE)||0);
+ localStorage.setItem(SAVE,String(Math.max(chapter,old)));
+ }catch(e){}
 }
 
-function playSlides(list,callback){
-slides=list;
-slideIndex=0;
-slideDone=callback||null;
-mode="scene";
-$("overlay").style.display="flex";
-$("hud").style.display="none";
-$("prompt").style.display="none";
-$("newButton").style.display="none";
-$("continueButton").textContent="CONTINUE";
-showSlide();
+function progress(){
+ try{
+ return clamp(Number(localStorage.getItem(SAVE)||0),0,7);
+ }catch(e){return 0;}
 }
 
-function nextSlide(){
-if(mode!=="scene")return;
-slideIndex++;
-if(slideIndex<slides.length){
-showSlide();
-return;
+function notify(msg,duration=1.7){
+ $("notice").textContent=msg;
+ $("notice").style.display="block";
+ noticeTime=duration;
 }
 
-$("overlay").style.display="none";
-$("hud").style.display="block";
-mode="playing";
-
-const done=slideDone;
-slideDone=null;
-if(done)done();
+function showScreen(label,title,text,button,action,secondary){
+ mode="scene";
+ $("overlay").style.display="flex";
+ $("smallTitle").textContent=label;
+ $("bigTitle").textContent=title;
+ $("story").textContent=text;
+ $("continueButton").textContent=button;
+ $("continueButton").onclick=action;
+ $("newButton").style.display=secondary?"inline-block":"none";
+ $("hud").style.display="none";
+ $("bossHud").style.display="none";
 }
 
-// =====================================
-// DIALOGUE
-// =====================================
-
-function talk(lines,callback){
-talking=true;
-dialogue=lines;
-dialogueIndex=0;
-dialogueDone=callback||null;
-$("dialogue").style.display="block";
-showLine();
+function cutscene(lines,done,title){
+ storyLines=lines;
+ storyIndex=0;
+ onSceneEnd=done;
+ function next(){
+  if(storyIndex>=storyLines.length){
+   $("overlay").style.display="none";
+   $("hud").style.display="block";
+   mode="playing";
+   const cb=onSceneEnd;
+   onSceneEnd=null;
+   if(cb)cb();
+   return;
+  }
+  const line=storyLines[storyIndex++];
+  showScreen(
+   "STORY CUTSCENE",
+   title||chapters[chapter].name,
+   line,
+   storyIndex===storyLines.length?"CONTINUE":"NEXT →",
+   next
+  );
+ }
+ next();
 }
 
-function showLine(){
-$("speaker").textContent=dialogue[dialogueIndex][0];
-$("speech").textContent=dialogue[dialogueIndex][1];
+function menu(){
+ mode="menu";
+ $("overlay").style.display="flex";
+ $("smallTitle").textContent="THEDARKWITHIN — DLC I";
+ $("bigTitle").textContent="THE FORGOTTEN KING";
+ $("story").textContent=
+ "Hundreds of years before TheDarkWithin, "+
+ "a loyal knight attempts to save his kingdom from an ancient darkness.\n\n"+
+ "Eight chapters • 2.5D environments • Cinematic battles • Royal soundtrack";
+ $("continueButton").textContent=progress()?
+ "CONTINUE — CHAPTER "+(progress()+1):"BEGIN STORY";
+ $("continueButton").onclick=()=>{
+  Music.start();
+  startChapter(progress());
+ };
+ $("newButton").style.display="inline-block";
+ $("newButton").onclick=()=>{
+  if(!confirm("Begin again from Chapter 1?"))return;
+  try{localStorage.removeItem(SAVE);}catch(e){}
+  Music.start();
+  startChapter(0);
+ };
+ $("hud").style.display="none";
+ $("bossHud").style.display="none";
 }
 
-function advanceDialogue(){
-if(!talking)return;
-dialogueIndex++;
-if(dialogueIndex<dialogue.length){
-showLine();
-return;
-}
-talking=false;
-$("dialogue").style.display="none";
-
-const done=dialogueDone;
-dialogueDone=null;
-if(done)done();
-}
-
-$("dialogue").onclick=advanceDialogue;
-
-// =====================================
-// CHAPTER PROGRESSION
-// =====================================
-
-const step=()=>chapters[chapter].steps[stage]||null;
-
-function updateHUD(){
-$("chapterName").textContent=
-"CHAPTER "+(chapter+1)+" — "+chapters[chapter].name;
-$("objective").textContent=
-step()?"OBJECTIVE: "+step().name:"";
-$("healthFill").style.width=
-(100*player.hp/player.maxHp)+"%";
-$("healthBack").style.display=chapter>=3?"block":"none";
+function startChapter(n){
+ chapter=n;
+ stage=0;
+ enemies=[];
+ projectiles=[];
+ particles=[];
+ battleStarted=false;
+ const d=difficulties[difficulty];
+ Object.assign(player,{
+  x:480,y:420,dir:1,
+  hp:d.hp,maxHp:d.hp,
+  swordCd:0,goldCd:0,
+  shieldCd:0,shield:0,
+  flameCd:0,slash:0,inv:1
+ });
+ save();
+ Music.reset();
+ cutscene(
+  chapters[n].intro,
+  beginTask,
+  "CHAPTER "+(n+1)+": "+chapters[n].name
+ );
 }
 
-function saveChapter(index){
-try{
-const old=Number(localStorage.getItem(SAVE)||0);
-localStorage.setItem(SAVE,String(Math.max(old,index)));
-}catch(e){}
+function currentTask(){
+ return chapters[chapter].tasks[stage];
 }
 
-function savedChapter(){
-try{
-return clamp(Number(localStorage.getItem(SAVE)||0),0,7);
-}catch(e){return 0;}
+function beginTask(){
+ battleStarted=false;
+ const task=currentTask();
+ if(task&&task[1]==="fight")spawnEnemies(task);
+ updateHUD();
 }
 
-function startChapter(index){
-chapter=index;
-stage=0;
-enemies=[];
-shots=[];
-particles=[];
-talking=false;
-battleDone=false;
-
-player.x=480;
-player.y=445;
-player.hp=player.maxHp;
-player.invincible=1;
-player.sword=player.gold=player.shield=player.fire=0;
-player.shieldTime=0;
-
-saveChapter(index);
-Music.change();
-
-playSlides(chapters[index].intro,enterStep);
+function nextTask(){
+ stage++;
+ if(stage>=chapters[chapter].tasks.length){
+  finishChapter();
+ }else{
+  beginTask();
+ }
 }
 
-function enterStep(){
-battleDone=false;
-updateHUD();
-if(step()?.type==="fight")spawnBattle(step());
+function finishChapter(){
+ cutscene([
+  "CHAPTER "+(chapter+1)+" COMPLETE",
+  chapters[chapter].ending
+ ],()=>{
+  if(chapter<7)startChapter(chapter+1);
+  else victory();
+ },"THE FORGOTTEN KING");
 }
 
-function advanceStep(){
-if(mode!=="playing")return;
-stage++;
-if(stage>=chapters[chapter].steps.length){
-const next=chapter+1;
-playSlides(chapters[chapter].ending,()=>{
-if(next<chapters.length)startChapter(next);
-else storyComplete();
-});
-}else{
-enterStep();
-}
-}
-
-function storyComplete(){
-mode="ending";
-$("overlay").style.display="flex";
-$("hud").style.display="none";
-$("overlayLabel").textContent="THE FORGOTTEN KING";
-$("overlayTitle").textContent="STORY COMPLETE";
-$("overlayText").textContent=
-"All eight chapters completed.\n"+
-"The Golden Kingdom has fallen.\n"+
-"The Purple King will return in TheDarkWithin.";
-$("continueButton").textContent="RETURN TO MENU";
-$("newButton").style.display="none";
-}
-
-function nearTarget(){
-const s=step();
-return mode==="playing"&&!talking&&
-s&&s.type==="talk"&&
-dist(player.x,player.y,s.x,s.y)<95;
+function victory(){
+ showScreen(
+  "THE FORGOTTEN KING — FINALE",
+  "THE END",
+  "King Aldric has fallen.\n"+
+  "The Black Spirit survives beneath the ruins.\n"+
+  "The kingdom is forgotten, but its darkness will return.\n\n"+
+  "THANK YOU FOR PLAYING THE FORGOTTEN KING.",
+  "RETURN TO MENU",
+  menu
+ );
 }
 
 function interact(){
-if(talking){
-advanceDialogue();
-return;
-}
-if(nearTarget())talk(step().lines,advanceStep);
+ if(mode!=="playing")return;
+ const task=currentTask();
+ if(task&&task[1]==="talk"){
+  cutscene([task[2]],nextTask,task[0]);
+ }
 }
 
-$("prompt").onclick=interact;
+function updateHUD(){
+ $("hudTitle").textContent=
+ "CHAPTER "+(chapter+1)+" — "+chapters[chapter].name;
+ const task=currentTask();
+ $("objective").textContent=task?
+ "OBJECTIVE: "+task[0]:"CHAPTER COMPLETE";
+ $("healthFill").style.width=
+ clamp(player.hp/player.maxHp*100,0,100)+"%";
+}
 
-// =====================================
-// ENEMIES
-// =====================================
+function burst(x,y,color,count=14){
+ for(let i=0;i<count;i++){
+  const a=Math.random()*Math.PI*2;
+  const speed=35+Math.random()*165;
+  particles.push({
+   x,y,vx:Math.cos(a)*speed,
+   vy:Math.sin(a)*speed,
+   life:.3+Math.random()*.5,color,
+   size:2+Math.random()*4
+  });
+ }
+}
 
 const enemyTypes={
-guard:[70,10,82,20,"#895cba"],
-captain:[290,16,83,31,"#ac4bd7"],
-beast:[95,12,105,22,"#6d3978"],
-beastBoss:[370,19,83,35,"#ad457e"],
-spirit:[105,13,110,21,"#a13cd7"],
-herald:[440,20,85,37,"#c148ec"],
-guardian:[520,23,93,39,"#9675a0"],
-aldric:[620,21,100,37,"#d0a0df"],
-purpleKing:[1100,25,98,47,"#9433e3"]
+ guard:[80,11,75,22,"#936ab4"],
+ captain:[300,18,80,32,"#a858d4"],
+ beast:[105,13,100,25,"#954f96"],
+ beastBoss:[420,22,75,42,"#b64d9a"],
+ spirit:[115,15,95,24,"#b05fe6"],
+ herald:[480,22,85,40,"#c363ef"],
+ guardian:[590,26,85,43,"#9b82bc"],
+ aldric:[750,24,95,45,"#d1a2df"],
+ purpleKing:[1350,30,90,62,"#963fdf"]
 };
 
-function spawnBattle(s){
-enemies=[];
-shots=[];
-battleDone=false;
+function spawnEnemies(task){
+ enemies=[];
+ projectiles=[];
+ battleStarted=true;
+ const type=task[3];
+ const data=enemyTypes[type];
+ const d=difficulties[difficulty];
 
-const base=enemyTypes[s.kind];
-const scale=difficulties[difficulty];
+ for(let i=0;i<task[2];i++){
+  const angle=2*Math.PI*i/task[2];
+  const boss=task[2]===1;
+  const hp=data[0]*d.enemy;
+  enemies.push({
+   x:boss?480:480+250*Math.cos(angle),
+   y:boss?230:290+110*Math.sin(angle),
+   vx:0,
+   hp,maxHp:hp,
+   damage:data[1]*d.damage,
+   speed:data[2]*d.speed,
+   r:data[3],color:data[4],
+   type,flash:0,
+   attack:1,shoot:1.5,
+   dead:false
+  });
+ }
 
-for(let i=0;i<s.count;i++){
-const a=i*2*Math.PI/s.count;
-const health=Math.round(base[0]*scale.health);
-enemies.push({
-x:s.count===1?480:480+240*Math.cos(a),
-y:s.count===1?225:305+105*Math.sin(a),
-hp:health,maxHp:health,
-damage:Math.round(base[1]*scale.damage),
-speed:base[2]*scale.speed,
-r:base[3],color:base[4],type:s.kind,
-attack:1,shoot:1.5,flash:0,dead:false
-});
-}
-
-if(s.kind==="purpleKing"){
-playSlides([
-S("THE BLACK SPIRIT","THE TRUE KING",
-"\"Your friend is gone. Behold the Purple King!\"")
-]);
-}
-}
-
-function burst(x,y,color,n=12){
-for(let i=0;i<n;i++){
-const a=Math.random()*Math.PI*2;
-particles.push({
-x,y,
-vx:Math.cos(a)*(50+Math.random()*130),
-vy:Math.sin(a)*(50+Math.random()*130),
-life:.3+Math.random()*.4,color
-});
-}
+ if(task[3]==="purpleKing"){
+  cutscene([
+   "BLACK SPIRIT: Your friend is gone. Behold the Purple King!",
+   "SIR AERON: Aldric... I am sorry.",
+   "THE PURPLE KING: THE KINGDOM IS MINE FOREVER!"
+  ],()=>{},"THE FINAL TRANSFORMATION");
+ }
 }
 
-function hurtEnemy(e,damage){
-if(e.dead)return;
-e.hp-=damage;
-e.flash=.13;
-burst(e.x,e.y,"#ffdc99",7);
-if(e.hp<=0){
-e.dead=true;
-burst(e.x,e.y,e.color,25);
-}
-}
-
-function hurtPlayer(damage){
-if(player.invincible>0||player.shieldTime>0)return;
-player.hp=Math.max(0,player.hp-damage);
-player.invincible=.8;
-burst(player.x,player.y,"#ff4964",12);
-
-if(player.hp<=0){
-playSlides([
-S("SIR AERON","YOU HAVE FALLEN",
-"The kingdom still needs you.\nRise and fight again.")
-],()=>{
-player.hp=player.maxHp;
-player.x=480;
-player.y=445;
-player.invincible=1.5;
-if(step()?.type==="fight")spawnBattle(step());
-});
-}
+function hurtEnemy(e,dmg){
+ if(e.dead)return;
+ e.hp-=dmg;
+ e.flash=.15;
+ burst(e.x,e.y,"#ffe3b1",8);
+ if(e.hp<=0){
+  e.dead=true;
+  burst(e.x,e.y,e.color,40);
+ }
 }
 
-// =====================================
-// ABILITIES
-// =====================================
+function hurtPlayer(dmg){
+ if(player.inv>0||player.shield>0||mode!=="playing")return;
+ player.hp-=dmg;
+ player.inv=.8;
+ burst(player.x,player.y,"#ff8198",15);
+ if(player.hp<=0){
+  cutscene([
+   "SIR AERON: I cannot fall... not while the kingdom needs me.",
+   "NARRATOR: The loyal knight rises to fight once more."
+  ],()=>{
+   player.hp=player.maxHp;
+   player.inv=2;
+   player.x=480;
+   player.y=420;
+   if(currentTask()?.[1]==="fight")spawnEnemies(currentTask());
+  },"YOU HAVE FALLEN");
+ }
+}
 
 function sword(){
-if(mode!=="playing"||talking||player.sword>0)return;
-player.sword=.34;
-player.slashTime=.14;
-for(const e of enemies){
-if(!e.dead&&
-dist(player.x,player.y,e.x,e.y)<90+e.r&&
-(e.x-player.x)*player.facing>-25){
-hurtEnemy(e,35);
-}
-}
-burst(player.x+player.facing*35,player.y,"#edf4ff",8);
-checkBattle();
+ if(mode!=="playing"||player.swordCd>0)return;
+ player.swordCd=.36;
+ player.slash=.23;
+ burst(player.x+player.dir*45,player.y-10,"#f2efff",18);
+ for(const e of enemies){
+  if(!e.dead&&
+    dist(player.x,player.y,e.x,e.y)<105+e.r&&
+    (e.x-player.x)*player.dir>-35){
+   hurtEnemy(e,37);
+  }
+ }
+ checkBattle();
 }
 
 function goldenSlash(){
-if(mode!=="playing"||talking||player.gold>0)return;
-player.gold=2.5;
-burst(player.x,player.y,"#ffce62",35);
-for(const e of enemies){
-if(!e.dead&&
-dist(player.x,player.y,e.x,e.y)<155+e.r){
-hurtEnemy(e,85);
-}
-}
-checkBattle();
+ if(mode!=="playing"||player.goldCd>0)return;
+ player.goldCd=2.5;
+ burst(player.x,player.y,"#ffdc85",55);
+ for(const e of enemies){
+  if(!e.dead&&dist(player.x,player.y,e.x,e.y)<180+e.r){
+   hurtEnemy(e,95);
+  }
+ }
+ notify("GOLDEN SLASH!");
+ checkBattle();
 }
 
 function kingsShield(){
-if(mode!=="playing"||talking||player.shield>0)return;
-player.shield=5;
-player.shieldTime=2;
-burst(player.x,player.y,"#ffdf80",20);
+ if(mode!=="playing"||player.shieldCd>0)return;
+ player.shieldCd=5;
+ player.shield=2.3;
+ burst(player.x,player.y,"#ffe0a0",35);
+ notify("KING'S SHIELD!");
 }
 
 function sacredFlame(){
-if(mode!=="playing"||talking||player.fire>0)return;
-player.fire=1.4;
-shots.push({
-x:player.x+player.facing*22,
-y:player.y-15,
-vx:player.facing*490,
-vy:0,
-r:13,damage:75,life:1.8,good:true
-});
+ if(mode!=="playing"||player.flameCd>0)return;
+ player.flameCd=1.25;
+ projectiles.push({
+  x:player.x+player.dir*25,
+  y:player.y-16,
+  vx:player.dir*550,vy:0,
+  r:15,damage:85,life:2,
+  good:true
+ });
+ burst(player.x,player.y,"#ffb66b",15);
 }
 
 function checkBattle(){
-if(mode!=="playing"||battleDone||
-step()?.type!=="fight")return;
-if(enemies.some(e=>!e.dead))return;
-
-battleDone=true;
-
-if(chapter===7&&step().kind==="aldric"){
-playSlides([
-S("THE KING FALLS","ALDRIC IS DEFEATED",
-"Aeron strikes his oldest friend."),
-S("THE BLACK SPIRIT","NOT YET!",
-"Purple flames consume the throne."),
-S("THE TRANSFORMATION","THE PURPLE KING",
-"A monstrous king rises from the darkness.")
-],advanceStep);
-}else{
-advanceStep();
+ if(mode!=="playing")return;
+ const task=currentTask();
+ if(!task||task[1]!=="fight")return;
+ if(enemies.some(e=>!e.dead))return;
+ if(!battleStarted)return;
+ battleStarted=false;
+ if(task[3]==="aldric"){
+  cutscene([
+   "NARRATOR: King Aldric collapses to his knees.",
+   "SIR AERON: It is over. Please come back.",
+   "BLACK SPIRIT: FOOLISH KNIGHT! THE KING HAS ONLY JUST BEGUN!",
+   "NARRATOR: Purple fire engulfs Aldric's crown."
+  ],nextTask,"THE KING'S TRANSFORMATION");
+ }else nextTask();
 }
-}
-
-// =====================================
-// GAME UPDATE
-// =====================================
 
 function update(dt){
-time+=dt;
+ time+=dt;
 
-for(let i=particles.length-1;i>=0;i--){
-const p=particles[i];
-p.x+=p.vx*dt;
-p.y+=p.vy*dt;
-p.life-=dt;
-if(p.life<=0)particles.splice(i,1);
+ if(noticeTime>0){
+  noticeTime-=dt;
+  if(noticeTime<=0)$("notice").style.display="none";
+ }
+
+ for(let i=particles.length-1;i>=0;i--){
+  const p=particles[i];
+  p.x+=p.vx*dt;
+  p.y+=p.vy*dt;
+  p.life-=dt;
+  if(p.life<=0)particles.splice(i,1);
+ }
+
+ if(mode!=="playing")return;
+
+ for(const k of ["swordCd","goldCd","shieldCd","shield","flameCd","slash","inv"]){
+  player[k]=Math.max(0,player[k]-dt);
+ }
+
+ let mx=Number(!!(keys.d||keys.arrowright))-
+        Number(!!(keys.a||keys.arrowleft));
+ let my=Number(!!(keys.s||keys.arrowdown))-
+        Number(!!(keys.w||keys.arrowup));
+ const len=Math.hypot(mx,my);
+
+ if(len){
+  mx/=len;
+  my/=len;
+  player.x+=mx*205*dt;
+  player.y+=my*205*dt;
+  if(mx)player.dir=mx>0?1:-1;
+ }
+
+ player.x=clamp(player.x,30,930);
+ player.y=clamp(player.y,220,495);
+
+ if(currentTask()?.[1]==="fight"){
+  for(const e of enemies){
+   if(e.dead)continue;
+
+   e.attack-=dt;
+   e.shoot-=dt;
+   e.flash=Math.max(0,e.flash-dt);
+
+   const dx=player.x-e.x;
+   const dy=player.y-e.y;
+   const d=Math.hypot(dx,dy)||1;
+
+   if(d>player.r+e.r+6){
+    e.x+=dx/d*e.speed*dt;
+    e.y+=dy/d*e.speed*dt;
+   }else if(e.attack<=0){
+    hurtPlayer(e.damage);
+    e.attack=1.2;
+   }
+
+   if(mode!=="playing")break;
+
+   if(e.r>=30&&e.shoot<=0){
+    projectiles.push({
+     x:e.x,y:e.y,
+     vx:dx/d*235,
+     vy:dy/d*235,
+     r:12,damage:e.damage,
+     life:3,good:false
+    });
+    e.shoot=1.6;
+   }
+  }
+ }
+
+ for(let i=projectiles.length-1;i>=0;i--){
+  const p=projectiles[i];
+
+  p.x+=p.vx*dt;
+  p.y+=p.vy*dt;
+  p.life-=dt;
+  let hit=false;
+
+  if(p.good){
+   for(const e of enemies){
+    if(!e.dead&&dist(p.x,p.y,e.x,e.y)<p.r+e.r){
+     hurtEnemy(e,p.damage);
+     hit=true;
+     break;
+    }
+   }
+  }else if(dist(p.x,p.y,player.x,player.y)<p.r+player.r){
+   hurtPlayer(p.damage);
+   hit=true;
+  }
+
+  if(hit||p.life<=0||
+    p.x<0||p.x>W||p.y<0||p.y>H){
+   projectiles.splice(i,1);
+  }
+ }
+
+ checkBattle();
+ updateHUD();
+
+ const boss=enemies.find(e=>!e.dead&&e.r>=32);
+ $("bossHud").style.display=boss?"block":"none";
+ if(boss){
+  $("bossName").textContent=boss.type.toUpperCase();
+  $("bossFill").style.width=
+   Math.max(0,boss.hp/boss.maxHp*100)+"%";
+ }
 }
 
-if(mode!=="playing")return;
+/* 2.5D ENVIRONMENT */
 
-for(const name of ["sword","gold","shield","fire"]){
-player[name]=Math.max(0,player[name]-dt);
-}
-player.shieldTime=Math.max(0,player.shieldTime-dt);
-player.invincible=Math.max(0,player.invincible-dt);
-player.slashTime=Math.max(0,player.slashTime-dt);
-
-if(!talking){
-let dx=Number(!!(keys.d||keys.arrowright))-
-Number(!!(keys.a||keys.arrowleft));
-let dy=Number(!!(keys.s||keys.arrowdown))-
-Number(!!(keys.w||keys.arrowup));
-
-const length=Math.hypot(dx,dy);
-if(length){
-dx/=length;
-dy/=length;
-player.x+=dx*player.speed*dt;
-player.y+=dy*player.speed*dt;
-if(dx)player.facing=dx>0?1:-1;
+function glow(x,y,r,color){
+ const g=ctx.createRadialGradient(x,y,0,x,y,r);
+ g.addColorStop(0,color);
+ g.addColorStop(1,"transparent");
+ ctx.fillStyle=g;
+ ctx.fillRect(x-r,y-r,r*2,r*2);
 }
 
-player.x=clamp(player.x,25,W-25);
-player.y=clamp(player.y,195,H-30);
+function mountain(x,y,w,h,color){
+ ctx.fillStyle=color;
+ ctx.beginPath();
+ ctx.moveTo(x-w/2,y);
+ ctx.lineTo(x,y-h);
+ ctx.lineTo(x+w/2,y);
+ ctx.closePath();
+ ctx.fill();
 
-if(step()?.type==="fight"){
-for(const e of enemies){
-if(e.dead)continue;
-
-e.attack=Math.max(0,e.attack-dt);
-e.shoot=Math.max(0,e.shoot-dt);
-e.flash=Math.max(0,e.flash-dt);
-
-const dx=player.x-e.x;
-const dy=player.y-e.y;
-const d=Math.hypot(dx,dy)||1;
-const reach=e.r+player.r+8;
-
-if(d>reach){
-e.x+=dx/d*e.speed*dt;
-e.y+=dy/d*e.speed*dt;
-}else if(e.attack<=0){
-hurtPlayer(e.damage);
-e.attack=1.15;
+ ctx.fillStyle="#ffffff12";
+ ctx.beginPath();
+ ctx.moveTo(x,y-h);
+ ctx.lineTo(x-w*.22,y-h*.35);
+ ctx.lineTo(x,y-h*.5);
+ ctx.closePath();
+ ctx.fill();
 }
 
-if(mode!=="playing")break;
+function tower(x,y,s,color){
+ ctx.save();
+ ctx.translate(x,y);
+ ctx.scale(s,s);
 
-if(e.r>=31&&e.shoot<=0){
-shots.push({
-x:e.x,y:e.y,
-vx:dx/d*245,vy:dy/d*245,
-r:12,
-damage:Math.round(15*difficulties[difficulty].damage),
-life:3,good:false
-});
-e.shoot=1.5;
-}
-}
-}
+ const g=ctx.createLinearGradient(-42,0,48,0);
+ g.addColorStop(0,"#211827");
+ g.addColorStop(.3,color);
+ g.addColorStop(.75,color);
+ g.addColorStop(1,"#281a31");
 
-if(mode==="playing"){
-for(let i=shots.length-1;i>=0;i--){
-const p=shots[i];
-p.x+=p.vx*dt;
-p.y+=p.vy*dt;
-p.life-=dt;
-let hit=false;
+ ctx.fillStyle=g;
+ ctx.fillRect(-42,-180,84,180);
 
-if(p.good){
-for(const e of enemies){
-if(!e.dead&&
-dist(p.x,p.y,e.x,e.y)<p.r+e.r){
-hurtEnemy(e,p.damage);
-hit=true;
-break;
-}
-}
-}else if(dist(p.x,p.y,player.x,player.y)<p.r+player.r){
-hurtPlayer(p.damage);
-hit=true;
-}
+ ctx.fillStyle="#39203e";
+ ctx.beginPath();
+ ctx.moveTo(-54,-180);
+ ctx.lineTo(0,-250);
+ ctx.lineTo(54,-180);
+ ctx.fill();
 
-if(hit||p.life<=0||p.x<0||p.x>W||p.y<0||p.y>H)
-shots.splice(i,1);
+ ctx.fillStyle="#c6a0d0";
+ ctx.beginPath();
+ ctx.moveTo(-47,-182);
+ ctx.lineTo(0,-246);
+ ctx.lineTo(0,-182);
+ ctx.fill();
 
-if(mode!=="playing")break;
-}
-}
-}
+ ctx.fillStyle="#f8d08b";
+ ctx.shadowColor="#ffe0a4";
+ ctx.shadowBlur=20;
+ ctx.fillRect(-12,-130,24,55);
+ ctx.shadowBlur=0;
 
-if(mode==="playing")checkBattle();
-updateHUD();
-$("prompt").style.display=nearTarget()?"block":"none";
+ for(let i=0;i<7;i++){
+  ctx.strokeStyle="#18121c33";
+  ctx.beginPath();
+  ctx.moveTo(-42,-150+i*22);
+  ctx.lineTo(42,-150+i*22);
+  ctx.stroke();
+ }
+
+ ctx.restore();
 }
 
-// =====================================
-// BACKGROUNDS
-// =====================================
+function drawTree(x,y,s){
+ ctx.save();
+ ctx.translate(x,y);
+ ctx.scale(s,s);
 
-const palettes={
-kingdom:["#c99576","#777c82"],
-mines:["#27152f","#443449"],
-castle:["#40314b","#5d4d62"],
-corrupted:["#642b58","#4a324c"],
-village:["#bd6349","#66413b"],
-ritual:["#321345","#49335e"],
-ruins:["#802d39","#4b343b"],
-final:["#2f1048","#3b2451"]
-};
+ ctx.fillStyle="#241c29";
+ ctx.fillRect(-8,-120,16,150);
 
-function crystal(x,y){
-const pulse=7*Math.sin(time*4);
-ctx.fillStyle="#c459ff35";
-ctx.beginPath();
-ctx.arc(x,y,65+pulse,0,Math.PI*2);
-ctx.fill();
+ for(const [dx,dy,r] of [
+  [0,-150,55],
+  [-30,-125,36],
+  [31,-119,40]
+ ]){
+  const g=ctx.createRadialGradient(dx-18,dy-20,2,dx,dy,r);
+  g.addColorStop(0,"#7c6886");
+  g.addColorStop(.4,"#393249");
+  g.addColorStop(1,"#171827");
+  ctx.fillStyle=g;
+  ctx.beginPath();
+  ctx.arc(dx,dy,r,0,Math.PI*2);
+  ctx.fill();
+ }
 
-ctx.fillStyle="#8131c3";
-ctx.beginPath();
-ctx.moveTo(x,y-65);
-ctx.lineTo(x+40,y-5);
-ctx.lineTo(x,y+50);
-ctx.lineTo(x-40,y-5);
-ctx.fill();
-
-ctx.fillStyle="#dc95ff";
-ctx.beginPath();
-ctx.moveTo(x,y-53);
-ctx.lineTo(x+12,y);
-ctx.lineTo(x,y+38);
-ctx.fill();
+ ctx.restore();
 }
 
-function background(){
-const theme=chapters[chapter].theme;
-const [top,ground]=palettes[theme];
-const gradient=ctx.createLinearGradient(0,0,0,H);
-gradient.addColorStop(0,top);
-gradient.addColorStop(1,"#090810");
-ctx.fillStyle=gradient;
-ctx.fillRect(0,0,W,H);
+function drawCrystal(x,y){
+ const pulse=Math.sin(time*4)*7;
+ glow(x,y,110+pulse,"#a855ff65");
 
-ctx.fillStyle=ground;
-for(let i=0;i<11;i++){
-const x=i*105;
-const peak=130+(i*43)%120;
-ctx.beginPath();
-ctx.moveTo(x-80,350);
-ctx.lineTo(x+25,350-peak);
-ctx.lineTo(x+140,350);
-ctx.fill();
-}
-ctx.fillRect(0,348,W,192);
+ ctx.fillStyle="#6630a0";
+ ctx.shadowColor="#d67bff";
+ ctx.shadowBlur=35;
+ ctx.beginPath();
+ ctx.moveTo(x,y-68);
+ ctx.lineTo(x+42,y-5);
+ ctx.lineTo(x,y+55);
+ ctx.lineTo(x-42,y-5);
+ ctx.fill();
 
-for(let i=0;i<60;i++){
-ctx.fillStyle="#ffffff13";
-ctx.fillRect((i*127)%W,360+(i*71)%170,11,3);
+ ctx.fillStyle="#e8b1ff";
+ ctx.beginPath();
+ ctx.moveTo(x,y-58);
+ ctx.lineTo(x+12,y);
+ ctx.lineTo(x,y+39);
+ ctx.fill();
+
+ ctx.shadowBlur=0;
 }
 
-if(["kingdom","castle","corrupted","ruins","final"].includes(theme)){
-ctx.fillStyle=theme==="kingdom"?"#98909c":"#393042";
-ctx.fillRect(312,105,336,240);
-for(const x of [188,690]){
-ctx.fillRect(x,72,100,272);
-ctx.fillStyle="#211626";
-ctx.fillRect(x+36,110,29,76);
-ctx.fillStyle=theme==="kingdom"?"#98909c":"#393042";
+function drawBackground(){
+ const theme=chapters[chapter].theme;
+ const [top,middle,bottom,accent]=palettes[theme];
+
+ let sky=ctx.createLinearGradient(0,0,0,H);
+ sky.addColorStop(0,top);
+ sky.addColorStop(.56,middle);
+ sky.addColorStop(1,bottom);
+ ctx.fillStyle=sky;
+ ctx.fillRect(0,0,W,H);
+
+ glow(720,110,260,accent+"55");
+
+ ctx.fillStyle="#ffebc8aa";
+ ctx.beginPath();
+ ctx.arc(715,120,43,0,Math.PI*2);
+ ctx.fill();
+
+ const layers=[
+  {y:345,h:135,color:"#70607855",speed:.012},
+  {y:370,h:165,color:"#302c4588",speed:.026},
+  {y:408,h:185,color:"#1e1a2f",speed:.048}
+ ];
+
+ for(let j=0;j<layers.length;j++){
+  const l=layers[j];
+
+  for(let i=-1;i<9;i++){
+   const x=i*170+
+    Math.sin(time*l.speed+i)*8;
+
+   mountain(
+    x,l.y,
+    220,l.h+(i*29+j*37)%80,
+    l.color
+   );
+  }
+ }
+
+ if(["kingdom","castle","corrupted","ruins","final"].includes(theme)){
+  tower(198,360,1.15,theme==="kingdom"?"#9b8296":"#665372");
+  tower(750,360,1.13,theme==="kingdom"?"#99849a":"#554366");
+
+  const castle=ctx.createLinearGradient(300,0,680,0);
+  castle.addColorStop(0,"#4c3c53");
+  castle.addColorStop(.45,theme==="kingdom"?"#aa96a1":"#6a5873");
+  castle.addColorStop(1,"#2d213b");
+
+  ctx.fillStyle=castle;
+  ctx.fillRect(300,180,360,177);
+  tower(480,360,1.35,theme==="kingdom"?"#a99ba1":"#624d73");
+
+  ctx.fillStyle="#160e20";
+  ctx.beginPath();
+  ctx.moveTo(427,357);
+  ctx.lineTo(427,282);
+  ctx.arc(480,282,53,Math.PI,0);
+  ctx.lineTo(533,357);
+  ctx.fill();
+ }
+
+ if(theme==="mines"||theme==="ritual"){
+  ctx.fillStyle="#110d1a";
+
+  for(let i=0;i<16;i++){
+   const x=i*75;
+   ctx.beginPath();
+   ctx.moveTo(x-15,0);
+   ctx.lineTo(x+10,60+i%4*25);
+   ctx.lineTo(x+55,0);
+   ctx.fill();
+  }
+
+  drawCrystal(510,264);
+ }
+
+ if(theme==="village"){
+  for(let i=0;i<5;i++){
+   const x=15+i*210;
+
+   ctx.fillStyle="#61495a";
+   ctx.fillRect(x,200,140,155);
+
+   ctx.fillStyle="#312237";
+   ctx.beginPath();
+   ctx.moveTo(x-20,205);
+   ctx.lineTo(x+70,115);
+   ctx.lineTo(x+160,205);
+   ctx.fill();
+
+   glow(x+70,270,90,"#ff974d66");
+   ctx.fillStyle="#ffc27c";
+   ctx.fillRect(x+55,260,30,65);
+  }
+ }
+
+ if(theme==="final"){
+  ctx.fillStyle="#6e4d88";
+  ctx.fillRect(420,160,120,195);
+  glow(480,280,240,"#b467ef44");
+  ctx.strokeStyle="#dc80ff";
+  ctx.lineWidth=7;
+  ctx.shadowColor="#bc5bf9";
+  ctx.shadowBlur=25;
+  ctx.beginPath();
+  ctx.ellipse(480,417,270,80,0,0,Math.PI*2);
+  ctx.stroke();
+  ctx.shadowBlur=0;
+ }
+
+ if(["kingdom","village"].includes(theme)){
+  for(let i=0;i<5;i++){
+   drawTree(i*247-20,355,.55);
+  }
+ }
+
+ // Perspective floor
+ const floor=ctx.createLinearGradient(0,350,0,H);
+ floor.addColorStop(0,"#514458");
+ floor.addColorStop(.2,"#30283d");
+ floor.addColorStop(1,"#100d1c");
+
+ ctx.fillStyle=floor;
+ ctx.fillRect(0,355,W,185);
+
+ ctx.strokeStyle="#e5bf8d31";
+ ctx.lineWidth=2;
+
+ for(let y=372;y<H;y+=19+(y-350)*.065){
+  ctx.beginPath();
+  ctx.moveTo(0,y);
+  ctx.lineTo(W,y);
+  ctx.stroke();
+ }
+
+ for(let x=-600;x<=1500;x+=135){
+  ctx.beginPath();
+  ctx.moveTo(480,353);
+  ctx.lineTo(x,H);
+  ctx.stroke();
+ }
+
+ for(let i=0;i<65;i++){
+  const x=(i*137)%W;
+  const y=370+(i*97)%169;
+
+  ctx.fillStyle=i%3===0?"#f4c99a23":"#ffffff0c";
+  ctx.beginPath();
+  ctx.ellipse(x,y,8+i%5,2,0,0,Math.PI*2);
+  ctx.fill();
+ }
+
+ // Animated atmospheric mist
+ const mist=ctx.createLinearGradient(0,285,0,455);
+ mist.addColorStop(0,"transparent");
+ mist.addColorStop(.5,accent+"22");
+ mist.addColorStop(1,"transparent");
+
+ ctx.fillStyle=mist;
+ ctx.fillRect(0,285,W,170);
+
+ // Floating motes
+ for(let i=0;i<35;i++){
+  const x=(i*193+time*(5+i%5)*2)%W;
+  const y=(i*73+Math.sin(time+i)*14)%H;
+  ctx.globalAlpha=.15+.22*Math.sin(time+i)**2;
+  ctx.fillStyle=accent;
+  ctx.beginPath();
+  ctx.arc(x,y,1.5+i%3*.6,0,Math.PI*2);
+  ctx.fill();
+ }
+ ctx.globalAlpha=1;
 }
-ctx.fillStyle="#201622";
-ctx.fillRect(438,185,85,160);
-ctx.fillStyle=theme==="kingdom"?"#e1bc65":"#a44bcf";
-ctx.fillRect(355,135,24,115);
-ctx.fillRect(585,135,24,115);
+
+/* SMOOTH ARMORED CHARACTERS */
+
+function drawKnight(x,y,king=false){
+ ctx.save();
+ ctx.translate(x,y+Math.sin(time*3+x*.01)*1.1);
+
+ // Ground contact shadow
+ ctx.fillStyle="#0009";
+ ctx.beginPath();
+ ctx.ellipse(0,31,31,9,0,0,Math.PI*2);
+ ctx.fill();
+
+ // Cape
+ const cape=ctx.createLinearGradient(-28,-25,20,40);
+ cape.addColorStop(0,king?"#9c67ca":"#587aab");
+ cape.addColorStop(1,"#21192b");
+
+ ctx.fillStyle=cape;
+ ctx.beginPath();
+ ctx.moveTo(-13,-23);
+ ctx.quadraticCurveTo(-34,-9,-30,25+Math.sin(time*4)*4);
+ ctx.lineTo(13,26);
+ ctx.lineTo(16,-22);
+ ctx.fill();
+
+ // Legs
+ for(const lx of [-10,10]){
+  ctx.lineCap="round";
+  ctx.strokeStyle="#25222c";
+  ctx.lineWidth=12;
+  ctx.beginPath();
+  ctx.moveTo(lx,3);
+  ctx.lineTo(lx,24);
+  ctx.stroke();
+
+  ctx.strokeStyle="#a59dab";
+  ctx.lineWidth=3;
+  ctx.beginPath();
+  ctx.moveTo(lx-4,18);
+  ctx.lineTo(lx+4,18);
+  ctx.stroke();
+ }
+
+ // Chest armor
+ const armor=ctx.createLinearGradient(-20,-30,22,12);
+ armor.addColorStop(0,"#c1c7d0");
+ armor.addColorStop(.43,king?"#d3a971":"#718bb2");
+ armor.addColorStop(1,"#242130");
+
+ ctx.fillStyle=armor;
+ ctx.beginPath();
+ ctx.moveTo(-18,-22);
+ ctx.quadraticCurveTo(0,-32,18,-22);
+ ctx.lineTo(20,7);
+ ctx.quadraticCurveTo(0,21,-20,7);
+ ctx.closePath();
+ ctx.fill();
+
+ ctx.strokeStyle="#f4d099";
+ ctx.lineWidth=2;
+ ctx.stroke();
+
+ // Shoulder armor
+ for(const s of [-1,1]){
+  ctx.fillStyle=king?"#c09b5b":"#687d9c";
+  ctx.beginPath();
+  ctx.ellipse(s*21,-18,11,13,s*.2,0,Math.PI*2);
+  ctx.fill();
+  ctx.stroke();
+ }
+
+ // Face
+ ctx.fillStyle="#dcc5ad";
+ ctx.beginPath();
+ ctx.ellipse(0,-37,13,16,0,0,Math.PI*2);
+ ctx.fill();
+
+ // Helmet
+ const helm=ctx.createLinearGradient(-15,-55,15,-30);
+ helm.addColorStop(0,"#d2cad6");
+ helm.addColorStop(1,"#383142");
+
+ ctx.fillStyle=helm;
+ ctx.beginPath();
+ ctx.moveTo(-15,-41);
+ ctx.quadraticCurveTo(-12,-62,0,-55);
+ ctx.quadraticCurveTo(17,-62,16,-41);
+ ctx.lineTo(10,-29);
+ ctx.lineTo(-10,-29);
+ ctx.closePath();
+ ctx.fill();
+
+ ctx.strokeStyle="#edd0a2";
+ ctx.stroke();
+
+ // Eyes
+ const eye=king&&chapter>=2?"#f58aff":"#dcf3ff";
+ ctx.fillStyle=eye;
+ ctx.shadowColor=eye;
+ ctx.shadowBlur=king?12:5;
+
+ for(const ex of [-6,6]){
+  ctx.beginPath();
+  ctx.ellipse(ex,-38,3,2,0,0,Math.PI*2);
+  ctx.fill();
+ }
+ ctx.shadowBlur=0;
+
+ // Crown
+ if(king){
+  ctx.fillStyle="#f8d68c";
+  ctx.shadowColor="#ffe4a4";
+  ctx.shadowBlur=10;
+  ctx.beginPath();
+  ctx.moveTo(-18,-52);
+  ctx.lineTo(-21,-73);
+  ctx.lineTo(-7,-62);
+  ctx.lineTo(0,-80);
+  ctx.lineTo(7,-62);
+  ctx.lineTo(21,-73);
+  ctx.lineTo(18,-52);
+  ctx.closePath();
+  ctx.fill();
+  ctx.shadowBlur=0;
+ }
+
+ ctx.restore();
 }
 
-if(theme==="mines"||theme==="ritual"){
-ctx.fillStyle="#120c1c";
-for(let i=0;i<20;i++){
-const x=i*55;
-ctx.beginPath();
-ctx.moveTo(x,0);
-ctx.lineTo(x+25,80+(i%4)*20);
-ctx.lineTo(x+53,0);
-ctx.fill();
+function drawEnemy(e){
+ ctx.save();
+ ctx.translate(e.x,e.y+Math.sin(time*4+e.x)*2);
+
+ const boss=e.r>=32;
+ const color=boss?"#df83ff":"#fb77ab";
+
+ ctx.fillStyle="#0008";
+ ctx.beginPath();
+ ctx.ellipse(0,e.r,35,10,0,0,Math.PI*2);
+ ctx.fill();
+
+ ctx.shadowColor=color;
+ ctx.shadowBlur=boss?25:12;
+
+ const g=ctx.createLinearGradient(-e.r,-e.r,e.r,e.r);
+ g.addColorStop(0,e.flash?"#ffffff":"#ba8ace");
+ g.addColorStop(.5,e.flash?"#ffffff":e.color);
+ g.addColorStop(1,"#150b21");
+
+ ctx.fillStyle=g;
+ ctx.beginPath();
+ ctx.ellipse(0,0,e.r*.84,e.r*1.15,0,0,Math.PI*2);
+ ctx.fill();
+
+ ctx.shadowBlur=0;
+
+ // Dark hood
+ ctx.fillStyle="#20122d";
+ ctx.beginPath();
+ ctx.moveTo(-e.r*.7,-e.r*.3);
+ ctx.quadraticCurveTo(0,-e.r*1.75,e.r*.7,-e.r*.3);
+ ctx.closePath();
+ ctx.fill();
+
+ // Glowing eyes
+ ctx.fillStyle=color;
+ ctx.shadowColor=color;
+ ctx.shadowBlur=15;
+
+ for(const ex of [-e.r*.28,e.r*.28]){
+  ctx.beginPath();
+  ctx.ellipse(ex,-3,e.r*.17,4,0,0,Math.PI*2);
+  ctx.fill();
+ }
+
+ ctx.shadowBlur=0;
+
+ if(boss){
+  ctx.fillStyle="#f6cc81";
+  ctx.beginPath();
+  ctx.moveTo(-e.r,-e.r);
+  ctx.lineTo(-e.r,-e.r*1.6);
+  ctx.lineTo(-e.r*.3,-e.r*1.38);
+  ctx.lineTo(0,-e.r*1.84);
+  ctx.lineTo(e.r*.3,-e.r*1.38);
+  ctx.lineTo(e.r,-e.r*1.6);
+  ctx.lineTo(e.r,-e.r);
+  ctx.fill();
+ }
+
+ ctx.fillStyle="#1a1024";
+ ctx.fillRect(-e.r,-e.r-48,e.r*2,9);
+ ctx.fillStyle="#ed82ae";
+ ctx.fillRect(
+  -e.r,-e.r-48,
+  e.r*2*Math.max(0,e.hp/e.maxHp),9
+ );
+
+ ctx.restore();
 }
-crystal(510,280);
-}
-
-if(theme==="village"){
-for(let i=0;i<5;i++){
-const x=25+i*210;
-ctx.fillStyle="#553837";
-ctx.fillRect(x,200,130,155);
-ctx.fillStyle="#30202b";
-ctx.beginPath();
-ctx.moveTo(x-12,205);
-ctx.lineTo(x+65,120);
-ctx.lineTo(x+142,205);
-ctx.fill();
-ctx.fillStyle="#ef8540";
-ctx.fillRect(x+45,255,30,45);
-}
-}
-
-if(theme==="final"){
-ctx.fillStyle="#e0b66a";
-ctx.fillRect(426,150,108,160);
-ctx.fillStyle="#612878";
-ctx.fillRect(439,170,82,140);
-ctx.strokeStyle="#b24fff";
-ctx.lineWidth=6;
-ctx.beginPath();
-ctx.ellipse(480,405,280,88,0,0,Math.PI*2);
-ctx.stroke();
-}
-}
-
-// =====================================
-// CHARACTERS
-// =====================================
-
-function person(x,y,color,king=false){
-ctx.save();
-ctx.translate(Math.round(x),Math.round(y));
-
-ctx.fillStyle="#0006";
-ctx.fillRect(-20,23,40,8);
-ctx.fillStyle="#24212e";
-ctx.fillRect(-13,8,10,22);
-ctx.fillRect(4,8,10,22);
-
-ctx.fillStyle=color;
-ctx.fillRect(-17,-25,34,38);
-ctx.fillStyle="#e0ac85";
-ctx.fillRect(-12,-47,24,25);
-
-ctx.fillStyle="#35272c";
-ctx.fillRect(-14,-50,28,10);
-ctx.fillStyle=king&&chapter>=2?"#d94aff":"#1b1620";
-ctx.fillRect(-8,-35,5,5);
-ctx.fillRect(5,-35,5,5);
-
-if(king){
-ctx.fillStyle="#edc874";
-ctx.fillRect(-16,-59,32,11);
-ctx.fillRect(-16,-68,6,11);
-ctx.fillRect(-3,-72,6,15);
-ctx.fillRect(10,-68,6,11);
-}
-ctx.restore();
-}
-
-function drawTarget(){
-const s=step();
-if(!s||s.type!=="talk")return;
-
-if(["Crystal","Ancient Altar"].includes(s.character)){
-crystal(s.x,s.y);
-}else if(["Journal","Broken Seal","Throne Door"].includes(s.character)){
-ctx.fillStyle="#ecd18d";
-ctx.fillRect(s.x-22,s.y-19,44,38);
-}else{
-person(s.x,s.y,
-s.character==="King Aldric"?"#c5a04f":"#897c98",
-s.character==="King Aldric");
-}
-
-ctx.textAlign="center";
-ctx.fillStyle="#ffe8a6";
-ctx.font="bold 29px Arial";
-ctx.fillText("!",s.x,s.y-76+Math.sin(time*4)*5);
-ctx.font="14px Arial";
-ctx.fillText(s.character,s.x,s.y+44);
-ctx.textAlign="left";
-}
-
-function drawEnemies(){
-for(const e of enemies){
-if(e.dead)continue;
-ctx.save();
-ctx.translate(e.x,e.y);
-
-ctx.fillStyle=e.flash>0?"#fff":e.color;
-ctx.beginPath();
-ctx.ellipse(0,0,e.r,e.r*1.25,0,0,Math.PI*2);
-ctx.fill();
-
-ctx.fillStyle="#180f20";
-ctx.fillRect(-e.r/2,-e.r,e.r,12);
-
-ctx.fillStyle="#ff3a72";
-ctx.fillRect(-12,-6,8,7);
-ctx.fillRect(5,-6,8,7);
-
-if(e.type==="aldric"||e.type==="purpleKing"){
-ctx.fillStyle="#efbf6d";
-ctx.beginPath();
-ctx.moveTo(-e.r,-e.r);
-ctx.lineTo(-e.r,-e.r-23);
-ctx.lineTo(0,-e.r-12);
-ctx.lineTo(0,-e.r-36);
-ctx.lineTo(e.r,-e.r-18);
-ctx.lineTo(e.r,-e.r);
-ctx.fill();
-}
-
-ctx.fillStyle="#230e24";
-ctx.fillRect(-e.r*1.2,-e.r-48,e.r*2.4,9);
-ctx.fillStyle="#f4556b";
-ctx.fillRect(-e.r*1.2,-e.r-48,
-e.r*2.4*Math.max(0,e.hp/e.maxHp),9);
-
-ctx.restore();
-}
-}
-
-// =====================================
-// DRAW
-// =====================================
 
 function draw(){
-ctx.clearRect(0,0,W,H);
-background();
-drawTarget();
-drawEnemies();
+ ctx.clearRect(0,0,W,H);
+ drawBackground();
 
-if(player.invincible<=0||Math.floor(time*12)%2===0){
-person(player.x,player.y,"#6a84aa");
-ctx.fillStyle="#e7f1ff";
-ctx.fillRect(
-player.x+player.facing*24,
-player.y-30,6,50
-);
+ if(mode==="playing"&&currentTask()?.[1]==="talk"){
+  drawKnight(480,270,true);
+  ctx.textAlign="center";
+  ctx.fillStyle="#ffe5ac";
+  ctx.font="bold 24px Arial";
+  ctx.fillText("!",480,178);
+  ctx.font="14px Arial";
+  ctx.fillText("PRESS E TO INTERACT",480,210);
+  ctx.textAlign="left";
+ }
+
+ for(const e of enemies){
+  if(!e.dead)drawEnemy(e);
+ }
+
+ if(player.inv<=0||Math.floor(time*12)%2===0){
+  drawKnight(player.x,player.y);
+
+  // Sword
+  ctx.save();
+  ctx.translate(player.x,player.y);
+  ctx.rotate(player.dir>0?-.3:3.4);
+  ctx.fillStyle="#c9e2f6";
+  ctx.shadowColor="#c3e8ff";
+  ctx.shadowBlur=12;
+  ctx.fillRect(22,-53,7,62);
+  ctx.fillStyle="#f9d8a1";
+  ctx.fillRect(14,-7,23,6);
+  ctx.restore();
+ }
+
+ if(player.slash>0){
+  ctx.strokeStyle="#e4f5ff";
+  ctx.shadowColor="#a9d7ff";
+  ctx.shadowBlur=30;
+  ctx.lineWidth=12;
+  ctx.beginPath();
+  ctx.arc(
+   player.x+player.dir*25,
+   player.y-8,70,
+   Math.PI*1.62,Math.PI*.43
+  );
+  ctx.stroke();
+  ctx.shadowBlur=0;
+ }
+
+ if(player.shield>0){
+  ctx.strokeStyle="#ffe6a2";
+  ctx.shadowColor="#ffda78";
+  ctx.shadowBlur=28;
+  ctx.lineWidth=6;
+  ctx.beginPath();
+  ctx.arc(player.x,player.y-10,48,0,Math.PI*2);
+  ctx.stroke();
+  ctx.shadowBlur=0;
+ }
+
+ for(const p of projectiles){
+  const color=p.good?"#ffd28a":"#c774ff";
+  glow(p.x,p.y,p.r*4,color+"66");
+  ctx.fillStyle=color;
+  ctx.shadowColor=color;
+  ctx.shadowBlur=20;
+  ctx.beginPath();
+  ctx.arc(p.x,p.y,p.r,0,Math.PI*2);
+  ctx.fill();
+  ctx.shadowBlur=0;
+ }
+
+ for(const p of particles){
+  ctx.globalAlpha=clamp(p.life*2,0,1);
+  ctx.fillStyle=p.color;
+  ctx.fillRect(p.x,p.y,p.size,p.size);
+ }
+ ctx.globalAlpha=1;
+
+ if(mode==="playing"&&currentTask()?.[1]==="fight"){
+  ctx.fillStyle="#100b19df";
+  ctx.fillRect(325,12,310,40);
+  ctx.fillStyle="#ffe1aa";
+  ctx.textAlign="center";
+  ctx.font="bold 17px Arial";
+  ctx.fillText(
+   "ENEMIES REMAINING: "+
+   enemies.filter(e=>!e.dead).length,
+   480,38
+  );
+  ctx.textAlign="left";
+ }
 }
 
-if(player.slashTime>0){
-ctx.strokeStyle="#d7edff";
-ctx.lineWidth=9;
-ctx.beginPath();
-ctx.arc(player.x+player.facing*20,
-player.y-7,60,Math.PI*1.65,Math.PI*.4);
-ctx.stroke();
+function frame(t){
+ const dt=Math.min((t-(previousTime||t))/1000,.045);
+ previousTime=t;
+ update(dt);
+ draw();
+ requestAnimationFrame(frame);
 }
 
-if(player.shieldTime>0){
-ctx.strokeStyle="#ffdc70";
-ctx.lineWidth=5;
-ctx.beginPath();
-ctx.arc(player.x,player.y-12,42,0,Math.PI*2);
-ctx.stroke();
-}
+/* ROYAL SOUNDTRACK */
 
-for(const p of shots){
-ctx.fillStyle=p.good?"#ffc35a":"#ab3be7";
-ctx.beginPath();
-ctx.arc(p.x,p.y,p.r,0,Math.PI*2);
-ctx.fill();
-}
+const Music=(()=>{
+ let audio,master,timer;
+ let enabled=true;
+ let volume=.35;
+ let current=-1;
+ let cursor=0;
+ let next=0;
 
-for(const p of particles){
-ctx.globalAlpha=clamp(p.life*2,0,1);
-ctx.fillStyle=p.color;
-ctx.fillRect(p.x,p.y,5,5);
-}
-ctx.globalAlpha=1;
+ const melodies=[
+  [60,64,67,72,67,64,62,67],
+  [60,59,55,62,60,55,58,54],
+  [64,62,60,55,59,60,62,60],
+  [57,60,62,64,62,60,57,55],
+  [62,65,69,67,65,62,60,57],
+  [60,63,66,67,66,63,59,55],
+  [57,60,64,69,67,64,62,60],
+  [72,67,64,67,69,67,64,62]
+ ];
 
-if(mode==="playing"&&step()?.type==="fight"){
-ctx.fillStyle="#080814df";
-ctx.fillRect(315,12,330,41);
-ctx.fillStyle="#f4d396";
-ctx.textAlign="center";
-ctx.font="bold 17px Arial";
-ctx.fillText(
-"Enemies Remaining: "+
-enemies.filter(e=>!e.dead).length,
-480,38
-);
-ctx.textAlign="left";
-}
-}
+ function tone(note,at,length,bass=false){
+  if(!audio||!enabled)return;
 
-function frame(stamp){
-const dt=Math.min((stamp-(last||stamp))/1000,.05);
-last=stamp;
-update(dt);
-draw();
-requestAnimationFrame(frame);
-}
+  const o=audio.createOscillator();
+  const g=audio.createGain();
+  const filter=audio.createBiquadFilter();
 
-// =====================================
-// INPUT
-// =====================================
+  o.type=bass?"triangle":"sawtooth";
+  o.frequency.value=440*Math.pow(2,(note-69)/12);
+
+  filter.type="lowpass";
+  filter.frequency.value=bass?480:1400;
+
+  g.gain.setValueAtTime(.0001,at);
+  g.gain.linearRampToValueAtTime(bass?.13:.075,at+.025);
+  g.gain.exponentialRampToValueAtTime(.0001,at+length);
+
+  o.connect(filter);
+  filter.connect(g);
+  g.connect(master);
+  o.start(at);
+  o.stop(at+length+.02);
+ }
+
+ function tick(){
+  if(!audio||audio.state!=="running"||!enabled)return;
+
+  if(current!==chapter){
+   current=chapter;
+   cursor=0;
+   next=audio.currentTime+.04;
+  }
+
+  const beat=30/(105+chapter*8);
+  const notes=melodies[chapter];
+
+  while(next<audio.currentTime+.16){
+   const i=cursor%8;
+   tone(notes[i],next,beat*.85);
+   if(i%2===0){
+    tone(notes[i]-24,next,beat*1.8,true);
+   }
+   cursor++;
+   next+=beat;
+  }
+ }
+
+ async function start(){
+  try{
+   if(!audio){
+    const AC=window.AudioContext||window.webkitAudioContext;
+    if(!AC)return;
+    audio=new AC();
+    master=audio.createGain();
+    master.gain.value=volume*.5;
+    master.connect(audio.destination);
+   }
+   await audio.resume();
+   if(!timer)timer=setInterval(tick,55);
+  }catch(e){}
+ }
+
+ function toggle(){
+  enabled=!enabled;
+  $("musicButton").textContent=
+   enabled?"♫ MUSIC: ON":"♫ MUSIC: OFF";
+  if(master&&audio){
+   master.gain.setTargetAtTime(
+    enabled?volume*.5:0,
+    audio.currentTime,.03
+   );
+  }
+  if(enabled)start();
+ }
+
+ function changeVolume(v){
+  volume=Number(v)/100;
+  if(master&&audio){
+   master.gain.setTargetAtTime(
+    enabled?volume*.5:0,
+    audio.currentTime,.03
+   );
+  }
+ }
+
+ return{
+  start,toggle,changeVolume,
+  reset:()=>{current=-1;}
+ };
+})();
+
+/* KEYBOARD AND BUTTONS */
 
 window.addEventListener("keydown",e=>{
-const k=e.key.toLowerCase();
+ const k=e.key.toLowerCase();
 
-if([" ","arrowup","arrowdown",
-"arrowleft","arrowright"].includes(k)){
-e.preventDefault();
-}
+ if([" ","arrowup","arrowdown","arrowleft","arrowright"].includes(k)){
+  e.preventDefault();
+ }
 
-keys[k]=true;
-if(e.repeat)return;
+ keys[k]=true;
+ if(e.repeat)return;
 
-if(mode==="scene"&&["enter"," "].includes(k)){
-nextSlide();
-return;
-}
+ if(mode!=="playing")return;
 
-if(talking&&["e","enter"," "].includes(k)){
-advanceDialogue();
-return;
-}
-
-if(k==="e")interact();
-if(k===" "||k==="j")sword();
-if(k==="m")goldenSlash();
-if(k==="n")kingsShield();
-if(k==="k")sacredFlame();
+ if(k==="e")interact();
+ if(k===" "||k==="j")sword();
+ if(k==="m")goldenSlash();
+ if(k==="n")kingsShield();
+ if(k==="k")sacredFlame();
 });
 
 window.addEventListener("keyup",e=>{
-keys[e.key.toLowerCase()]=false;
+ keys[e.key.toLowerCase()]=false;
 });
 
 window.addEventListener("blur",()=>{
-for(const k in keys)keys[k]=false;
+ for(const k in keys)keys[k]=false;
 });
 
 $("swordButton").onclick=sword;
 $("goldButton").onclick=goldenSlash;
 $("shieldButton").onclick=kingsShield;
 $("flameButton").onclick=sacredFlame;
+$("interactButton").onclick=interact;
 
-// =====================================
-// MAIN MENU
-// =====================================
+$("musicButton").onclick=Music.toggle;
+$("volume").oninput=e=>Music.changeVolume(e.target.value);
 
-function menu(){
-mode="menu";
-$("overlay").style.display="flex";
-$("hud").style.display="none";
-$("overlayLabel").textContent="THEDARKWITHIN — DLC I";
-$("overlayTitle").textContent="THE FORGOTTEN KING";
-$("overlayText").textContent=
-"Eight chapters. One fallen kingdom.\n"+
-"Discover the origin of the Purple King.\n"+
-"Royal trumpets, drums, and epic battle music.";
-$("continueButton").textContent=
-savedChapter()>0
-?"CONTINUE — CHAPTER "+(savedChapter()+1)
-:"BEGIN STORY";
-$("newButton").style.display="inline-block";
-}
-
-$("continueButton").onclick=()=>{
-if(mode==="scene"){
-nextSlide();
-}else if(mode==="menu"){
-Music.start();
-startChapter(savedChapter());
-}else if(mode==="ending"){
-menu();
-}
+$("difficulty").onchange=e=>{
+ difficulty=e.target.value;
+ if(mode==="playing")startChapter(chapter);
 };
 
-$("newButton").onclick=()=>{
-if(!confirm("Begin a new game from Chapter 1?"))return;
-try{localStorage.removeItem(SAVE);}catch(e){}
-Music.start();
-startChapter(0);
+$("restartButton").onclick=()=>{
+ if(mode==="playing"||mode==="scene")startChapter(chapter);
 };
 
-changeDifficulty();
+$("menuButton").onclick=menu;
+
+$("fullButton").onclick=async()=>{
+ try{
+  if(document.fullscreenElement){
+   await document.exitFullscreen();
+  }else{
+   await $("stage").requestFullscreen();
+  }
+ }catch(e){
+  alert("Fullscreen is unavailable.");
+ }
+};
+
 menu();
 requestAnimationFrame(frame);
 
 })();
 </script>
-
 </body>
 </html>
