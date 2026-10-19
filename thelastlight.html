@@ -1,0 +1,1885 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>The Last Light — TheDarkWithin DLC III</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;background:#0d0910;color:#fff0d4;font-family:Arial,sans-serif}
+header{background:#1a1018;border-bottom:2px solid #ffc778;padding:18px;display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}
+header h1{margin:0;color:#ffe0a2}
+a{color:#ffe0a2;text-decoration:none}
+main{max-width:1100px;margin:20px auto;padding:0 12px}
+.toolbar{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;align-items:center;background:#20151f;border:1px solid #755542;border-radius:8px;padding:12px;margin:10px 0}
+button,select{background:#49302c;color:#ffe7b8;border:1px solid #d5a16b;padding:10px;border-radius:6px;font-weight:bold;cursor:pointer}
+button:hover{background:#78503b}
+#stage{position:relative;border:2px solid #e9b46d;overflow:hidden;background:#090713}
+canvas{width:100%;height:auto;display:block;image-rendering:pixelated}
+#hud,#bossHud{position:absolute;top:12px;background:#100a19e8;padding:10px;border:1px solid #d5a16b;border-radius:5px;font-size:12px;pointer-events:none}
+#hud{left:12px;display:none}
+#bossHud{right:12px;width:38%;display:none;text-align:center}
+#bossBar{height:13px;background:#39202c;margin-top:8px}
+#bossFill{height:100%;width:100%;background:linear-gradient(90deg,#ff6c89,#ffd07d)}
+#overlay{position:absolute;inset:0;background:radial-gradient(circle,#493040f5,#080610fa);display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;padding:15px;z-index:10}
+#overlay h2{font-size:clamp(25px,5vw,48px);color:#ffe0a2;margin:12px}
+#story{max-width:720px;line-height:1.7;white-space:pre-line}
+#choices{display:flex;gap:10px;flex-wrap:wrap;justify-content:center}
+#notice{position:absolute;bottom:18px;left:50%;transform:translateX(-50%);background:#160d20e8;border:1px solid #ffd58a;padding:10px;text-align:center;display:none;z-index:5}
+#stage:fullscreen{width:100vw;height:100vh;display:flex;align-items:center;background:#07050c}
+#stage:fullscreen canvas{height:100%;object-fit:contain}
+#stage:fullscreen #overlay{background:#090711f0}
+footer{text-align:center;padding:25px;color:#b59d87;font-size:12px}
+.instructions{text-align:center;color:#cbb7a0;font-size:12px;line-height:1.8}
+@media(max-width:600px){button{font-size:11px;padding:8px}#hud,#bossHud{font-size:9px;padding:6px}}
+</style>
+</head>
+<body>
+
+<header>
+<h1>🌅 THE LAST LIGHT</h1>
+<a href="index.html">← BACK TO LAUNCHER</a>
+</header>
+
+<main>
+
+<div class="toolbar">
+<label>DIFFICULTY
+<select id="difficulty">
+<option value="easy">Easy</option>
+<option value="medium" selected>Medium</option>
+<option value="hard">Hard</option>
+<option value="extreme">Extreme</option>
+</select>
+</label>
+<button id="fullscreen">⛶ FULLSCREEN</button>
+<button id="restart">↻ RESTART CHAPTER</button>
+<button id="menu">☰ MENU</button>
+</div>
+
+<div id="stage">
+<canvas id="canvas" width="960" height="540"></canvas>
+
+<div id="hud">
+<strong id="chapterName"></strong>
+<div id="objective"></div>
+<div id="stats"></div>
+</div>
+
+<div id="bossHud">
+<strong>THE ECLIPSE SOVEREIGN</strong>
+<div id="phase"></div>
+<div id="bossBar"><div id="bossFill"></div></div>
+</div>
+
+<div id="notice"></div>
+
+<div id="overlay">
+<div id="label">THEDARKWITHIN — FINAL DLC</div>
+<h2 id="title">THE LAST LIGHT</h2>
+<p id="story"></p>
+<div id="choices">
+<button id="primary">BEGIN STORY</button>
+<button id="secondary">NEW GAME</button>
+</div>
+</div>
+</div>
+
+<div class="toolbar">
+<button id="jump">SPACE — JUMP</button>
+<button id="dash">SHIFT — PHOTON RUSH</button>
+<button id="slash">J — RADIANT LANCE</button>
+<button id="beam">K — PIERCING LIGHT</button>
+<button id="shield">N — SOLAR GUARD</button>
+<button id="step">E — HARD-LIGHT STEP</button>
+<button id="reverse">F — DARK REVERSAL</button>
+<button id="domain">R — ECLIPSE DOMAIN</button>
+</div>
+
+<div class="toolbar">
+<button id="music">♫ MUSIC: ON</button>
+<label>VOLUME
+<input id="volume" type="range" min="0" max="100" value="35">
+</label>
+</div>
+
+<p class="instructions">
+A/D or ←/→ MOVE • SPACE DOUBLE JUMP • SHIFT PHOTON RUSH •
+J RADIANT LANCE • K PIERCING LIGHT • N SOLAR GUARD •
+E HARD-LIGHT STEP • F DARK REVERSAL • R ECLIPSE DOMAIN
+</p>
+
+</main>
+
+<footer>THEDARKWITHIN © 2026 — THE LAST LIGHT</footer>
+
+<script>
+(()=>{
+"use strict";
+
+const $=id=>document.getElementById(id);
+const canvas=$("canvas");
+const ctx=canvas.getContext("2d");
+ctx.imageSmoothingEnabled=false;
+
+const W=960,H=540,GRAVITY=1650;
+const SAVE="tdw-last-light-save-v1";
+const clamp=(x,a,b)=>Math.max(a,Math.min(b,x));
+const distance=(a,b,c,d)=>Math.hypot(a-c,b-d);
+
+const settings={
+easy:{hp:9,damage:.6,boss:.7,speed:.8},
+medium:{hp:6,damage:1,boss:1,speed:1},
+hard:{hp:4,damage:1.5,boss:1.35,speed:1.2},
+extreme:{hp:3,damage:2,boss:1.7,speed:1.4}
+};
+
+const chapters=[
+{
+name:"Ashes of Dawn",
+intro:[
+"NARRATOR: The Spirit Realm is quiet, but the living world's sky is turning black.",
+"HERO: We defeated the Purple King. We freed the souls. Why is the darkness still spreading?",
+"VOICE OF LIGHT: Because the final eclipse has begun.",
+"VOICE OF LIGHT: Shape your light into weapons, bridges, and shields. The world needs you."
+],
+end:"The first spark burns through the darkness."
+},
+{
+name:"The Sunken City",
+intro:[
+"HERO: This city was once full of life.",
+"VOICE OF LIGHT: The eclipse stole the light protecting it.",
+"HERO: Then I'll take it back."
+],
+end:"Golden sunlight returns to the abandoned rooftops."
+},
+{
+name:"Embers of Memory",
+intro:[
+"NARRATOR: Memories of King Aldric and the Spirit Titan echo through the ruins.",
+"HERO: They were warning us about the same darkness.",
+"VOICE OF LIGHT: The eclipse existed long before either realm."
+],
+end:"An ancient memory reveals the name of the Eclipse Sovereign."
+},
+{
+name:"The Golden Divide",
+intro:[
+"HERO: The bridge across the sky is completely broken.",
+"VOICE OF LIGHT: Your Photon Rush and Hard-Light Step can carry you across.",
+"HERO: Then I won't stop."
+],
+end:"The hero crosses the golden divide."
+},
+{
+name:"The Fallen Sun",
+intro:[
+"NARRATOR: A blackened sun hangs above the ruins.",
+"HERO: Something is moving inside it.",
+"VOICE OF LIGHT: The Eclipse Sovereign is awakening."
+],
+end:"The fallen sun cracks, revealing the final sanctuary."
+},
+{
+name:"The Sanctuary of Sparks",
+intro:[
+"LOST SOUL: Please protect the last flame.",
+"HERO: Everyone deserves another sunrise.",
+"VOICE OF LIGHT: Recover three sparks to open the sanctuary gate."
+],
+end:"The last flame survives, but the Sovereign knows where it is."
+},
+{
+name:"Before the Eclipse",
+intro:[
+"HERO: That fortress is floating above the void.",
+"VOICE OF LIGHT: Beyond it lies the final battlefield.",
+"HERO: Then this is where the darkness ends."
+],
+end:"The gates of the eclipse open."
+},
+{
+name:"The Last Light",
+intro:[
+"NARRATOR: The hero approaches a shattered solar throne.",
+"HERO: The Eclipse Sovereign is waiting.",
+"VOICE OF LIGHT: The last light is with you. Do not surrender it."
+],
+end:""
+}
+];
+
+try{
+const choice=localStorage.getItem("tdw-spirit-realm-ending");
+if(choice==="taken"){
+chapters[0].intro.splice(2,0,
+"HERO: I still carry the Light of Souls. I can feel it resisting the eclipse.");
+}
+if(choice==="left"){
+chapters[0].intro.splice(2,0,
+"HERO: I left the Light of Souls in the Spirit Realm. I'll have to find another way.");
+}
+}catch(e){}
+
+let difficulty="medium";
+let chapter=0;
+let mode="menu";
+let time=0;
+let previousTime=0;
+let camera=0;
+let worldEnd=0;
+let arenaX=0;
+let collected=0;
+let checkpointX=70;
+let checkpointY=420;
+let finished=false;
+let boss=null;
+let bossActive=false;
+let bossEntered=false;
+let noticeTime=0;
+
+let platforms=[];
+let fragments=[];
+let checkpoints=[];
+let enemies=[];
+let shots=[];
+let particles=[];
+let hazards=[];
+
+const keys={};
+
+const player={
+x:70,y:420,w:26,h:42,
+vx:0,vy:0,dir:1,
+hp:6,maxHp:6,
+jumps:0,ground:false,
+dashReady:true,dash:0,
+inv:0,shield:0,
+slash:0,
+slashCd:0,beamCd:0,
+shieldCd:0,stepCd:0,
+reverseCd:0,domainCd:0,
+domain:0,reverse:0,
+beamEffect:0,
+steps:[]
+};
+
+/* MUSIC */
+
+const Music=(()=>{
+let audio,master,timer;
+let enabled=true,volume=.35;
+let step=0,next=0,lastChapter=-1;
+
+const melodies=[
+[60,63,67,70],
+[62,65,69,72],
+[64,67,71,74],
+[65,69,72,76],
+[67,70,74,77],
+[57,60,64,67],
+[59,62,66,69],
+[60,67,70,74]
+];
+
+function tone(midi,at,length,bass=false){
+if(!audio||!enabled)return;
+const o=audio.createOscillator();
+const g=audio.createGain();
+
+o.type=bass?"triangle":"square";
+o.frequency.value=440*Math.pow(2,(midi-69)/12);
+
+g.gain.setValueAtTime(.0001,at);
+g.gain.linearRampToValueAtTime(bass?.13:.075,at+.015);
+g.gain.exponentialRampToValueAtTime(.0001,at+length);
+
+o.connect(g);
+g.connect(master);
+o.start(at);
+o.stop(at+length+.02);
+}
+
+function tick(){
+if(!audio||audio.state!=="running"||!enabled)return;
+
+if(lastChapter!==chapter){
+lastChapter=chapter;
+step=0;
+next=audio.currentTime+.05;
+}
+
+const notes=melodies[chapter];
+const beat=30/(100+chapter*9);
+const pattern=[0,2,1,3,2,1,0,2,3,2,1,0,1,2,3,1];
+
+while(next<audio.currentTime+.16){
+const i=step%16;
+tone(notes[pattern[i]],next,beat*.8);
+if(i%4===0)tone(notes[i/4]-24,next,beat*3.5,true);
+next+=beat;
+step++;
+}
+}
+
+async function start(){
+try{
+if(!audio){
+const AC=window.AudioContext||window.webkitAudioContext;
+if(!AC)return;
+audio=new AC();
+master=audio.createGain();
+master.gain.value=volume*.5;
+master.connect(audio.destination);
+}
+await audio.resume();
+if(!timer)timer=setInterval(tick,55);
+}catch(e){}
+}
+
+function toggle(){
+enabled=!enabled;
+$("music").textContent=enabled?"♫ MUSIC: ON":"♫ MUSIC: OFF";
+if(master&&audio){
+master.gain.setTargetAtTime(enabled?volume*.5:0,audio.currentTime,.03);
+}
+if(enabled)start();
+}
+
+function setVolume(v){
+volume=Number(v)/100;
+if(master&&audio){
+master.gain.setTargetAtTime(enabled?volume*.5:0,audio.currentTime,.03);
+}
+}
+
+return{start,toggle,setVolume,reset:()=>lastChapter=-1};
+})();
+
+$("music").onclick=Music.toggle;
+$("volume").oninput=e=>Music.setVolume(e.target.value);
+
+/* STORY SCREENS */
+
+let primaryAction=null;
+let secondaryAction=null;
+
+function screen(label,title,text,button,action,other,otherAction){
+$("overlay").style.display="flex";
+$("label").textContent=label;
+$("title").textContent=title;
+$("story").textContent=text;
+$("primary").textContent=button;
+primaryAction=action;
+$("secondary").style.display=other?"inline-block":"none";
+$("secondary").textContent=other||"";
+secondaryAction=otherAction||null;
+$("hud").style.display="none";
+$("bossHud").style.display="none";
+}
+
+$("primary").onclick=()=>primaryAction&&primaryAction();
+$("secondary").onclick=()=>secondaryAction&&secondaryAction();
+
+function resume(){
+mode="playing";
+$("overlay").style.display="none";
+$("hud").style.display="block";
+$("bossHud").style.display=bossActive?"block":"none";
+}
+
+function cutscene(lines,done,title){
+mode="scene";
+let i=0;
+
+function next(){
+if(i>=lines.length){
+resume();
+if(done)done();
+return;
+}
+
+const line=lines[i++];
+screen("STORY CUTSCENE",title||chapters[chapter].name,
+line,i===lines.length?"CONTINUE":"NEXT →",next);
+}
+
+next();
+}
+
+function notify(text,duration=1.5){
+$("notice").textContent=text;
+$("notice").style.display="block";
+noticeTime=duration;
+}
+
+function saved(){
+try{
+return clamp(Number(localStorage.getItem(SAVE)||0),0,7);
+}catch(e){return 0;}
+}
+
+function save(){
+try{
+localStorage.setItem(SAVE,String(Math.max(saved(),chapter)));
+}catch(e){}
+}
+
+/* LEVELS */
+
+function platform(x,y,w,type="solid",phase=0){
+platforms.push({x,y,w,type,phase});
+}
+
+function createLevel(n){
+chapter=n;
+mode="playing";
+time=0;
+camera=0;
+collected=0;
+finished=false;
+boss=null;
+bossActive=false;
+bossEntered=false;
+
+platforms=[];
+fragments=[];
+checkpoints=[];
+enemies=[];
+shots=[];
+particles=[];
+hazards=[];
+
+const d=settings[difficulty];
+
+Object.assign(player,{
+x:70,y:420,vx:0,vy:0,dir:1,
+hp:d.hp,maxHp:d.hp,
+jumps:0,ground:false,
+dashReady:true,dash:0,inv:1,
+shield:0,slash:0,
+slashCd:0,beamCd:0,
+shieldCd:0,stepCd:0,
+reverseCd:0,domainCd:0,
+domain:0,reverse:0,
+beamEffect:0,steps:[]
+});
+
+checkpointX=70;
+checkpointY=420;
+
+platform(0,470,345);
+
+const count=n===7?12:15;
+const heights=[410,360,400,345,380,330,375,350];
+
+for(let i=0;i<count;i++){
+const x=300+i*228;
+const y=heights[(i+n)%heights.length];
+
+let type="solid";
+if(n>=1&&i%5===2)type="moving";
+if(n>=2&&i%5===4)type="vanish";
+if(n>=3&&i%7===5)type="boost";
+if(i===6||i===count-1)type="solid";
+
+platform(x,y,195,type,i*.8);
+
+if([2,7,10].includes(i)){
+fragments.push({x:x+85,y:y-53,taken:false});
+}
+
+if(i===6){
+checkpoints.push({x:x+85,y,active:false});
+}
+
+if(n>=1&&i%4===3){
+enemies.push({
+x:x+100,y:y-75,
+baseX:x+100,baseY:y-75,
+hp:65*d.boss,
+dead:false,phase:i
+});
+}
+}
+
+const last=platforms[platforms.length-1];
+worldEnd=last.x+last.w+170;
+
+if(n===7){
+arenaX=worldEnd+20;
+platform(worldEnd-160,445,280);
+platform(arenaX,470,1120);
+worldEnd=arenaX+1120;
+
+checkpoints.push({
+x:arenaX+85,y:470,active:false,arena:true
+});
+
+boss={
+x:arenaX+820,y:340,
+hp:1900*d.boss,
+maxHp:1900*d.boss,
+phase:1,
+action:"idle",
+timer:1.5,
+attack:"",
+count:0,
+target:0,
+flash:0,
+shockwaves:[],
+flames:[],
+slash:null,
+dead:false
+};
+}
+
+Music.reset();
+updateHUD();
+}
+
+function startChapter(n){
+createLevel(n);
+save();
+cutscene(chapters[n].intro,
+()=>notify("COLLECT THREE SUN SPARKS"),
+"CHAPTER "+(n+1)+": "+chapters[n].name);
+}
+
+function finishChapter(){
+if(finished)return;
+finished=true;
+const next=chapter+1;
+
+cutscene([
+"CHAPTER COMPLETE",
+chapters[chapter].end
+],()=>{
+if(next<8)startChapter(next);
+},"ANOTHER SPARK OF HOPE");
+}
+
+function updateHUD(){
+$("chapterName").textContent=
+"CHAPTER "+(chapter+1)+" — "+chapters[chapter].name;
+
+$("objective").textContent=
+bossActive?"DEFEAT THE ECLIPSE SOVEREIGN":
+"SUN SPARKS: "+collected+"/3";
+
+$("stats").textContent=
+"♥ "+Math.ceil(player.hp)+"/"+player.maxHp+
+" | DASH "+(player.dashReady?"READY":"USED")+
+" | STEP "+(player.stepCd<=0?"READY":Math.ceil(player.stepCd)+"s")+
+" | REVERSAL "+(player.reverseCd<=0?"READY":Math.ceil(player.reverseCd)+"s")+
+" | DOMAIN "+(player.domainCd<=0?"READY":Math.ceil(player.domainCd)+"s");
+}
+
+function platformY(q){
+return q.type==="moving"?
+q.y+Math.sin(time*1.8+q.phase)*42:q.y;
+}
+
+function visible(q){
+return q.type!=="vanish"||
+Math.sin(time*2.1+q.phase)>-.35;
+}
+
+/* PARTICLES */
+
+function burst(x,y,color,count){
+for(let i=0;i<count;i++){
+const angle=Math.random()*Math.PI*2;
+const speed=35+Math.random()*230;
+particles.push({
+x,y,
+vx:Math.cos(angle)*speed,
+vy:Math.sin(angle)*speed,
+life:.3+Math.random()*.5,
+color
+});
+}
+}
+
+/* MOVEMENT */
+
+function jump(){
+if(mode!=="playing"||player.jumps>=2)return;
+player.vy=player.jumps===0?-675:-615;
+player.jumps++;
+player.ground=false;
+burst(player.x,player.y+15,"#ffd58d",12);
+}
+
+function photonRush(){
+if(mode!=="playing"||!player.dashReady)return;
+player.dash=.25;
+player.dashReady=false;
+player.vy=0;
+player.inv=Math.max(player.inv,.3);
+burst(player.x,player.y,"#ffdc79",30);
+notify("PHOTON RUSH!",.6);
+}
+
+/* COMBAT ABILITIES */
+
+function radiantLance(){
+if(mode!=="playing"||player.slashCd>0)return;
+
+player.slashCd=.34;
+player.slash=.22;
+
+burst(player.x+player.dir*60,player.y,"#fff2af",22);
+
+for(const e of enemies){
+if(!e.dead&&
+Math.abs(player.y-e.y)<85&&
+Math.abs(player.x-e.x)<170&&
+(e.x-player.x)*player.dir>-20){
+hurtEnemy(e,65);
+}
+}
+
+if(bossActive&&boss&&!boss.dead&&
+Math.abs(player.x-boss.x)<190&&
+Math.abs(player.y-boss.y)<160&&
+(boss.x-player.x)*player.dir>-35){
+hurtBoss(74);
+}
+}
+
+function piercingLight(){
+if(mode!=="playing"||player.beamCd>0)return;
+
+player.beamCd=1.1;
+player.beamEffect=.18;
+
+shots.push({
+x:player.x+player.dir*25,
+y:player.y-8,
+vx:player.dir*940,
+vy:0,
+r:16,
+damage:145,
+friendly:true,
+life:2.2
+});
+
+burst(player.x,player.y,"#fff9ce",25);
+notify("PIERCING LIGHT!",.6);
+}
+
+function solarGuard(){
+if(mode!=="playing"||player.shieldCd>0)return;
+
+player.shield=2.2;
+player.shieldCd=5.8;
+burst(player.x,player.y,"#fff3c6",28);
+}
+
+function hardLightStep(){
+if(mode!=="playing"||player.stepCd>0)return;
+
+player.stepCd=4.8;
+
+const x=clamp(
+player.x+player.dir*105,20,worldEnd-145
+);
+const y=clamp(player.y+58,120,460);
+
+player.steps.push({
+x,y,w:145,life:4.5,type:"light"
+});
+
+burst(x+65,y,"#ffeaaa",25);
+notify("HARD-LIGHT PLATFORM CREATED!",1);
+}
+
+function darkReversal(){
+if(mode!=="playing"||player.reverseCd>0)return;
+
+player.reverseCd=8.5;
+player.reverse=1.2;
+player.inv=Math.max(player.inv,1.2);
+player.hp=Math.min(player.maxHp,player.hp+1);
+
+burst(player.x,player.y,"#9965f4",55);
+
+for(const e of enemies){
+if(!e.dead&&distance(player.x,player.y,e.x,e.y)<165){
+hurtEnemy(e,100);
+}
+}
+
+if(bossActive&&boss&&!boss.dead&&
+distance(player.x,player.y,boss.x,boss.y)<235){
+hurtBoss(170);
+}
+
+shots=shots.filter(s=>
+s.friendly||
+distance(player.x,player.y,s.x,s.y)>230
+);
+
+notify("DARK REVERSAL!",1.4);
+}
+
+function eclipseDomain(){
+if(mode!=="playing"||player.domainCd>0)return;
+
+player.domainCd=27;
+player.domain=5.2;
+player.inv=Math.max(player.inv,1);
+
+burst(player.x,player.y,"#fff0b0",85);
+notify("ECLIPSE DOMAIN — LIGHT OVERTAKES DARKNESS!",2);
+}
+
+function hurtEnemy(e,damage){
+e.hp-=damage;
+burst(e.x,e.y,"#e8b6ff",10);
+
+if(e.hp<=0){
+e.dead=true;
+burst(e.x,e.y,"#ffc66c",22);
+}
+}
+
+function hurtBoss(damage){
+if(!boss||boss.dead||!bossActive)return;
+
+boss.hp=Math.max(0,boss.hp-damage);
+boss.flash=.15;
+
+burst(boss.x,boss.y,"#ffe3aa",12);
+
+if(boss.hp<=0)bossVictory();
+}
+
+/* DAMAGE AND RESPAWN */
+
+function hurt(amount){
+if(player.inv>0||player.shield>0||mode!=="playing")return;
+
+player.hp-=amount;
+player.inv=.9;
+
+burst(player.x,player.y,"#ff8296",14);
+
+if(player.hp<=0)respawn();
+}
+
+function respawn(){
+player.hp=player.maxHp;
+
+Object.assign(player,{
+x:checkpointX,y:checkpointY,
+vx:0,vy:0,jumps:0,
+dashReady:true,dash:0,
+inv:1.8,domain:0,
+steps:[]
+});
+
+shots=[];
+
+if(bossActive)resetBoss();
+
+notify("RETURNED TO CHECKPOINT",2);
+}
+
+/* PLAYER PHYSICS */
+
+function move(dt){
+for(const key of [
+"inv","slashCd","slash","beamCd",
+"shieldCd","shield","stepCd",
+"reverseCd","domainCd","domain",
+"reverse","beamEffect"
+]){
+player[key]=Math.max(0,player[key]-dt);
+}
+
+for(let i=player.steps.length-1;i>=0;i--){
+player.steps[i].life-=dt;
+if(player.steps[i].life<=0)player.steps.splice(i,1);
+}
+
+if(player.domain>0){
+for(const e of enemies){
+if(!e.dead&&distance(player.x,player.y,e.x,e.y)<440){
+hurtEnemy(e,75*dt);
+}
+}
+
+if(bossActive&&boss&&!boss.dead&&
+distance(player.x,player.y,boss.x,boss.y)<570){
+hurtBoss(80*dt);
+}
+}
+
+let direction=0;
+if(keys.a||keys.arrowleft)direction--;
+if(keys.d||keys.arrowright)direction++;
+
+if(direction)player.dir=direction;
+
+if(player.dash>0){
+player.dash-=dt;
+player.vx=player.dir*790;
+player.vy=0;
+}else{
+player.vx=direction*315;
+player.vy+=GRAVITY*dt;
+}
+
+const oldBottom=player.y+player.h/2;
+
+player.x+=player.vx*dt;
+player.y+=player.vy*dt;
+
+player.x=clamp(player.x,15,worldEnd-15);
+player.ground=false;
+
+for(const q of [...platforms,...player.steps]){
+if(!visible(q))continue;
+
+const top=platformY(q);
+
+if(
+player.vy>=0&&
+oldBottom<=top+14&&
+player.y+player.h/2>=top&&
+player.x+player.w/2>q.x&&
+player.x-player.w/2<q.x+q.w
+){
+player.y=top-player.h/2;
+player.vy=0;
+player.ground=true;
+player.jumps=0;
+player.dashReady=true;
+
+if(q.type==="boost"){
+player.vy=-920;
+player.jumps=1;
+player.ground=false;
+}
+break;
+}
+}
+
+if(player.y>H+120){
+respawn();
+return;
+}
+
+for(const s of fragments){
+if(!s.taken&&distance(player.x,player.y,s.x,s.y)<35){
+s.taken=true;
+collected++;
+burst(s.x,s.y,"#fff4b2",25);
+notify("SUN SPARK "+collected+"/3");
+}
+}
+
+for(const c of checkpoints){
+if(!c.active&&
+Math.abs(player.x-c.x)<45&&
+Math.abs(player.y-(c.y-35))<90){
+c.active=true;
+checkpointX=c.x;
+checkpointY=c.y-45;
+notify(c.arena?"BOSS CHECKPOINT!":"CHECKPOINT ACTIVATED");
+}
+}
+
+if(chapter<7&&player.x>worldEnd-215){
+if(collected>=3){
+finishChapter();
+}else if(noticeTime<=0){
+notify("FIND ALL THREE SUN SPARKS");
+}
+}
+
+if(chapter===7&&boss&&!bossEntered&&
+player.x>arenaX+155){
+if(collected<3){
+player.x=arenaX+130;
+if(noticeTime<=0)notify("COLLECT ALL THREE SPARKS FIRST");
+}else{
+enterBoss();
+}
+}
+
+if(bossActive){
+player.x=clamp(player.x,arenaX+130,arenaX+1100);
+}
+}
+
+/* ENEMIES */
+
+function updateEnemies(dt){
+for(const e of enemies){
+if(e.dead)continue;
+
+e.phase+=dt;
+e.x=e.baseX+Math.sin(e.phase)*40;
+e.y=e.baseY+Math.sin(e.phase*2)*18;
+
+if(distance(player.x,player.y,e.x,e.y)<43){
+hurt(settings[difficulty].damage);
+}
+}
+}
+
+/* PROJECTILES */
+
+function updateShots(dt){
+for(let i=shots.length-1;i>=0;i--){
+const s=shots[i];
+
+s.x+=s.vx*dt;
+s.y+=s.vy*dt;
+s.life-=dt;
+
+let hit=false;
+
+if(s.friendly){
+for(const e of enemies){
+if(!e.dead&&distance(s.x,s.y,e.x,e.y)<s.r+25){
+hurtEnemy(e,s.damage);
+hit=true;
+break;
+}
+}
+
+if(!hit&&bossActive&&boss&&!boss.dead&&
+distance(s.x,s.y,boss.x,boss.y)<s.r+100){
+hurtBoss(s.damage);
+hit=true;
+}
+}else{
+if(distance(s.x,s.y,player.x,player.y)<s.r+23){
+hurt(s.damage);
+hit=true;
+}
+}
+
+if(hit||s.life<=0)shots.splice(i,1);
+
+if(mode!=="playing")break;
+}
+}
+
+/* FINAL BOSS CUTSCENE */
+
+function enterBoss(){
+bossEntered=true;
+
+checkpointX=arenaX+135;
+checkpointY=425;
+
+player.x=checkpointX;
+player.y=checkpointY;
+player.vx=0;
+player.vy=0;
+
+cutscene([
+"NARRATOR: The hero enters a ruined battlefield beneath the blackened sun.",
+"ECLIPSE SOVEREIGN: So the last bearer of light has arrived.",
+"HERO: You're the reason both worlds have suffered.",
+"ECLIPSE SOVEREIGN: I existed before your kings, your spirits, and your fragile suns.",
+"HERO: Then you've had more than enough time to learn when to stop.",
+"ECLIPSE SOVEREIGN: Your light cannot defeat the darkness that created it.",
+"HERO: Watch me.",
+"ECLIPSE SOVEREIGN: THEN COME, BEARER. LET THE FINAL ECLIPSE BEGIN!"
+],()=>{
+bossActive=true;
+boss.timer=1.5;
+$("bossHud").style.display="block";
+notify("FINAL BOSS — THE ECLIPSE SOVEREIGN!",2.5);
+},"THE FINAL ECLIPSE");
+}
+
+function resetBoss(){
+boss.hp=boss.maxHp;
+boss.phase=1;
+boss.action="idle";
+boss.timer=1.5;
+boss.count=0;
+boss.shockwaves=[];
+boss.flames=[];
+boss.slash=null;
+shots=[];
+}
+
+/* BOSS ATTACKS */
+
+function startAttack(){
+const attacks=["blades","orbs","slam"];
+
+if(boss.phase>=2)attacks.push("teleport","fire");
+if(boss.phase===3)attacks.push("blades","slam");
+
+boss.attack=attacks[boss.count%attacks.length];
+boss.count++;
+
+boss.action="warning";
+boss.timer=boss.phase===1?.85:boss.phase===2?.65:.48;
+boss.target=player.x;
+
+notify("WARNING — "+boss.attack.toUpperCase(),.7);
+}
+
+function executeAttack(){
+boss.action="recover";
+boss.timer=boss.phase===3?.6:.95;
+
+const d=settings[difficulty];
+
+if(boss.attack==="blades"){
+boss.x=clamp(
+player.x+(player.x<boss.x?130:-130),
+arenaX+280,arenaX+1000
+);
+
+boss.slash={x:player.x,life:.4};
+
+if(distance(player.x,player.y,boss.x,boss.y)<185){
+hurt(d.damage);
+}
+}
+
+if(boss.attack==="orbs"){
+const count=boss.phase===1?3:boss.phase===2?5:7;
+
+for(let i=0;i<count;i++){
+const angle=
+Math.atan2(player.y-boss.y,player.x-boss.x)+
+(i-(count-1)/2)*.16;
+
+const speed=(250+boss.phase*45)*d.speed;
+
+shots.push({
+x:boss.x,y:boss.y,
+vx:Math.cos(angle)*speed,
+vy:Math.sin(angle)*speed,
+r:13,damage:d.damage,
+friendly:false,life:4
+});
+}
+}
+
+if(boss.attack==="slam"){
+boss.shockwaves.push({
+x:boss.x,vx:-400*d.speed,life:2.5
+},{
+x:boss.x,vx:400*d.speed,life:2.5
+});
+
+burst(boss.x,465,"#ffcb7c",45);
+}
+
+if(boss.attack==="teleport"){
+burst(boss.x,boss.y,"#d4a0ff",30);
+
+boss.x=clamp(
+player.x+(player.dir>0?-125:125),
+arenaX+280,arenaX+1000
+);
+
+boss.slash={x:player.x,life:.45};
+
+if(distance(player.x,player.y,boss.x,boss.y)<175){
+hurt(d.damage);
+}
+}
+
+if(boss.attack==="fire"){
+for(const offset of [-150,0,150]){
+boss.flames.push({
+x:clamp(boss.target+offset,arenaX+180,arenaX+1060),
+life:1.2
+});
+}
+}
+}
+
+function updateBoss(dt){
+if(!bossActive||!boss||boss.dead)return;
+
+boss.flash=Math.max(0,boss.flash-dt);
+
+const ratio=boss.hp/boss.maxHp;
+const newPhase=ratio<=.33?3:ratio<=.66?2:1;
+
+if(newPhase!==boss.phase){
+boss.phase=newPhase;
+boss.action="recover";
+boss.timer=1.2;
+burst(boss.x,boss.y,"#ffe1a1",80);
+notify("PHASE "+newPhase+" — THE ECLIPSE GROWS!",2);
+}
+
+$("phase").textContent="PHASE "+boss.phase+" OF 3";
+$("bossFill").style.width=(ratio*100)+"%";
+
+if(boss.action==="idle"){
+boss.y=340+Math.sin(time*2)*15;
+boss.timer-=dt;
+if(boss.timer<=0)startAttack();
+}else if(boss.action==="warning"){
+boss.timer-=dt;
+if(boss.timer<=0)executeAttack();
+}else if(boss.action==="recover"){
+boss.timer-=dt;
+if(boss.timer<=0){
+boss.action="idle";
+boss.timer=(boss.phase===1?.7:boss.phase===2?.45:.25)/
+settings[difficulty].speed;
+}
+}
+
+if(distance(player.x,player.y,boss.x,boss.y)<100){
+hurt(settings[difficulty].damage);
+}
+
+if(boss.slash){
+boss.slash.life-=dt;
+if(boss.slash.life<=0)boss.slash=null;
+}
+
+for(let i=boss.shockwaves.length-1;i>=0;i--){
+const s=boss.shockwaves[i];
+s.x+=s.vx*dt;
+s.life-=dt;
+
+if(Math.abs(player.x-s.x)<30&&
+player.y+player.h/2>435){
+hurt(settings[difficulty].damage);
+}
+
+if(s.life<=0)boss.shockwaves.splice(i,1);
+}
+
+for(let i=boss.flames.length-1;i>=0;i--){
+const f=boss.flames[i];
+f.life-=dt;
+
+if(Math.abs(player.x-f.x)<43&&
+player.y+player.h/2>280){
+hurt(settings[difficulty].damage);
+}
+
+if(f.life<=0)boss.flames.splice(i,1);
+}
+}
+
+/* FINAL ENDING */
+
+function bossVictory(){
+boss.dead=true;
+bossActive=false;
+mode="scene";
+shots=[];
+
+burst(boss.x,boss.y,"#ffe5ad",100);
+
+cutscene([
+"NARRATOR: The Eclipse Sovereign falls. Its dark crown shatters across the battlefield.",
+"ECLIPSE SOVEREIGN: Impossible... the darkness existed before the first dawn...",
+"HERO: And the light will exist after you.",
+"ECLIPSE SOVEREIGN: Then perhaps... the world is finally ready.",
+"NARRATOR: The blackened sun begins to crack. Golden light spills through the sky.",
+"VOICE OF LIGHT: You have won. But one choice remains.",
+"VOICE OF LIGHT: Will you share the last light with every soul, or guard it for the future?"
+],endingChoice,"THE FINAL VICTORY");
+}
+
+function endingChoice(){
+mode="choice";
+
+screen(
+"THE FINAL DECISION",
+"THE LAST LIGHT",
+"The Eclipse Sovereign is defeated.\n\n"+
+"Will you share the Light with the world or protect it?",
+"SHARE THE LIGHT",
+()=>ending("share"),
+"GUARD THE LIGHT",
+()=>ending("guard")
+);
+}
+
+function ending(choice){
+const lines=choice==="share"?
+[
+"HERO: The light doesn't belong to one person. It belongs to everyone.",
+"NARRATOR: Golden rays spread across the kingdoms and the Spirit Realm.",
+"VOICE OF LIGHT: The darkness has ended. A new dawn begins.",
+"NARRATOR: The hero watches the first true sunrise in centuries."
+]:
+[
+"HERO: This light is too powerful to leave unprotected.",
+"NARRATOR: The hero seals the last light inside a sacred sanctuary.",
+"VOICE OF LIGHT: You have chosen to become its guardian.",
+"NARRATOR: The world sees a new sunrise, while its protector remains vigilant."
+];
+
+cutscene(lines,()=>{
+mode="ending";
+
+try{
+localStorage.setItem("tdw-last-light-ending",choice);
+}catch(e){}
+
+screen(
+"THEDARKWITHIN — THE FINALE",
+"THE END",
+"The Purple King has fallen.\n"+
+"The Spirit Realm has been freed.\n"+
+"The Eclipse Sovereign has been defeated.\n\n"+
+"After centuries of darkness, the world finally sees the light.\n\n"+
+"THANK YOU FOR PLAYING THEDARKWITHIN.",
+"RETURN TO MENU",
+menu
+);
+},"THE LAST SUNRISE");
+}
+
+/* GAME UPDATE */
+
+function update(dt){
+time+=dt;
+
+if(noticeTime>0){
+noticeTime-=dt;
+if(noticeTime<=0)$("notice").style.display="none";
+}
+
+for(let i=particles.length-1;i>=0;i--){
+const a=particles[i];
+a.x+=a.vx*dt;
+a.y+=a.vy*dt;
+a.life-=dt;
+if(a.life<=0)particles.splice(i,1);
+}
+
+if(mode!=="playing")return;
+
+move(dt);
+if(mode!=="playing")return;
+
+updateEnemies(dt);
+updateBoss(dt);
+updateShots(dt);
+
+const target=clamp(player.x-335,0,Math.max(0,worldEnd-W));
+camera+=(target-camera)*Math.min(1,dt*6);
+
+updateHUD();
+}
+
+/* BACKGROUND */
+
+const skies=[
+["#56322b","#120e1b"],
+["#3c2a36","#110d19"],
+["#423044","#150f1e"],
+["#563a24","#1a1117"],
+["#50212d","#110b19"],
+["#654128","#150e14"],
+["#381f3c","#0e0a19"],
+["#2b122c","#080610"]
+];
+
+function background(){
+const pal=skies[chapter];
+const gradient=ctx.createLinearGradient(0,0,0,H);
+
+gradient.addColorStop(0,pal[0]);
+gradient.addColorStop(1,pal[1]);
+
+ctx.fillStyle=gradient;
+ctx.fillRect(0,0,W,H);
+
+for(let i=0;i<90;i++){
+const x=((i*173-camera*.12)%1020+1020)%1020;
+const y=i*71%480;
+
+ctx.fillStyle="#ffe6b577";
+ctx.fillRect(x,y,2,2);
+}
+
+const sunX=720-camera*.05;
+
+ctx.fillStyle=chapter===7?"#120a1b":"#ed9b61";
+ctx.beginPath();
+ctx.arc(sunX,100,95,0,Math.PI*2);
+ctx.fill();
+
+ctx.strokeStyle="#ffcd8888";
+ctx.lineWidth=12;
+ctx.beginPath();
+ctx.arc(sunX,100,103,0,Math.PI*2);
+ctx.stroke();
+
+for(let i=0;i<18;i++){
+const x=((i*220-camera*.2)%1400+1400)%1400-120;
+const y=120+i*87%260;
+
+ctx.fillStyle="#21162599";
+ctx.beginPath();
+ctx.moveTo(x,y);
+ctx.lineTo(x+110,y);
+ctx.lineTo(x+60,y+75);
+ctx.lineTo(x+20,y+55);
+ctx.fill();
+
+ctx.fillStyle="#d29b7788";
+ctx.fillRect(x,y,110,8);
+}
+
+if(chapter===7){
+const x=arenaX-camera;
+
+if(x<W&&x+1120>0){
+for(let i=0;i<5;i++){
+const px=x+70+i*240;
+ctx.fillStyle="#382b36";
+ctx.fillRect(px,220,46,250);
+ctx.fillStyle="#99726a";
+ctx.fillRect(px-8,205,62,15);
+}
+
+ctx.strokeStyle="#ffbd7c88";
+ctx.lineWidth=16;
+ctx.beginPath();
+ctx.ellipse(x+830,270,148,183,0,0,Math.PI*2);
+ctx.stroke();
+
+if(bossActive){
+ctx.fillStyle="#a35b77";
+ctx.fillRect(x+125,225,20,245);
+ctx.fillRect(x+1090,225,20,245);
+}
+}
+}
+}
+
+/* DRAW PLATFORMS */
+
+function drawPlatforms(){
+for(const q of [...platforms,...player.steps]){
+if(!visible(q))continue;
+
+const x=q.x-camera;
+const y=platformY(q);
+
+if(x>W||x+q.w<0)continue;
+
+ctx.fillStyle="#281923";
+ctx.beginPath();
+ctx.moveTo(x,y+13);
+ctx.lineTo(x+q.w,y+13);
+ctx.lineTo(x+q.w*.7,y+67);
+ctx.lineTo(x+q.w*.28,y+54);
+ctx.fill();
+
+ctx.fillStyle=
+q.type==="light"?"#fff4bc":
+q.type==="boost"?"#ffeb8c":
+q.type==="moving"?"#d99673":
+q.type==="vanish"?"#c18fba":"#c58f61";
+
+ctx.fillRect(x,y,q.w,15);
+
+ctx.fillStyle="#77503f";
+ctx.fillRect(x+8,y+16,q.w-16,11);
+}
+}
+
+/* DRAW COLLECTIBLES */
+
+function drawItems(){
+for(const s of fragments){
+if(s.taken)continue;
+
+const x=s.x-camera;
+const y=s.y+Math.sin(time*4)*7;
+
+ctx.fillStyle="#ffeb9960";
+ctx.beginPath();
+ctx.arc(x,y,24,0,Math.PI*2);
+ctx.fill();
+
+ctx.fillStyle="#fff6c0";
+ctx.beginPath();
+ctx.moveTo(x,y-18);
+ctx.lineTo(x+12,y);
+ctx.lineTo(x,y+18);
+ctx.lineTo(x-12,y);
+ctx.fill();
+}
+
+for(const c of checkpoints){
+const x=c.x-camera;
+
+ctx.fillStyle=c.active?"#aaffdb":"#ddac7a";
+ctx.fillRect(x-5,c.y-55,10,56);
+
+ctx.beginPath();
+ctx.moveTo(x,c.y-80);
+ctx.lineTo(x+18,c.y-53);
+ctx.lineTo(x,c.y-29);
+ctx.lineTo(x-18,c.y-53);
+ctx.fill();
+}
+
+for(const e of enemies){
+if(e.dead)continue;
+
+const x=e.x-camera;
+
+ctx.fillStyle="#211224";
+ctx.beginPath();
+ctx.arc(x,e.y,24,0,Math.PI*2);
+ctx.fill();
+
+ctx.fillStyle="#d982ae";
+ctx.fillRect(x-12,e.y-4,8,5);
+ctx.fillRect(x+4,e.y-4,8,5);
+}
+}
+
+/* DRAW HERO */
+
+function drawHero(){
+if(player.inv>0&&Math.floor(time*12)%2===0)return;
+
+const x=player.x-camera;
+const y=player.y;
+
+ctx.save();
+ctx.translate(Math.round(x),Math.round(y));
+
+ctx.fillStyle="#bd7a42";
+ctx.beginPath();
+ctx.moveTo(-13,-9);
+ctx.lineTo(-23,24);
+ctx.lineTo(13,16);
+ctx.fill();
+
+ctx.fillStyle="#32222d";
+ctx.fillRect(-10,9,8,14);
+ctx.fillRect(3,9,8,14);
+
+ctx.fillStyle="#f0c586";
+ctx.fillRect(-15,-20,30,31);
+
+ctx.fillStyle="#fff0b6";
+ctx.fillRect(-9,-14,18,17);
+
+ctx.fillStyle="#e8d4c3";
+ctx.fillRect(-12,-42,24,22);
+
+ctx.fillStyle="#6c3d35";
+ctx.fillRect(-14,-45,28,11);
+
+ctx.fillStyle="#fffbd0";
+ctx.fillRect(player.dir>0?4:-9,-34,6,4);
+
+const swordX=player.dir>0?19:-24;
+
+ctx.fillStyle="#fff3ba";
+ctx.fillRect(swordX,-31,6,40);
+ctx.fillRect(swordX-5,-28,16,5);
+
+if(player.domain>0){
+ctx.strokeStyle="#ffe4a4";
+ctx.lineWidth=6;
+ctx.beginPath();
+ctx.arc(0,-4,54+Math.sin(time*9)*4,0,Math.PI*2);
+ctx.stroke();
+}
+
+if(player.reverse>0){
+ctx.fillStyle="#8253e54d";
+ctx.beginPath();
+ctx.arc(0,-5,60,0,Math.PI*2);
+ctx.fill();
+}
+
+if(player.shield>0){
+ctx.strokeStyle="#fff6a9";
+ctx.lineWidth=4;
+ctx.beginPath();
+ctx.arc(0,-4,37,0,Math.PI*2);
+ctx.stroke();
+}
+
+if(player.slash>0){
+ctx.strokeStyle="#fff2aa";
+ctx.lineWidth=13;
+ctx.beginPath();
+const a=player.dir>0?0:Math.PI;
+ctx.arc(player.dir*60,-5,96,a-.85,a+.85);
+ctx.stroke();
+}
+
+if(player.beamEffect>0){
+ctx.fillStyle="#fff8bb99";
+ctx.fillRect(player.dir>0?18:-165,-15,150,12);
+}
+
+if(player.dash>0){
+ctx.fillStyle="#ffe99566";
+ctx.fillRect(-player.dir*55,-25,35,40);
+}
+
+ctx.restore();
+}
+
+/* DRAW FINAL BOSS */
+
+function drawBoss(){
+if(!boss||boss.dead)return;
+
+const x=boss.x-camera;
+const y=boss.y;
+
+ctx.save();
+ctx.translate(x,y);
+
+ctx.fillStyle="#ffbd6a22";
+ctx.beginPath();
+ctx.ellipse(0,5,155,190,0,0,Math.PI*2);
+ctx.fill();
+
+ctx.fillStyle="#241527";
+ctx.beginPath();
+ctx.moveTo(-80,-60);
+ctx.lineTo(-110,55);
+ctx.lineTo(-46,130);
+ctx.lineTo(0,235);
+ctx.lineTo(46,130);
+ctx.lineTo(110,55);
+ctx.lineTo(80,-60);
+ctx.fill();
+
+ctx.fillStyle=boss.flash>0?"#fff6bd":"#514056";
+ctx.beginPath();
+ctx.moveTo(-80,-65);
+ctx.lineTo(0,-100);
+ctx.lineTo(80,-65);
+ctx.lineTo(58,15);
+ctx.lineTo(0,48);
+ctx.lineTo(-58,15);
+ctx.fill();
+
+ctx.strokeStyle="#dda76d";
+ctx.lineWidth=6;
+ctx.stroke();
+
+for(const side of [-1,1]){
+ctx.fillStyle="#382739";
+ctx.beginPath();
+ctx.moveTo(side*35,-70);
+ctx.lineTo(side*105,-145);
+ctx.lineTo(side*142,-75);
+ctx.lineTo(side*95,-27);
+ctx.fill();
+}
+
+ctx.fillStyle="#edb76d";
+ctx.beginPath();
+ctx.arc(0,-140,48,0,Math.PI*2);
+ctx.fill();
+
+ctx.fillStyle="#201325";
+ctx.beginPath();
+ctx.arc(0,-145,38,0,Math.PI*2);
+ctx.fill();
+
+ctx.fillStyle="#ffecaa";
+ctx.fillRect(-28,-152,19,8);
+ctx.fillRect(9,-152,19,8);
+
+ctx.fillStyle="#e3a760";
+ctx.beginPath();
+ctx.moveTo(-47,-159);
+ctx.lineTo(-58,-210);
+ctx.lineTo(-12,-183);
+ctx.lineTo(0,-226);
+ctx.lineTo(12,-183);
+ctx.lineTo(58,-210);
+ctx.lineTo(47,-159);
+ctx.fill();
+
+ctx.strokeStyle="#fbc979";
+ctx.lineWidth=7;
+ctx.beginPath();
+ctx.moveTo(-29,-40);
+ctx.lineTo(0,-5);
+ctx.lineTo(29,-40);
+ctx.stroke();
+
+ctx.restore();
+
+ctx.textAlign="center";
+ctx.font="bold 19px Arial";
+ctx.fillStyle="#ffe7bd";
+ctx.fillText("THE ECLIPSE SOVEREIGN",x,y-245);
+ctx.textAlign="left";
+}
+
+/* BOSS ATTACK EFFECTS */
+
+function drawBossAttacks(){
+if(!boss||!bossActive)return;
+
+if(boss.action==="warning"){
+ctx.globalAlpha=.4+.23*Math.sin(time*24);
+ctx.fillStyle="#ff6486";
+
+if(boss.attack==="blades"){
+ctx.fillRect(boss.target-camera-140,286,280,184);
+}
+
+if(boss.attack==="slam"){
+ctx.fillRect(arenaX+130-camera,452,970,18);
+}
+
+if(boss.attack==="fire"){
+for(const offset of [-150,0,150]){
+const x=clamp(
+boss.target+offset,arenaX+180,arenaX+1060
+)-camera;
+ctx.fillRect(x-43,450,86,20);
+}
+}
+
+if(boss.attack==="teleport"){
+ctx.fillRect(boss.target-camera-75,285,150,185);
+}
+
+if(boss.attack==="orbs"){
+ctx.beginPath();
+ctx.arc(boss.x-camera,boss.y,95,0,Math.PI*2);
+ctx.fill();
+}
+
+ctx.globalAlpha=1;
+}
+
+if(boss.slash){
+ctx.strokeStyle="#ffdab0";
+ctx.lineWidth=16;
+ctx.beginPath();
+ctx.arc(boss.slash.x-camera,boss.y,92,-1.35,1.5);
+ctx.stroke();
+}
+
+for(const s of boss.shockwaves){
+ctx.fillStyle="#ffcd77";
+ctx.beginPath();
+ctx.arc(s.x-camera,450,26,Math.PI,0);
+ctx.fill();
+}
+
+for(const f of boss.flames){
+const x=f.x-camera;
+
+ctx.fillStyle="#ff9a71b0";
+ctx.beginPath();
+ctx.moveTo(x-43,470);
+ctx.lineTo(x,260+Math.sin(time*12)*12);
+ctx.lineTo(x+43,470);
+ctx.fill();
+}
+}
+
+/* DRAW EVERYTHING */
+
+function draw(){
+ctx.clearRect(0,0,W,H);
+
+background();
+
+if(player.domain>0&&mode==="playing"){
+ctx.fillStyle="#ffe18f15";
+ctx.fillRect(0,0,W,H);
+
+ctx.strokeStyle="#f9e8ab66";
+ctx.lineWidth=9;
+ctx.beginPath();
+ctx.arc(player.x-camera,player.y,220,0,Math.PI*2);
+ctx.stroke();
+}
+
+drawPlatforms();
+drawItems();
+drawBoss();
+drawBossAttacks();
+drawHero();
+
+for(const s of shots){
+ctx.fillStyle=s.friendly?"#fff7b3":"#e86d9b";
+ctx.beginPath();
+ctx.arc(s.x-camera,s.y,s.r,0,Math.PI*2);
+ctx.fill();
+}
+
+for(const a of particles){
+ctx.globalAlpha=clamp(a.life*2,0,1);
+ctx.fillStyle=a.color;
+ctx.fillRect(a.x-camera,a.y,5,5);
+}
+
+ctx.globalAlpha=1;
+
+if(chapter<7){
+const x=worldEnd-150-camera;
+
+ctx.strokeStyle=collected===3?"#ffeeab":"#725263";
+ctx.lineWidth=8;
+ctx.beginPath();
+ctx.ellipse(x,385,35,68,0,0,Math.PI*2);
+ctx.stroke();
+
+ctx.textAlign="center";
+ctx.fillStyle="#fff3cb";
+ctx.font="13px Arial";
+ctx.fillText(
+collected===3?"EXIT OPEN":"3 SPARKS NEEDED",
+x,288
+);
+ctx.textAlign="left";
+}
+}
+
+/* MAIN LOOP */
+
+function loop(timestamp){
+const dt=Math.min(
+(timestamp-(previousTime||timestamp))/1000,
+.04
+);
+
+previousTime=timestamp;
+
+update(dt);
+draw();
+
+requestAnimationFrame(loop);
+}
+
+/* KEYBOARD */
+
+window.addEventListener("keydown",e=>{
+const key=e.key.toLowerCase();
+
+if([" ","arrowup","arrowdown","arrowleft","arrowright"].includes(key)){
+e.preventDefault();
+}
+
+keys[key]=true;
+
+if(e.repeat||mode!=="playing")return;
+
+if(key===" "||key==="w"||key==="arrowup")jump();
+if(key==="shift")photonRush();
+if(key==="j")radiantLance();
+if(key==="k")piercingLight();
+if(key==="n")solarGuard();
+if(key==="e")hardLightStep();
+if(key==="f")darkReversal();
+if(key==="r")eclipseDomain();
+});
+
+window.addEventListener("keyup",e=>{
+keys[e.key.toLowerCase()]=false;
+});
+
+window.addEventListener("blur",()=>{
+for(const key in keys)keys[key]=false;
+});
+
+/* BUTTON CONTROLS */
+
+$("jump").onclick=jump;
+$("dash").onclick=photonRush;
+$("slash").onclick=radiantLance;
+$("beam").onclick=piercingLight;
+$("shield").onclick=solarGuard;
+$("step").onclick=hardLightStep;
+$("reverse").onclick=darkReversal;
+$("domain").onclick=eclipseDomain;
+
+$("difficulty").onchange=e=>{
+difficulty=e.target.value;
+if(mode!=="menu")startChapter(chapter);
+};
+
+$("restart").onclick=()=>{
+if(mode!=="menu")startChapter(chapter);
+};
+
+$("menu").onclick=menu;
+
+$("fullscreen").onclick=async()=>{
+try{
+if(document.fullscreenElement){
+await document.exitFullscreen();
+}else{
+await $("stage").requestFullscreen();
+}
+}catch(e){
+alert("Fullscreen is unavailable in this browser.");
+}
+};
+
+/* MAIN MENU */
+
+function menu(){
+mode="menu";
+
+const progress=saved();
+
+screen(
+"THEDARKWITHIN — DLC III",
+"THE LAST LIGHT",
+"The final eclipse is swallowing the world.\n\n"+
+"Cross floating ruins, recover the sparks of dawn, "+
+"master light and darkness, and defeat the Eclipse Sovereign.\n\n"+
+"8 CHAPTERS • LIGHT CONSTRUCTS • DARK REVERSAL • "+
+"ECLIPSE DOMAIN • FINAL BOSS",
+progress>0?"CONTINUE — CHAPTER "+(progress+1):"BEGIN STORY",
+()=>{
+Music.start();
+startChapter(progress);
+},
+"NEW GAME",
+()=>{
+if(!confirm("Restart the story from Chapter 1?"))return;
+
+try{localStorage.removeItem(SAVE);}catch(e){}
+
+Music.start();
+startChapter(0);
+}
+);
+}
+
+/* START */
+
+createLevel(0);
+menu();
+requestAnimationFrame(loop);
+
+})();
+</script>
+
+</body>
+</html>
