@@ -3,220 +3,310 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>TheDarkWithin — Main Story</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>TheDarkWithin — 2.5D Main Story</title>
 
 <style>
-*{box-sizing:border-box}
-
-html{
- background:#050a07;
- scroll-behavior:smooth;
+* {
+  box-sizing: border-box;
 }
 
-body{
- margin:0;
- min-height:100vh;
- background:
- radial-gradient(ellipse at top,#173b28,#07110c 50%,#050806);
- color:#f0fff4;
- font-family:Arial,Helvetica,sans-serif;
- overflow-x:hidden;
+html {
+  min-height: 100%;
+  background: #050907;
 }
 
-header{
- display:flex;
- justify-content:space-between;
- align-items:center;
- gap:15px;
- flex-wrap:wrap;
- padding:22px 5%;
- background:#08110cec;
- border-bottom:1px solid #397c50;
- box-shadow:0 15px 40px #0008;
+body {
+  margin: 0;
+  padding: 0;
+  min-height: 100vh;
+  overflow-x: hidden;
+  font-family: Arial, Helvetica, sans-serif;
+  color: #f0fff4;
+
+  background:
+    radial-gradient(
+      ellipse at 50% 0%,
+      #214d35 0%,
+      #0a1b12 38%,
+      #050806 100%
+    );
 }
 
-.logo{
- color:#fff;
- font-size:clamp(23px,4vw,36px);
- font-weight:900;
- letter-spacing:3px;
+header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 15px;
+
+  padding: 21px 5%;
+
+  background: rgba(5, 14, 9, 0.95);
+  border-bottom: 1px solid #43845b;
+  box-shadow: 0 14px 40px #0008;
 }
 
-.logo span{
- color:#7af0a2;
- text-shadow:0 0 25px #65ed9166;
+.logo {
+  color: white;
+  font-size: clamp(23px, 4vw, 36px);
+  font-weight: 900;
+  letter-spacing: 3px;
 }
 
-.back{
- text-decoration:none;
- color:#d7ffe3;
- padding:12px 18px;
- background:#183827;
- border:1px solid #55986a;
- border-radius:9px;
- font-weight:bold;
- font-size:12px;
+.logo span {
+  color: #7cf1a5;
+  text-shadow: 0 0 28px #66ed9366;
 }
 
-.back:hover{
- background:#286644;
+.back {
+  display: inline-block;
+  color: #d9ffe6;
+  text-decoration: none;
+
+  padding: 12px 18px;
+
+  background: #163a27;
+  border: 1px solid #65ad7d;
+  border-radius: 9px;
+
+  font-size: 12px;
+  font-weight: bold;
 }
 
-.intro{
- max-width:1000px;
- margin:35px auto 25px;
- padding:0 20px;
- text-align:center;
+.back:hover {
+  background: #286d47;
 }
 
-.eyebrow{
- color:#8df4aa;
- letter-spacing:4px;
- font-size:12px;
- font-weight:bold;
+.intro {
+  max-width: 1060px;
+  margin: 30px auto 20px;
+  padding: 0 20px;
+  text-align: center;
 }
 
-.intro h1{
- font-size:clamp(36px,7vw,76px);
- margin:15px 0;
- letter-spacing:2px;
- text-shadow:0 10px 35px #000a;
+.eyebrow {
+  color: #91f2b0;
+  letter-spacing: 4px;
+  font-size: 12px;
+  font-weight: bold;
 }
 
-.intro h1 span{
- color:#7df0a5;
+.intro h1 {
+  margin: 15px 0;
+  font-size: clamp(35px, 7vw, 75px);
+  line-height: 1.1;
+  letter-spacing: 2px;
+  text-shadow: 0 10px 35px #000a;
 }
 
-.intro p{
- color:#b8cfc0;
- max-width:720px;
- margin:0 auto;
- font-size:15px;
- line-height:1.85;
+.intro h1 span {
+  color: #7cf1a5;
+  text-shadow: 0 0 35px #65ed9344;
 }
 
-#gameMount{
- width:min(1100px,calc(100% - 24px));
- margin:25px auto;
+.intro p {
+  max-width: 740px;
+  margin: 0 auto;
+  color: #bdd3c5;
+  font-size: 15px;
+  line-height: 1.8;
 }
 
-/*
- The real game.js creates #dwGameFrame.
- This is the ONLY game screen.
-*/
+/* THE ONE REAL GAME CONTAINER */
 
-#dwGameFrame{
- position:relative!important;
- width:min(960px,100%)!important;
- margin:12px auto!important;
- background:#07110d!important;
- border-radius:12px;
- overflow:hidden;
- box-shadow:
- 0 25px 75px #000c,
- 0 0 55px #5cf59a26;
- border:2px solid #478661;
+#gameMount {
+  width: min(1060px, calc(100% - 24px));
+  margin: 24px auto;
 }
 
-#darkWithinCanvas{
- display:block!important;
- width:100%!important;
- height:auto!important;
- max-width:100%;
- border:0!important;
- border-radius:9px;
- image-rendering:auto!important;
- filter:
- saturate(1.12)
- contrast(1.06)
- brightness(1.04);
+/* ACTUAL GAME FRAME */
+
+#dwGameFrame {
+  position: relative;
+  width: min(960px, 100%);
+  max-width: 100%;
+  margin: 15px auto !important;
+  overflow: hidden;
+
+  background: #07100c;
+  border: 2px solid #5aa477;
+  border-radius: 13px;
+
+  box-shadow:
+    0 28px 85px rgba(0, 0, 0, 0.75),
+    0 0 60px rgba(86, 232, 137, 0.17);
 }
 
-#darkWithinUI{
- width:min(960px,100%)!important;
- margin:14px auto!important;
- padding:17px!important;
- border:1px solid #3c7654!important;
- border-radius:12px;
- background:#0f1c15!important;
- box-shadow:0 18px 45px #0006;
- color:#eaffef!important;
- font-family:Arial,sans-serif!important;
+/* SMOOTH GAME GRAPHICS */
+
+#darkWithinCanvas {
+  display: block;
+  width: 100%;
+  height: auto;
+  max-width: 100%;
+
+  image-rendering: auto !important;
+
+  border: 0;
+  border-radius: 9px;
+
+  filter:
+    saturate(1.08)
+    contrast(1.04);
 }
 
-#darkWithinUI button{
- cursor:pointer;
+/* GAME CONTROLS */
+
+#darkWithinUI {
+  width: min(960px, 100%);
+  max-width: 100%;
+
+  margin: 18px auto !important;
+  padding: 18px;
+
+  background:
+    linear-gradient(145deg, #142a1d, #0b1711);
+
+  border: 1px solid #437657;
+  border-radius: 13px;
+
+  color: #edfff2;
+
+  box-shadow: 0 15px 45px #0006;
 }
 
-#darkWithinUI button:hover{
- filter:brightness(1.18);
+#darkWithinUI button,
+#darkWithinUI select {
+  font-family: Arial, sans-serif;
+  transition: background 0.2s, filter 0.2s;
 }
 
-.info{
- max-width:1000px;
- padding:0 15px;
- margin:25px auto;
- display:grid;
- grid-template-columns:repeat(3,1fr);
- gap:14px;
+#darkWithinUI button:hover:not(:disabled) {
+  filter: brightness(1.25);
 }
 
-.card{
- background:linear-gradient(145deg,#14291d,#0b1710);
- border:1px solid #315e42;
- border-radius:12px;
- padding:18px;
+#darkWithinUI button:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
 }
 
-.card strong{
- color:#8ff2ac;
- display:block;
- margin-bottom:8px;
- font-size:13px;
+#darkWithinUI input[type="range"] {
+  accent-color: #7cf1a5;
 }
 
-.card p{
- color:#b5cbbb;
- font-size:13px;
- line-height:1.7;
- margin:0;
+/* VISUAL EDITION LABEL */
+
+.edition-label {
+  width: fit-content;
+  margin: 0 auto 17px;
+
+  color: #b2f6c9;
+  background: #123522;
+  border: 1px solid #397450;
+  border-radius: 999px;
+
+  padding: 10px 17px;
+
+  font-size: 11px;
+  font-weight: bold;
+  letter-spacing: 2px;
 }
 
-footer{
- margin-top:45px;
- padding:30px;
- border-top:1px solid #265138;
- text-align:center;
- color:#839a88;
- font-size:12px;
- letter-spacing:2px;
+/* INFO CARDS */
+
+.info {
+  max-width: 1060px;
+  margin: 28px auto;
+  padding: 0 15px;
+
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 14px;
 }
 
-@media(max-width:750px){
- .info{grid-template-columns:1fr}
- header{padding:17px}
+.card {
+  background:
+    linear-gradient(145deg, #163021, #0a1710);
+
+  border: 1px solid #315d43;
+  border-radius: 13px;
+
+  padding: 20px;
+  box-shadow: 0 14px 35px #0004;
 }
 
-/* Fullscreen gameplay */
+.card strong {
+  display: block;
+  margin-bottom: 9px;
 
-#dwGameFrame:fullscreen{
- width:100vw!important;
- height:100vh!important;
- margin:0!important;
- border:0!important;
- border-radius:0!important;
- background:#050906!important;
- display:flex!important;
- align-items:center!important;
- justify-content:center!important;
+  font-size: 13px;
+  color: #8df1ad;
 }
 
-#dwGameFrame:fullscreen #darkWithinCanvas{
- max-height:100vh;
- width:100%!important;
- height:auto!important;
- object-fit:contain;
+.card p {
+  margin: 0;
+  color: #b4cbbb;
+  line-height: 1.7;
+  font-size: 13px;
+}
+
+/* FULLSCREEN */
+
+#dwGameFrame:fullscreen {
+  width: 100vw !important;
+  height: 100vh !important;
+  max-width: none !important;
+  margin: 0 !important;
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  border: none;
+  border-radius: 0;
+  background: #040805;
+}
+
+#dwGameFrame:fullscreen #darkWithinCanvas {
+  width: 100%;
+  height: auto;
+  max-height: 100vh;
+  object-fit: contain;
+}
+
+/* FOOTER */
+
+footer {
+  margin-top: 45px;
+  padding: 30px 15px;
+
+  text-align: center;
+  color: #8ba18f;
+
+  font-size: 12px;
+  letter-spacing: 2px;
+
+  border-top: 1px solid #235338;
+}
+
+@media (max-width: 750px) {
+  .info {
+    grid-template-columns: 1fr;
+  }
+
+  header {
+    padding: 16px;
+  }
+
+  .intro {
+    margin-top: 25px;
+  }
+
+  #darkWithinUI {
+    padding: 12px;
+  }
 }
 </style>
 </head>
@@ -224,93 +314,130 @@ footer{
 <body>
 
 <header>
-<div class="logo">THE<span>DARK</span>WITHIN</div>
-<a class="back" href="index.html">← BACK TO LAUNCHER</a>
+  <div class="logo">
+    THE<span>DARK</span>WITHIN
+  </div>
+
+  <a class="back" href="index.html">
+    ← BACK TO LAUNCHER
+  </a>
 </header>
 
 <section class="intro">
-<div class="eyebrow">THE ORIGINAL STORY</div>
-<h1>THE<span>DARK</span>WITHIN</h1>
-<p>
-The villagers have vanished. Travel through dark forests,
-snowy mountains, deserts, and cursed kingdoms.
-Master powerful abilities, uncover the Black Spirit's
-secrets, and confront the Purple King.
-</p>
+
+  <div class="eyebrow">
+    THE ORIGINAL STORY
+  </div>
+
+  <h1>
+    THE<span>DARK</span>WITHIN
+  </h1>
+
+  <p>
+    The villagers have vanished. Journey through ancient forests,
+    snowy mountains, forgotten deserts, and corrupted kingdoms.
+
+    Unlock incredible abilities, uncover the Black Spirit's secrets,
+    and defeat the Purple King.
+  </p>
+
 </section>
 
-<!-- ONE REAL GAME LOCATION -->
+<div class="edition-label">
+  2.5D CINEMATIC EDITION
+</div>
+
+<!-- THE ACTUAL PLAYABLE GAME GOES HERE -->
+
 <main id="gameMount"></main>
 
+<!-- INFORMATION BELOW THE GAME -->
+
 <section class="info">
-<div class="card">
-<strong>🌲 EIGHT CHAPTERS</strong>
-<p>Explore the full original story across dangerous lands and mysterious realms.</p>
-</div>
 
-<div class="card">
-<strong>⚔️ ORIGINAL COMBAT</strong>
-<p>Keep your sword, special attacks, Black Flash, Divergent Fist, and other abilities.</p>
-</div>
+  <div class="card">
+    <strong>🌲 EIGHT STORY CHAPTERS</strong>
+    <p>
+      Experience the complete journey from the missing
+      villagers to the final battle against the Purple King.
+    </p>
+  </div>
 
-<div class="card">
-<strong>🎵 MUSIC & DIFFICULTY</strong>
-<p>Your existing soundtrack, controls, difficulty modes, and fullscreen remain available.</p>
-</div>
+  <div class="card">
+    <strong>⚔️ POWERFUL ABILITIES</strong>
+    <p>
+      Fight using your sword, Water Wheel, Flame Arrow,
+      Black Flash, and Divergent Fist.
+    </p>
+  </div>
+
+  <div class="card">
+    <strong>✨ ENHANCED GRAPHICS</strong>
+    <p>
+      Play using the upgraded game engine with
+      smoother characters, scenery, lighting,
+      and battle effects.
+    </p>
+  </div>
+
 </section>
 
-<footer>THEDARKWITHIN © 2026 — MAIN STORY</footer>
+<footer>
+  THEDARKWITHIN © 2026 — MAIN STORY
+</footer>
 
-<!-- LOAD THE ACTUAL GAME ONCE -->
-<script src="game.js"></script>
+<!--
+  LOAD THE NEW GAME.JS VERSION.
+
+  THE VERSION PARAMETER MAKES THE BROWSER
+  REQUEST A FRESH COPY OF THE FILE.
+-->
+
+<script src="game.js?v=25d-20261019-new"></script>
+
+<!--
+  MOVE THE GAME ENGINE'S EXISTING GAME
+  INTO THE CORRECT LOCATION.
+  NO SECOND GAME IS CREATED.
+-->
 
 <script>
-(()=>{
-"use strict";
+(function () {
+  "use strict";
 
-/*
- FIX:
- game.js creates its game frame and control panel
- directly inside document.body.
+  const mount = document.getElementById("gameMount");
 
- Move those existing elements into the correct
- location instead of creating another game.
-*/
+  function positionGame() {
+    const frame = document.getElementById("dwGameFrame");
+    const ui = document.getElementById("darkWithinUI");
 
-function positionGame(){
- const mount=document.getElementById("gameMount");
- const frame=document.getElementById("dwGameFrame");
- const ui=document.getElementById("darkWithinUI");
+    if (!frame || !ui || !mount) {
+      return false;
+    }
 
- if(!mount||!frame||!ui)return false;
+    if (frame.parentElement !== mount) {
+      mount.appendChild(frame);
+    }
 
- if(frame.parentElement!==mount){
-  mount.appendChild(frame);
- }
+    if (ui.parentElement !== mount) {
+      mount.appendChild(ui);
+    }
 
- if(ui.parentElement!==mount){
-  mount.appendChild(ui);
- }
+    return true;
+  }
 
- return true;
-}
+  if (!positionGame()) {
+    const observer = new MutationObserver(() => {
+      if (positionGame()) {
+        observer.disconnect();
+      }
+    });
 
-/*
- The current game.js creates the elements
- synchronously, so this should succeed immediately.
-*/
-
-if(!positionGame()){
- const observer=new MutationObserver(()=>{
-  if(positionGame())observer.disconnect();
- });
-
- observer.observe(document.body,{
-  childList:true,
-  subtree:true
- });
-}
-
+    observer.observe(document.body, {
+      childList: true,
+      subtree: true
+    });
+  }
 })();
 </script>
 
