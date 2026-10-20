@@ -4,47 +4,101 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>The Last Light — TheDarkWithin DLC III</title>
+<title>The Last Light — 2.5D Edition</title>
 <style>
 *{box-sizing:border-box}
-body{margin:0;background:#0d0910;color:#fff0d4;font-family:Arial,sans-serif}
-header{background:#1a1018;border-bottom:2px solid #ffc778;padding:18px;display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}
-header h1{margin:0;color:#ffe0a2}
-a{color:#ffe0a2;text-decoration:none}
-main{max-width:1100px;margin:20px auto;padding:0 12px}
-.toolbar{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;align-items:center;background:#20151f;border:1px solid #755542;border-radius:8px;padding:12px;margin:10px 0}
-button,select{background:#49302c;color:#ffe7b8;border:1px solid #d5a16b;padding:10px;border-radius:6px;font-weight:bold;cursor:pointer}
-button:hover{background:#78503b}
-#stage{position:relative;border:2px solid #e9b46d;overflow:hidden;background:#090713}
-canvas{width:100%;height:auto;display:block;image-rendering:pixelated}
-#hud,#bossHud{position:absolute;top:12px;background:#100a19e8;padding:10px;border:1px solid #d5a16b;border-radius:5px;font-size:12px;pointer-events:none}
-#hud{left:12px;display:none}
-#bossHud{right:12px;width:38%;display:none;text-align:center}
-#bossBar{height:13px;background:#39202c;margin-top:8px}
-#bossFill{height:100%;width:100%;background:linear-gradient(90deg,#ff6c89,#ffd07d)}
-#overlay{position:absolute;inset:0;background:radial-gradient(circle,#493040f5,#080610fa);display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;padding:15px;z-index:10}
-#overlay h2{font-size:clamp(25px,5vw,48px);color:#ffe0a2;margin:12px}
-#story{max-width:720px;line-height:1.7;white-space:pre-line}
-#choices{display:flex;gap:10px;flex-wrap:wrap;justify-content:center}
-#notice{position:absolute;bottom:18px;left:50%;transform:translateX(-50%);background:#160d20e8;border:1px solid #ffd58a;padding:10px;text-align:center;display:none;z-index:5}
-#stage:fullscreen{width:100vw;height:100vh;display:flex;align-items:center;background:#07050c}
+html{background:#07070e}
+body{
+ margin:0;color:#fff1df;
+ background:radial-gradient(ellipse at top,#493027,#0b0813 75%);
+ font-family:Arial,sans-serif;
+}
+header{
+ display:flex;align-items:center;justify-content:space-between;
+ flex-wrap:wrap;gap:12px;padding:19px 5%;
+ background:#120e19;border-bottom:1px solid #e7b47d;
+}
+header h1{margin:0;color:#ffe2a4;letter-spacing:2px}
+a{color:#ffdcaa;text-decoration:none}
+main{max-width:1160px;margin:22px auto;padding:0 12px}
+.bar{
+ display:flex;justify-content:center;align-items:center;
+ flex-wrap:wrap;gap:9px;padding:12px;margin:12px 0;
+ background:#201721d9;border:1px solid #855d55;border-radius:12px;
+}
+button,select{
+ padding:11px 13px;border:1px solid #e4b17c;border-radius:8px;
+ color:#ffebd1;background:linear-gradient(#6d4b49,#31222d);
+ cursor:pointer;font-weight:bold;
+}
+button:hover{filter:brightness(1.2)}
+button:disabled{opacity:.4}
+#stage{
+ position:relative;overflow:hidden;background:#0b0815;
+ border:2px solid #f1b77b;border-radius:13px;
+ box-shadow:0 25px 75px #000b,0 0 55px #ffb66930;
+}
+canvas{display:block;width:100%;height:auto;image-rendering:auto}
+#hud,#bossHud{
+ position:absolute;top:12px;z-index:4;
+ background:#120e1ce4;border:1px solid #dba977;
+ border-radius:10px;padding:11px;font-size:12px;
+ backdrop-filter:blur(8px);pointer-events:none;
+}
+#hud{left:12px;display:none;max-width:65%}
+#bossHud{right:12px;display:none;width:34%;text-align:center}
+#hpBack,#bossBack{
+ height:12px;margin-top:8px;border-radius:8px;
+ background:#39202c;overflow:hidden;
+}
+#hpFill{height:100%;width:100%;background:linear-gradient(90deg,#f06a80,#ffca90)}
+#bossFill{height:100%;width:100%;background:linear-gradient(90deg,#ae477e,#ffd093)}
+#overlay{
+ position:absolute;inset:0;z-index:10;display:flex;
+ flex-direction:column;align-items:center;justify-content:center;
+ text-align:center;padding:22px;
+ background:radial-gradient(ellipse,#4a3046ef,#090710fa 80%);
+ backdrop-filter:blur(7px);
+}
+#tag{font-size:12px;color:#f5c68b;letter-spacing:3px}
+#title{
+ margin:16px 0;color:#ffe4ab;
+ font:700 clamp(28px,5vw,58px) Georgia,serif;
+ text-shadow:0 0 35px #ffbd7966;
+}
+#story{
+ max-width:735px;white-space:pre-line;
+ line-height:1.75;font-size:clamp(14px,2vw,19px);
+}
+#actions{display:flex;flex-wrap:wrap;justify-content:center;gap:12px;margin-top:10px}
+#notice{
+ position:absolute;bottom:18px;left:50%;transform:translateX(-50%);
+ z-index:6;display:none;background:#171021e9;
+ border:1px solid #f2c184;border-radius:8px;
+ padding:11px;text-align:center;pointer-events:none;
+ font:bold 12px Arial;
+}
+.help{text-align:center;color:#bea9ab;font-size:12px;line-height:2}
+#stage:fullscreen{
+ width:100vw;height:100vh;border:0;display:flex;
+ align-items:center;background:#06050a;
+}
 #stage:fullscreen canvas{height:100%;object-fit:contain}
-#stage:fullscreen #overlay{background:#090711f0}
-footer{text-align:center;padding:25px;color:#b59d87;font-size:12px}
-.instructions{text-align:center;color:#cbb7a0;font-size:12px;line-height:1.8}
-@media(max-width:600px){button{font-size:11px;padding:8px}#hud,#bossHud{font-size:9px;padding:6px}}
+footer{text-align:center;color:#a58d84;padding:28px;font-size:12px}
+@media(max-width:650px){
+ button{padding:8px;font-size:11px}
+ #hud,#bossHud{padding:7px;font-size:9px}
+}
 </style>
 </head>
 <body>
-
 <header>
 <h1>🌅 THE LAST LIGHT</h1>
 <a href="index.html">← BACK TO LAUNCHER</a>
 </header>
 
 <main>
-
-<div class="toolbar">
+<div class="bar">
 <label>DIFFICULTY
 <select id="difficulty">
 <option value="easy">Easy</option>
@@ -65,1821 +119,2157 @@ footer{text-align:center;padding:25px;color:#b59d87;font-size:12px}
 <strong id="chapterName"></strong>
 <div id="objective"></div>
 <div id="stats"></div>
+<div id="hpBack"><div id="hpFill"></div></div>
 </div>
 
 <div id="bossHud">
 <strong>THE ECLIPSE SOVEREIGN</strong>
 <div id="phase"></div>
-<div id="bossBar"><div id="bossFill"></div></div>
+<div id="bossBack"><div id="bossFill"></div></div>
 </div>
 
 <div id="notice"></div>
 
 <div id="overlay">
-<div id="label">THEDARKWITHIN — FINAL DLC</div>
+<div id="tag">THEDARKWITHIN — DLC III</div>
 <h2 id="title">THE LAST LIGHT</h2>
 <p id="story"></p>
-<div id="choices">
+<div id="actions">
 <button id="primary">BEGIN STORY</button>
 <button id="secondary">NEW GAME</button>
 </div>
 </div>
 </div>
 
-<div class="toolbar">
+<div class="bar">
 <button id="jump">SPACE — JUMP</button>
-<button id="dash">SHIFT — PHOTON RUSH</button>
-<button id="slash">J — RADIANT LANCE</button>
+<button id="rush">SHIFT — PHOTON RUSH</button>
+<button id="lance">J — RADIANT LANCE</button>
 <button id="beam">K — PIERCING LIGHT</button>
-<button id="shield">N — SOLAR GUARD</button>
 <button id="step">E — HARD-LIGHT STEP</button>
 <button id="reverse">F — DARK REVERSAL</button>
+<button id="guard">N — SOLAR GUARD</button>
 <button id="domain">R — ECLIPSE DOMAIN</button>
 </div>
 
-<div class="toolbar">
+<div class="bar">
 <button id="music">♫ MUSIC: ON</button>
 <label>VOLUME
 <input id="volume" type="range" min="0" max="100" value="35">
 </label>
 </div>
 
-<p class="instructions">
-A/D or ←/→ MOVE • SPACE DOUBLE JUMP • SHIFT PHOTON RUSH •
-J RADIANT LANCE • K PIERCING LIGHT • N SOLAR GUARD •
-E HARD-LIGHT STEP • F DARK REVERSAL • R ECLIPSE DOMAIN
+<p class="help">
+A/D OR ←/→ MOVE • SPACE DOUBLE JUMP • SHIFT PHOTON RUSH •
+J RADIANT LANCE • K PIERCING LIGHT • E HARD-LIGHT STEP •
+F DARK REVERSAL • N SOLAR GUARD • R ECLIPSE DOMAIN
 </p>
-
 </main>
 
-<footer>THEDARKWITHIN © 2026 — THE LAST LIGHT</footer>
+<footer>THEDARKWITHIN © 2026 — THE LAST LIGHT 2.5D EDITION</footer>
 
 <script>
 (()=>{
 "use strict";
 
+/* ENGINE */
+
 const $=id=>document.getElementById(id);
 const canvas=$("canvas");
 const ctx=canvas.getContext("2d");
-ctx.imageSmoothingEnabled=false;
+ctx.imageSmoothingEnabled=true;
 
-const W=960,H=540,GRAVITY=1650;
-const SAVE="tdw-last-light-save-v1";
+const W=960,H=540,TAU=Math.PI*2;
 const clamp=(x,a,b)=>Math.max(a,Math.min(b,x));
-const distance=(a,b,c,d)=>Math.hypot(a-c,b-d);
+const dist=(a,b,c,d)=>Math.hypot(a-c,b-d);
+const rand=(a,b)=>a+Math.random()*(b-a);
+const SAVE="tdw-last-light-save-v1";
+const keys={};
 
-const settings={
-easy:{hp:9,damage:.6,boss:.7,speed:.8},
-medium:{hp:6,damage:1,boss:1,speed:1},
-hard:{hp:4,damage:1.5,boss:1.35,speed:1.2},
-extreme:{hp:3,damage:2,boss:1.7,speed:1.4}
+const difficulties={
+ easy:{hp:9,damage:.6,boss:.7,speed:.8},
+ medium:{hp:6,damage:1,boss:1,speed:1},
+ hard:{hp:4,damage:1.5,boss:1.35,speed:1.2},
+ extreme:{hp:3,damage:2,boss:1.7,speed:1.4}
 };
 
 const chapters=[
 {
-name:"Ashes of Dawn",
-intro:[
-"NARRATOR: The Spirit Realm is quiet, but the living world's sky is turning black.",
-"HERO: We defeated the Purple King. We freed the souls. Why is the darkness still spreading?",
-"VOICE OF LIGHT: Because the final eclipse has begun.",
-"VOICE OF LIGHT: Shape your light into weapons, bridges, and shields. The world needs you."
-],
-end:"The first spark burns through the darkness."
+ name:"Ashes of Dawn",
+ intro:[
+ "NARRATOR: The Spirit Realm is quiet, but the living world's sky is turning black.",
+ "HERO: We defeated the Purple King. We freed the souls. Why is the darkness still spreading?",
+ "VOICE OF LIGHT: Because the final eclipse has begun.",
+ "VOICE OF LIGHT: Shape your light into weapons, bridges, and shields. The world needs you."
+ ],
+ ending:"The first spark burns through the darkness."
 },
 {
-name:"The Sunken City",
-intro:[
-"HERO: This city was once full of life.",
-"VOICE OF LIGHT: The eclipse stole the light protecting it.",
-"HERO: Then I'll take it back."
-],
-end:"Golden sunlight returns to the abandoned rooftops."
+ name:"The Sunken City",
+ intro:[
+ "HERO: This city was once full of life.",
+ "VOICE OF LIGHT: The eclipse stole the light protecting it.",
+ "HERO: Then I'll take it back."
+ ],
+ ending:"Golden sunlight returns to the abandoned rooftops."
 },
 {
-name:"Embers of Memory",
-intro:[
-"NARRATOR: Memories of King Aldric and the Spirit Titan echo through the ruins.",
-"HERO: They were warning us about the same darkness.",
-"VOICE OF LIGHT: The eclipse existed long before either realm."
-],
-end:"An ancient memory reveals the name of the Eclipse Sovereign."
+ name:"Embers of Memory",
+ intro:[
+ "NARRATOR: Memories of King Aldric and the Spirit Titan echo through the ruins.",
+ "HERO: They were warning us about the same darkness.",
+ "VOICE OF LIGHT: The eclipse existed long before either realm."
+ ],
+ ending:"An ancient memory reveals the name of the Eclipse Sovereign."
 },
 {
-name:"The Golden Divide",
-intro:[
-"HERO: The bridge across the sky is completely broken.",
-"VOICE OF LIGHT: Your Photon Rush and Hard-Light Step can carry you across.",
-"HERO: Then I won't stop."
-],
-end:"The hero crosses the golden divide."
+ name:"The Golden Divide",
+ intro:[
+ "HERO: The bridge across the sky is completely broken.",
+ "VOICE OF LIGHT: Your Photon Rush and Hard-Light Step can carry you across.",
+ "HERO: Then I won't stop."
+ ],
+ ending:"The hero crosses the golden divide."
 },
 {
-name:"The Fallen Sun",
-intro:[
-"NARRATOR: A blackened sun hangs above the ruins.",
-"HERO: Something is moving inside it.",
-"VOICE OF LIGHT: The Eclipse Sovereign is awakening."
-],
-end:"The fallen sun cracks, revealing the final sanctuary."
+ name:"The Fallen Sun",
+ intro:[
+ "NARRATOR: A blackened sun hangs above the ruins.",
+ "HERO: Something is moving inside it.",
+ "VOICE OF LIGHT: The Eclipse Sovereign is awakening."
+ ],
+ ending:"The fallen sun cracks, revealing the final sanctuary."
 },
 {
-name:"The Sanctuary of Sparks",
-intro:[
-"LOST SOUL: Please protect the last flame.",
-"HERO: Everyone deserves another sunrise.",
-"VOICE OF LIGHT: Recover three sparks to open the sanctuary gate."
-],
-end:"The last flame survives, but the Sovereign knows where it is."
+ name:"The Sanctuary of Sparks",
+ intro:[
+ "LOST SOUL: Please protect the last flame.",
+ "HERO: Everyone deserves another sunrise.",
+ "VOICE OF LIGHT: Recover three sparks to open the sanctuary gate."
+ ],
+ ending:"The last flame survives, but the Sovereign knows where it is."
 },
 {
-name:"Before the Eclipse",
-intro:[
-"HERO: That fortress is floating above the void.",
-"VOICE OF LIGHT: Beyond it lies the final battlefield.",
-"HERO: Then this is where the darkness ends."
-],
-end:"The gates of the eclipse open."
+ name:"Before the Eclipse",
+ intro:[
+ "HERO: That fortress is floating above the void.",
+ "VOICE OF LIGHT: Beyond it lies the final battlefield.",
+ "HERO: Then this is where the darkness ends."
+ ],
+ ending:"The gates of the eclipse open."
 },
 {
-name:"The Last Light",
-intro:[
-"NARRATOR: The hero approaches a shattered solar throne.",
-"HERO: The Eclipse Sovereign is waiting.",
-"VOICE OF LIGHT: The last light is with you. Do not surrender it."
-],
-end:""
+ name:"The Last Light",
+ intro:[
+ "NARRATOR: The hero approaches a shattered solar throne.",
+ "HERO: The Eclipse Sovereign is waiting.",
+ "VOICE OF LIGHT: The last light is with you. Do not surrender it."
+ ],
+ ending:""
 }
 ];
 
 try{
-const choice=localStorage.getItem("tdw-spirit-realm-ending");
-if(choice==="taken"){
-chapters[0].intro.splice(2,0,
-"HERO: I still carry the Light of Souls. I can feel it resisting the eclipse.");
-}
-if(choice==="left"){
-chapters[0].intro.splice(2,0,
-"HERO: I left the Light of Souls in the Spirit Realm. I'll have to find another way.");
-}
+ const choice=localStorage.getItem("tdw-spirit-realm-ending");
+ if(choice==="taken"){
+  chapters[0].intro.splice(2,0,
+   "HERO: I still carry the Light of Souls. I can feel it resisting the eclipse.");
+ }
+ if(choice==="left"){
+  chapters[0].intro.splice(2,0,
+   "HERO: I left the Light of Souls in the Spirit Realm. I'll have to find another way.");
+ }
 }catch(e){}
 
-let difficulty="medium";
-let chapter=0;
-let mode="menu";
-let time=0;
-let previousTime=0;
-let camera=0;
-let worldEnd=0;
-let arenaX=0;
-let collected=0;
-let checkpointX=70;
-let checkpointY=420;
-let finished=false;
-let boss=null;
-let bossActive=false;
-let bossEntered=false;
-let noticeTime=0;
+const palettes=[
+ ["#765045","#352632","#ffca87"],
+ ["#5b455f","#241d37","#efb89e"],
+ ["#69556c","#29223f","#ddbbff"],
+ ["#8e5944","#3a2832","#ffd18c"],
+ ["#7c354c","#22172e","#ff9895"],
+ ["#a57549","#3c2d35","#ffe0a4"],
+ ["#534367","#241a37","#cab2ff"],
+ ["#351a38","#130d25","#ffb67d"]
+];
 
-let platforms=[];
-let fragments=[];
-let checkpoints=[];
-let enemies=[];
-let shots=[];
-let particles=[];
-let hazards=[];
+let chapter=0,difficulty="medium",mode="menu";
+let time=0,lastFrame=0,camera=0,worldEnd=0,arenaX=0;
+let collected=0,checkpointX=70,checkpointY=420;
+let platforms=[],fragments=[],enemies=[],shots=[],particles=[],checkpoints=[];
+let boss=null,bossActive=false,bossEntered=false;
+let finished=false,noticeTime=0;
+let mainAction=null,otherAction=null;
+let flashTime=0;
 
-const keys={};
-
-const player={
-x:70,y:420,w:26,h:42,
-vx:0,vy:0,dir:1,
-hp:6,maxHp:6,
-jumps:0,ground:false,
-dashReady:true,dash:0,
-inv:0,shield:0,
-slash:0,
-slashCd:0,beamCd:0,
-shieldCd:0,stepCd:0,
-reverseCd:0,domainCd:0,
-domain:0,reverse:0,
-beamEffect:0,
-steps:[]
+const hero={
+ x:70,y:420,w:26,h:42,vx:0,vy:0,dir:1,
+ hp:6,maxHp:6,jumps:0,ground:false,
+ dashReady:true,dash:0,inv:0,
+ shield:0,shieldCd:0,
+ slash:0,slashCd:0,beamCd:0,
+ stepCd:0,reverseCd:0,
+ domainCd:0,domain:0,reverse:0,
+ beamEffect:0,
+ steps:[]
 };
 
-/* MUSIC */
+/* PROCEDURAL MUSIC */
 
 const Music=(()=>{
-let audio,master,timer;
-let enabled=true,volume=.35;
-let step=0,next=0,lastChapter=-1;
+ let audio,master,timer,enabled=true,volume=.35;
+ let cursor=0,next=0,current=-1;
 
-const melodies=[
-[60,63,67,70],
-[62,65,69,72],
-[64,67,71,74],
-[65,69,72,76],
-[67,70,74,77],
-[57,60,64,67],
-[59,62,66,69],
-[60,67,70,74]
-];
+ const melodies=[
+ [60,63,67,70],
+ [62,65,69,72],
+ [64,67,71,74],
+ [65,69,72,76],
+ [67,70,74,77],
+ [57,60,64,67],
+ [59,62,66,69],
+ [60,67,70,74]
+ ];
 
-function tone(midi,at,length,bass=false){
-if(!audio||!enabled)return;
-const o=audio.createOscillator();
-const g=audio.createGain();
+ function tone(note,when,length,bass=false){
+  if(!audio||!enabled)return;
+  const osc=audio.createOscillator();
+  const gain=audio.createGain();
+  osc.type=bass?"triangle":"sine";
+  osc.frequency.value=440*Math.pow(2,(note-69)/12);
+  gain.gain.setValueAtTime(.0001,when);
+  gain.gain.linearRampToValueAtTime(bass?.13:.08,when+.025);
+  gain.gain.exponentialRampToValueAtTime(.0001,when+length);
+  osc.connect(gain);
+  gain.connect(master);
+  osc.start(when);
+  osc.stop(when+length+.02);
+ }
 
-o.type=bass?"triangle":"square";
-o.frequency.value=440*Math.pow(2,(midi-69)/12);
+ function tick(){
+  if(!audio||audio.state!=="running"||!enabled)return;
+  if(current!==chapter){
+   current=chapter;
+   cursor=0;
+   next=audio.currentTime+.05;
+  }
+  const notes=melodies[chapter];
+  const beat=30/(100+chapter*8);
+  const pattern=[0,2,1,3,2,1,0,2,3,2,1,0,1,2,3,1];
+  while(next<audio.currentTime+.15){
+   const i=cursor%16;
+   tone(notes[pattern[i]],next,beat*.85);
+   if(i%4===0)tone(notes[i/4]-24,next,beat*3.5,true);
+   next+=beat;
+   cursor++;
+  }
+ }
 
-g.gain.setValueAtTime(.0001,at);
-g.gain.linearRampToValueAtTime(bass?.13:.075,at+.015);
-g.gain.exponentialRampToValueAtTime(.0001,at+length);
+ async function start(){
+  try{
+   if(!audio){
+    const AC=window.AudioContext||window.webkitAudioContext;
+    if(!AC)return;
+    audio=new AC();
+    master=audio.createGain();
+    master.gain.value=volume*.45;
+    master.connect(audio.destination);
+   }
+   await audio.resume();
+   if(!timer)timer=setInterval(tick,55);
+  }catch(e){}
+ }
 
-o.connect(g);
-g.connect(master);
-o.start(at);
-o.stop(at+length+.02);
-}
+ function toggle(){
+  enabled=!enabled;
+  $("music").textContent=enabled?"♫ MUSIC: ON":"♫ MUSIC: OFF";
+  if(master&&audio){
+   master.gain.setTargetAtTime(enabled?volume*.45:0,audio.currentTime,.03);
+  }
+  if(enabled)start();
+ }
 
-function tick(){
-if(!audio||audio.state!=="running"||!enabled)return;
+ function setVolume(v){
+  volume=Number(v)/100;
+  if(master&&audio){
+   master.gain.setTargetAtTime(enabled?volume*.45:0,audio.currentTime,.03);
+  }
+ }
 
-if(lastChapter!==chapter){
-lastChapter=chapter;
-step=0;
-next=audio.currentTime+.05;
-}
-
-const notes=melodies[chapter];
-const beat=30/(100+chapter*9);
-const pattern=[0,2,1,3,2,1,0,2,3,2,1,0,1,2,3,1];
-
-while(next<audio.currentTime+.16){
-const i=step%16;
-tone(notes[pattern[i]],next,beat*.8);
-if(i%4===0)tone(notes[i/4]-24,next,beat*3.5,true);
-next+=beat;
-step++;
-}
-}
-
-async function start(){
-try{
-if(!audio){
-const AC=window.AudioContext||window.webkitAudioContext;
-if(!AC)return;
-audio=new AC();
-master=audio.createGain();
-master.gain.value=volume*.5;
-master.connect(audio.destination);
-}
-await audio.resume();
-if(!timer)timer=setInterval(tick,55);
-}catch(e){}
-}
-
-function toggle(){
-enabled=!enabled;
-$("music").textContent=enabled?"♫ MUSIC: ON":"♫ MUSIC: OFF";
-if(master&&audio){
-master.gain.setTargetAtTime(enabled?volume*.5:0,audio.currentTime,.03);
-}
-if(enabled)start();
-}
-
-function setVolume(v){
-volume=Number(v)/100;
-if(master&&audio){
-master.gain.setTargetAtTime(enabled?volume*.5:0,audio.currentTime,.03);
-}
-}
-
-return{start,toggle,setVolume,reset:()=>lastChapter=-1};
+ return{start,toggle,setVolume,reset:()=>current=-1};
 })();
 
 $("music").onclick=Music.toggle;
 $("volume").oninput=e=>Music.setVolume(e.target.value);
 
-/* STORY SCREENS */
+/* MENUS AND CUTSCENES */
 
-let primaryAction=null;
-let secondaryAction=null;
-
-function screen(label,title,text,button,action,other,otherAction){
-$("overlay").style.display="flex";
-$("label").textContent=label;
-$("title").textContent=title;
-$("story").textContent=text;
-$("primary").textContent=button;
-primaryAction=action;
-$("secondary").style.display=other?"inline-block":"none";
-$("secondary").textContent=other||"";
-secondaryAction=otherAction||null;
-$("hud").style.display="none";
-$("bossHud").style.display="none";
+function screen(tag,title,text,button,action,other,second){
+ mode="scene";
+ $("overlay").style.display="flex";
+ $("tag").textContent=tag;
+ $("title").textContent=title;
+ $("story").textContent=text;
+ $("primary").textContent=button;
+ $("secondary").style.display=other?"inline-block":"none";
+ $("secondary").textContent=other||"";
+ mainAction=action;
+ otherAction=second||null;
+ $("hud").style.display="none";
+ $("bossHud").style.display="none";
 }
 
-$("primary").onclick=()=>primaryAction&&primaryAction();
-$("secondary").onclick=()=>secondaryAction&&secondaryAction();
+$("primary").onclick=()=>mainAction&&mainAction();
+$("secondary").onclick=()=>otherAction&&otherAction();
 
 function resume(){
-mode="playing";
-$("overlay").style.display="none";
-$("hud").style.display="block";
-$("bossHud").style.display=bossActive?"block":"none";
+ mode="playing";
+ $("overlay").style.display="none";
+ $("hud").style.display="block";
+ $("bossHud").style.display=bossActive?"block":"none";
 }
 
 function cutscene(lines,done,title){
-mode="scene";
-let i=0;
-
-function next(){
-if(i>=lines.length){
-resume();
-if(done)done();
-return;
-}
-
-const line=lines[i++];
-screen("STORY CUTSCENE",title||chapters[chapter].name,
-line,i===lines.length?"CONTINUE":"NEXT →",next);
-}
-
-next();
+ let index=0;
+ function next(){
+  if(index>=lines.length){
+   resume();
+   if(done)done();
+   return;
+  }
+  const line=lines[index++];
+  screen(
+   "STORY CUTSCENE",
+   title||chapters[chapter].name,
+   line,index===lines.length?"CONTINUE":"NEXT →",next
+  );
+ }
+ next();
 }
 
 function notify(text,duration=1.5){
-$("notice").textContent=text;
-$("notice").style.display="block";
-noticeTime=duration;
+ $("notice").textContent=text;
+ $("notice").style.display="block";
+ noticeTime=duration;
 }
 
-function saved(){
-try{
-return clamp(Number(localStorage.getItem(SAVE)||0),0,7);
-}catch(e){return 0;}
+function saveProgress(){
+ try{
+  localStorage.setItem(
+   SAVE,String(Math.max(chapter,Number(localStorage.getItem(SAVE)||0)))
+  );
+ }catch(e){}
 }
 
-function save(){
-try{
-localStorage.setItem(SAVE,String(Math.max(saved(),chapter)));
-}catch(e){}
+function savedChapter(){
+ try{return clamp(Number(localStorage.getItem(SAVE)||0),0,7)}
+ catch(e){return 0}
 }
 
 /* LEVELS */
 
-function platform(x,y,w,type="solid",phase=0){
-platforms.push({x,y,w,type,phase});
+function addPlatform(x,y,w,type="stone",phase=0){
+ platforms.push({x,y,w,type,phase});
 }
 
-function createLevel(n){
-chapter=n;
-mode="playing";
-time=0;
-camera=0;
-collected=0;
-finished=false;
-boss=null;
-bossActive=false;
-bossEntered=false;
+function makeLevel(n){
+ chapter=n;
+ time=0;
+ camera=0;
+ collected=0;
+ finished=false;
+ bossActive=false;
+ bossEntered=false;
 
-platforms=[];
-fragments=[];
-checkpoints=[];
-enemies=[];
-shots=[];
-particles=[];
-hazards=[];
+ platforms=[];
+ fragments=[];
+ enemies=[];
+ shots=[];
+ particles=[];
+ checkpoints=[];
+ boss=null;
 
-const d=settings[difficulty];
+ const d=difficulties[difficulty];
 
-Object.assign(player,{
-x:70,y:420,vx:0,vy:0,dir:1,
-hp:d.hp,maxHp:d.hp,
-jumps:0,ground:false,
-dashReady:true,dash:0,inv:1,
-shield:0,slash:0,
-slashCd:0,beamCd:0,
-shieldCd:0,stepCd:0,
-reverseCd:0,domainCd:0,
-domain:0,reverse:0,
-beamEffect:0,steps:[]
-});
+ Object.assign(hero,{
+  x:70,y:420,
+  vx:0,vy:0,dir:1,
+  hp:d.hp,maxHp:d.hp,
+  jumps:0,ground:false,
+  dashReady:true,dash:0,
+  inv:1,shield:0,shieldCd:0,
+  slash:0,slashCd:0,beamCd:0,
+  stepCd:0,reverseCd:0,
+  domainCd:0,domain:0,reverse:0,
+  beamEffect:0,steps:[]
+ });
 
-checkpointX=70;
-checkpointY=420;
+ checkpointX=70;
+ checkpointY=420;
 
-platform(0,470,345);
+ addPlatform(0,470,345);
 
-const count=n===7?12:15;
-const heights=[410,360,400,345,380,330,375,350];
+ const heights=[410,360,400,345,380,330,375,350];
 
-for(let i=0;i<count;i++){
-const x=300+i*228;
-const y=heights[(i+n)%heights.length];
+ for(let i=0;i<15;i++){
+  const x=300+i*228;
+  const y=heights[(i+n)%heights.length];
+  let type="stone";
 
-let type="solid";
-if(n>=1&&i%5===2)type="moving";
-if(n>=2&&i%5===4)type="vanish";
-if(n>=3&&i%7===5)type="boost";
-if(i===6||i===count-1)type="solid";
+  if(n>=1&&i%5===2)type="moving";
+  if(n>=2&&i%5===4)type="vanish";
+  if(n>=3&&i%7===5)type="boost";
+  if(i===6||i===14)type="stone";
 
-platform(x,y,195,type,i*.8);
+  addPlatform(x,y,195,type,i*.8);
 
-if([2,7,10].includes(i)){
-fragments.push({x:x+85,y:y-53,taken:false});
-}
+  if([2,7,11].includes(i)){
+   fragments.push({x:x+90,y:y-55,taken:false});
+  }
 
-if(i===6){
-checkpoints.push({x:x+85,y,active:false});
-}
+  if(i===6){
+   checkpoints.push({x:x+85,y,active:false});
+  }
 
-if(n>=1&&i%4===3){
-enemies.push({
-x:x+100,y:y-75,
-baseX:x+100,baseY:y-75,
-hp:65*d.boss,
-dead:false,phase:i
-});
-}
-}
+  if(n>=1&&i%4===3){
+   enemies.push({
+    x:x+95,y:y-75,
+    baseX:x+95,baseY:y-75,
+    hp:85*d.boss,
+    dead:false,phase:i
+   });
+  }
+ }
 
-const last=platforms[platforms.length-1];
-worldEnd=last.x+last.w+170;
+ const last=platforms[platforms.length-1];
+ worldEnd=last.x+last.w+200;
 
-if(n===7){
-arenaX=worldEnd+20;
-platform(worldEnd-160,445,280);
-platform(arenaX,470,1120);
-worldEnd=arenaX+1120;
+ if(n===7){
+  arenaX=worldEnd+10;
+  addPlatform(worldEnd-155,445,270);
+  addPlatform(arenaX,470,1120);
+  worldEnd=arenaX+1120;
 
-checkpoints.push({
-x:arenaX+85,y:470,active:false,arena:true
-});
+  checkpoints.push({
+   x:arenaX+95,y:470,active:false,arena:true
+  });
 
-boss={
-x:arenaX+820,y:340,
-hp:1900*d.boss,
-maxHp:1900*d.boss,
-phase:1,
-action:"idle",
-timer:1.5,
-attack:"",
-count:0,
-target:0,
-flash:0,
-shockwaves:[],
-flames:[],
-slash:null,
-dead:false
-};
-}
+  boss={
+   x:arenaX+820,y:340,
+   hp:1900*d.boss,
+   maxHp:1900*d.boss,
+   phase:1,action:"idle",
+   timer:1.5,count:0,
+   attack:"",target:0,
+   flash:0,dead:false,
+   waves:[],flames:[],slash:null
+  };
+ }
 
-Music.reset();
-updateHUD();
+ Music.reset();
+ updateHUD();
 }
 
 function startChapter(n){
-createLevel(n);
-save();
-cutscene(chapters[n].intro,
-()=>notify("COLLECT THREE SUN SPARKS"),
-"CHAPTER "+(n+1)+": "+chapters[n].name);
+ makeLevel(n);
+ saveProgress();
+
+ cutscene(
+  chapters[n].intro,
+  ()=>notify("COLLECT THREE SUN SPARKS"),
+  "CHAPTER "+(n+1)+": "+chapters[n].name
+ );
 }
 
 function finishChapter(){
-if(finished)return;
-finished=true;
-const next=chapter+1;
+ if(finished)return;
+ finished=true;
 
-cutscene([
-"CHAPTER COMPLETE",
-chapters[chapter].end
-],()=>{
-if(next<8)startChapter(next);
-},"ANOTHER SPARK OF HOPE");
+ cutscene([
+  "CHAPTER COMPLETE",
+  chapters[chapter].ending
+ ],()=>{
+  if(chapter<7)startChapter(chapter+1);
+ },"ANOTHER SPARK OF HOPE");
 }
 
 function updateHUD(){
-$("chapterName").textContent=
-"CHAPTER "+(chapter+1)+" — "+chapters[chapter].name;
+ $("chapterName").textContent=
+  "CHAPTER "+(chapter+1)+" — "+chapters[chapter].name;
 
-$("objective").textContent=
-bossActive?"DEFEAT THE ECLIPSE SOVEREIGN":
-"SUN SPARKS: "+collected+"/3";
+ $("objective").textContent=bossActive?
+  "DEFEAT THE ECLIPSE SOVEREIGN":
+  "SUN SPARKS: "+collected+"/3";
 
-$("stats").textContent=
-"♥ "+Math.ceil(player.hp)+"/"+player.maxHp+
-" | DASH "+(player.dashReady?"READY":"USED")+
-" | STEP "+(player.stepCd<=0?"READY":Math.ceil(player.stepCd)+"s")+
-" | REVERSAL "+(player.reverseCd<=0?"READY":Math.ceil(player.reverseCd)+"s")+
-" | DOMAIN "+(player.domainCd<=0?"READY":Math.ceil(player.domainCd)+"s");
-}
+ $("stats").textContent=
+  "♥ "+Math.ceil(hero.hp)+"/"+hero.maxHp+
+  " | STEP "+(hero.stepCd<=0?"READY":Math.ceil(hero.stepCd)+"s")+
+  " | REVERSAL "+(hero.reverseCd<=0?"READY":Math.ceil(hero.reverseCd)+"s")+
+  " | DOMAIN "+(hero.domainCd<=0?"READY":Math.ceil(hero.domainCd)+"s");
 
-function platformY(q){
-return q.type==="moving"?
-q.y+Math.sin(time*1.8+q.phase)*42:q.y;
-}
-
-function visible(q){
-return q.type!=="vanish"||
-Math.sin(time*2.1+q.phase)>-.35;
+ $("hpFill").style.width=
+  clamp(hero.hp/hero.maxHp*100,0,100)+"%";
 }
 
 /* PARTICLES */
 
-function burst(x,y,color,count){
-for(let i=0;i<count;i++){
-const angle=Math.random()*Math.PI*2;
-const speed=35+Math.random()*230;
-particles.push({
-x,y,
-vx:Math.cos(angle)*speed,
-vy:Math.sin(angle)*speed,
-life:.3+Math.random()*.5,
-color
-});
-}
+function burst(x,y,color,count=20,power=220){
+ for(let i=0;i<count;i++){
+  const a=rand(0,TAU);
+  const s=rand(25,power);
+  particles.push({
+   x,y,
+   vx:Math.cos(a)*s,
+   vy:Math.sin(a)*s,
+   size:rand(2,5),
+   life:rand(.25,.85),
+   color
+  });
+ }
 }
 
-/* MOVEMENT */
+function glow(x,y,r,color){
+ const g=ctx.createRadialGradient(x,y,0,x,y,r);
+ g.addColorStop(0,color);
+ g.addColorStop(1,"transparent");
+ ctx.fillStyle=g;
+ ctx.fillRect(x-r,y-r,r*2,r*2);
+}
+
+function ellipse(x,y,rx,ry,color){
+ ctx.fillStyle=color;
+ ctx.beginPath();
+ ctx.ellipse(x,y,rx,ry,0,0,TAU);
+ ctx.fill();
+}
+
+/* MOVEMENT AND ABILITIES */
 
 function jump(){
-if(mode!=="playing"||player.jumps>=2)return;
-player.vy=player.jumps===0?-675:-615;
-player.jumps++;
-player.ground=false;
-burst(player.x,player.y+15,"#ffd58d",12);
+ if(mode!=="playing"||hero.jumps>=2)return;
+ hero.vy=hero.jumps===0?-675:-615;
+ hero.jumps++;
+ hero.ground=false;
+ burst(hero.x,hero.y+15,"#ffdfa1",14);
 }
 
 function photonRush(){
-if(mode!=="playing"||!player.dashReady)return;
-player.dash=.25;
-player.dashReady=false;
-player.vy=0;
-player.inv=Math.max(player.inv,.3);
-burst(player.x,player.y,"#ffdc79",30);
-notify("PHOTON RUSH!",.6);
+ if(mode!=="playing"||!hero.dashReady)return;
+ hero.dash=.25;
+ hero.dashReady=false;
+ hero.vy=0;
+ hero.inv=Math.max(hero.inv,.32);
+ burst(hero.x,hero.y,"#fff5ba",36);
+ notify("PHOTON RUSH!",.7);
 }
-
-/* COMBAT ABILITIES */
 
 function radiantLance(){
-if(mode!=="playing"||player.slashCd>0)return;
+ if(mode!=="playing"||hero.slashCd>0)return;
 
-player.slashCd=.34;
-player.slash=.22;
+ hero.slashCd=.35;
+ hero.slash=.24;
 
-burst(player.x+player.dir*60,player.y,"#fff2af",22);
+ burst(hero.x+hero.dir*70,hero.y-10,"#ffe4a0",30);
 
-for(const e of enemies){
-if(!e.dead&&
-Math.abs(player.y-e.y)<85&&
-Math.abs(player.x-e.x)<170&&
-(e.x-player.x)*player.dir>-20){
-hurtEnemy(e,65);
-}
-}
+ for(const e of enemies){
+  if(!e.dead&&
+   Math.abs(hero.x-e.x)<172&&
+   Math.abs(hero.y-e.y)<88&&
+   (e.x-hero.x)*hero.dir>-24){
+   hurtEnemy(e,65);
+  }
+ }
 
-if(bossActive&&boss&&!boss.dead&&
-Math.abs(player.x-boss.x)<190&&
-Math.abs(player.y-boss.y)<160&&
-(boss.x-player.x)*player.dir>-35){
-hurtBoss(74);
-}
+ if(bossActive&&boss&&!boss.dead&&
+  Math.abs(hero.x-boss.x)<195&&
+  Math.abs(hero.y-boss.y)<170&&
+  (boss.x-hero.x)*hero.dir>-40){
+  hurtBoss(74);
+ }
 }
 
 function piercingLight(){
-if(mode!=="playing"||player.beamCd>0)return;
+ if(mode!=="playing"||hero.beamCd>0)return;
 
-player.beamCd=1.1;
-player.beamEffect=.18;
+ hero.beamCd=1.1;
+ hero.beamEffect=.2;
 
-shots.push({
-x:player.x+player.dir*25,
-y:player.y-8,
-vx:player.dir*940,
-vy:0,
-r:16,
-damage:145,
-friendly:true,
-life:2.2
-});
+ shots.push({
+  x:hero.x+hero.dir*26,
+  y:hero.y-8,
+  vx:hero.dir*940,vy:0,
+  r:16,damage:145,
+  friendly:true,life:2.2
+ });
 
-burst(player.x,player.y,"#fff9ce",25);
-notify("PIERCING LIGHT!",.6);
-}
-
-function solarGuard(){
-if(mode!=="playing"||player.shieldCd>0)return;
-
-player.shield=2.2;
-player.shieldCd=5.8;
-burst(player.x,player.y,"#fff3c6",28);
+ burst(hero.x,hero.y,"#fff7cd",27);
+ notify("PIERCING LIGHT!",.7);
 }
 
 function hardLightStep(){
-if(mode!=="playing"||player.stepCd>0)return;
+ if(mode!=="playing"||hero.stepCd>0)return;
 
-player.stepCd=4.8;
+ hero.stepCd=4.8;
 
-const x=clamp(
-player.x+player.dir*105,20,worldEnd-145
-);
-const y=clamp(player.y+58,120,460);
+ const x=clamp(hero.x+hero.dir*105,20,worldEnd-145);
+ const y=clamp(hero.y+58,120,455);
 
-player.steps.push({
-x,y,w:145,life:4.5,type:"light"
-});
+ hero.steps.push({x,y,w:145,life:4.5,type:"light"});
 
-burst(x+65,y,"#ffeaaa",25);
-notify("HARD-LIGHT PLATFORM CREATED!",1);
+ burst(x+72,y,"#fff4c1",28);
+ notify("HARD-LIGHT STEP!",1);
 }
 
 function darkReversal(){
-if(mode!=="playing"||player.reverseCd>0)return;
+ if(mode!=="playing"||hero.reverseCd>0)return;
 
-player.reverseCd=8.5;
-player.reverse=1.2;
-player.inv=Math.max(player.inv,1.2);
-player.hp=Math.min(player.maxHp,player.hp+1);
+ hero.reverseCd=8.5;
+ hero.reverse=1.2;
+ hero.inv=Math.max(hero.inv,1.2);
+ hero.hp=Math.min(hero.maxHp,hero.hp+1);
 
-burst(player.x,player.y,"#9965f4",55);
+ flashTime=.25;
 
-for(const e of enemies){
-if(!e.dead&&distance(player.x,player.y,e.x,e.y)<165){
-hurtEnemy(e,100);
+ burst(hero.x,hero.y,"#8c58e7",60);
+ burst(hero.x,hero.y,"#1a082b",35);
+
+ for(const e of enemies){
+  if(!e.dead&&dist(hero.x,hero.y,e.x,e.y)<170){
+   hurtEnemy(e,100);
+  }
+ }
+
+ if(bossActive&&boss&&!boss.dead&&
+  dist(hero.x,hero.y,boss.x,boss.y)<235){
+  hurtBoss(170);
+ }
+
+ shots=shots.filter(s=>s.friendly||
+  dist(hero.x,hero.y,s.x,s.y)>230);
+
+ notify("DARK REVERSAL!",1.5);
 }
-}
 
-if(bossActive&&boss&&!boss.dead&&
-distance(player.x,player.y,boss.x,boss.y)<235){
-hurtBoss(170);
-}
+function solarGuard(){
+ if(mode!=="playing"||hero.shieldCd>0)return;
 
-shots=shots.filter(s=>
-s.friendly||
-distance(player.x,player.y,s.x,s.y)>230
-);
-
-notify("DARK REVERSAL!",1.4);
+ hero.shield=2.2;
+ hero.shieldCd=5.8;
+ burst(hero.x,hero.y,"#fff6c7",32);
+ notify("SOLAR GUARD!",.8);
 }
 
 function eclipseDomain(){
-if(mode!=="playing"||player.domainCd>0)return;
+ if(mode!=="playing"||hero.domainCd>0)return;
 
-player.domainCd=27;
-player.domain=5.2;
-player.inv=Math.max(player.inv,1);
+ hero.domainCd=27;
+ hero.domain=5.2;
+ hero.inv=Math.max(hero.inv,1);
 
-burst(player.x,player.y,"#fff0b0",85);
-notify("ECLIPSE DOMAIN — LIGHT OVERTAKES DARKNESS!",2);
+ burst(hero.x,hero.y,"#ffe7a4",95);
+ notify("ECLIPSE DOMAIN!",2);
 }
 
 function hurtEnemy(e,damage){
-e.hp-=damage;
-burst(e.x,e.y,"#e8b6ff",10);
-
-if(e.hp<=0){
-e.dead=true;
-burst(e.x,e.y,"#ffc66c",22);
-}
+ if(e.dead)return;
+ e.hp-=damage;
+ burst(e.x,e.y,"#d1a0e6",8);
+ if(e.hp<=0){
+  e.dead=true;
+  burst(e.x,e.y,"#ffc989",28);
+ }
 }
 
 function hurtBoss(damage){
-if(!boss||boss.dead||!bossActive)return;
+ if(!bossActive||!boss||boss.dead)return;
 
-boss.hp=Math.max(0,boss.hp-damage);
-boss.flash=.15;
+ boss.hp=Math.max(0,boss.hp-damage);
+ boss.flash=.15;
+ burst(boss.x,boss.y,"#ffe1ae",10);
 
-burst(boss.x,boss.y,"#ffe3aa",12);
-
-if(boss.hp<=0)bossVictory();
+ if(boss.hp<=0)bossVictory();
 }
 
-/* DAMAGE AND RESPAWN */
-
 function hurt(amount){
-if(player.inv>0||player.shield>0||mode!=="playing")return;
+ if(mode!=="playing"||hero.inv>0||hero.shield>0)return;
 
-player.hp-=amount;
-player.inv=.9;
+ hero.hp-=amount;
+ hero.inv=.9;
+ burst(hero.x,hero.y,"#ff869c",18);
 
-burst(player.x,player.y,"#ff8296",14);
-
-if(player.hp<=0)respawn();
+ if(hero.hp<=0)respawn();
 }
 
 function respawn(){
-player.hp=player.maxHp;
+ hero.hp=hero.maxHp;
 
-Object.assign(player,{
-x:checkpointX,y:checkpointY,
-vx:0,vy:0,jumps:0,
-dashReady:true,dash:0,
-inv:1.8,domain:0,
-steps:[]
-});
+ Object.assign(hero,{
+  x:checkpointX,y:checkpointY,
+  vx:0,vy:0,jumps:0,
+  dashReady:true,dash:0,
+  inv:1.8,domain:0,
+  steps:[]
+ });
 
-shots=[];
-
-if(bossActive)resetBoss();
-
-notify("RETURNED TO CHECKPOINT",2);
+ shots=[];
+ if(bossActive)resetBoss();
+ notify("RETURNED TO CHECKPOINT",2);
 }
 
-/* PLAYER PHYSICS */
+/* PLATFORM PHYSICS */
+
+function platformY(q){
+ return q.type==="moving"?
+  q.y+Math.sin(time*1.8+q.phase)*42:q.y;
+}
+
+function visible(q){
+ return q.type!=="vanish"||
+  Math.sin(time*2.1+q.phase)>-.35;
+}
 
 function move(dt){
-for(const key of [
-"inv","slashCd","slash","beamCd",
-"shieldCd","shield","stepCd",
-"reverseCd","domainCd","domain",
-"reverse","beamEffect"
-]){
-player[key]=Math.max(0,player[key]-dt);
-}
+ for(const key of [
+  "inv","slashCd","slash","beamCd",
+  "shieldCd","shield","stepCd",
+  "reverseCd","domainCd","domain",
+  "reverse","beamEffect"
+ ]){
+  hero[key]=Math.max(0,hero[key]-dt);
+ }
 
-for(let i=player.steps.length-1;i>=0;i--){
-player.steps[i].life-=dt;
-if(player.steps[i].life<=0)player.steps.splice(i,1);
-}
+ for(let i=hero.steps.length-1;i>=0;i--){
+  hero.steps[i].life-=dt;
+  if(hero.steps[i].life<=0)hero.steps.splice(i,1);
+ }
 
-if(player.domain>0){
-for(const e of enemies){
-if(!e.dead&&distance(player.x,player.y,e.x,e.y)<440){
-hurtEnemy(e,75*dt);
-}
-}
+ if(hero.domain>0){
+  for(const e of enemies){
+   if(!e.dead&&dist(hero.x,hero.y,e.x,e.y)<440){
+    hurtEnemy(e,75*dt);
+   }
+  }
 
-if(bossActive&&boss&&!boss.dead&&
-distance(player.x,player.y,boss.x,boss.y)<570){
-hurtBoss(80*dt);
-}
-}
+  if(bossActive&&boss&&!boss.dead&&
+   dist(hero.x,hero.y,boss.x,boss.y)<570){
+   hurtBoss(80*dt);
+  }
+ }
 
-let direction=0;
-if(keys.a||keys.arrowleft)direction--;
-if(keys.d||keys.arrowright)direction++;
+ let direction=0;
+ if(keys.a||keys.arrowleft)direction--;
+ if(keys.d||keys.arrowright)direction++;
 
-if(direction)player.dir=direction;
+ if(direction)hero.dir=direction;
 
-if(player.dash>0){
-player.dash-=dt;
-player.vx=player.dir*790;
-player.vy=0;
-}else{
-player.vx=direction*315;
-player.vy+=GRAVITY*dt;
+ if(hero.dash>0){
+  hero.dash-=dt;
+  hero.vx=hero.dir*790;
+  hero.vy=0;
+ }else{
+  hero.vx=direction*315;
+  hero.vy+=1650*dt;
+ }
+
+ const oldBottom=hero.y+hero.h/2;
+
+ hero.x+=hero.vx*dt;
+ hero.y+=hero.vy*dt;
+ hero.x=clamp(hero.x,15,worldEnd-15);
+ hero.ground=false;
+
+ for(const q of [...platforms,...hero.steps]){
+  if(!visible(q))continue;
+  const y=platformY(q);
+
+  if(
+   hero.vy>=0&&
+   oldBottom<=y+14&&
+   hero.y+hero.h/2>=y&&
+   hero.x+hero.w/2>q.x&&
+   hero.x-hero.w/2<q.x+q.w
+  ){
+   hero.y=y-hero.h/2;
+   hero.vy=0;
+   hero.ground=true;
+   hero.jumps=0;
+   hero.dashReady=true;
+
+   if(q.type==="boost"){
+    hero.vy=-920;
+    hero.jumps=1;
+    hero.ground=false;
+   }
+   break;
+  }
+ }
+
+ if(hero.y>H+120){
+  respawn();
+  return;
+ }
+
+ for(const s of fragments){
+  if(!s.taken&&dist(hero.x,hero.y,s.x,s.y)<37){
+   s.taken=true;
+   collected++;
+   burst(s.x,s.y,"#fff4ad",32);
+   notify("SUN SPARK "+collected+"/3");
+  }
+ }
+
+ for(const c of checkpoints){
+  if(!c.active&&
+   Math.abs(hero.x-c.x)<46&&
+   Math.abs(hero.y-(c.y-35))<90){
+   c.active=true;
+   checkpointX=c.x;
+   checkpointY=c.y-45;
+   notify(c.arena?"BOSS CHECKPOINT!":"CHECKPOINT ACTIVATED");
+  }
+ }
+
+ if(chapter<7&&hero.x>worldEnd-215){
+  if(collected>=3)finishChapter();
+  else if(noticeTime<=0)notify("FIND ALL THREE SUN SPARKS");
+ }
+
+ if(chapter===7&&boss&&!bossEntered&&
+  hero.x>arenaX+155){
+  if(collected<3){
+   hero.x=arenaX+130;
+   if(noticeTime<=0)notify("COLLECT ALL THREE SPARKS FIRST");
+  }else enterBoss();
+ }
+
+ if(bossActive){
+  hero.x=clamp(hero.x,arenaX+130,arenaX+1100);
+ }
 }
-
-const oldBottom=player.y+player.h/2;
-
-player.x+=player.vx*dt;
-player.y+=player.vy*dt;
-
-player.x=clamp(player.x,15,worldEnd-15);
-player.ground=false;
-
-for(const q of [...platforms,...player.steps]){
-if(!visible(q))continue;
-
-const top=platformY(q);
-
-if(
-player.vy>=0&&
-oldBottom<=top+14&&
-player.y+player.h/2>=top&&
-player.x+player.w/2>q.x&&
-player.x-player.w/2<q.x+q.w
-){
-player.y=top-player.h/2;
-player.vy=0;
-player.ground=true;
-player.jumps=0;
-player.dashReady=true;
-
-if(q.type==="boost"){
-player.vy=-920;
-player.jumps=1;
-player.ground=false;
-}
-break;
-}
-}
-
-if(player.y>H+120){
-respawn();
-return;
-}
-
-for(const s of fragments){
-if(!s.taken&&distance(player.x,player.y,s.x,s.y)<35){
-s.taken=true;
-collected++;
-burst(s.x,s.y,"#fff4b2",25);
-notify("SUN SPARK "+collected+"/3");
-}
-}
-
-for(const c of checkpoints){
-if(!c.active&&
-Math.abs(player.x-c.x)<45&&
-Math.abs(player.y-(c.y-35))<90){
-c.active=true;
-checkpointX=c.x;
-checkpointY=c.y-45;
-notify(c.arena?"BOSS CHECKPOINT!":"CHECKPOINT ACTIVATED");
-}
-}
-
-if(chapter<7&&player.x>worldEnd-215){
-if(collected>=3){
-finishChapter();
-}else if(noticeTime<=0){
-notify("FIND ALL THREE SUN SPARKS");
-}
-}
-
-if(chapter===7&&boss&&!bossEntered&&
-player.x>arenaX+155){
-if(collected<3){
-player.x=arenaX+130;
-if(noticeTime<=0)notify("COLLECT ALL THREE SPARKS FIRST");
-}else{
-enterBoss();
-}
-}
-
-if(bossActive){
-player.x=clamp(player.x,arenaX+130,arenaX+1100);
-}
-}
-
-/* ENEMIES */
 
 function updateEnemies(dt){
-for(const e of enemies){
-if(e.dead)continue;
+ for(const e of enemies){
+  if(e.dead)continue;
 
-e.phase+=dt;
-e.x=e.baseX+Math.sin(e.phase)*40;
-e.y=e.baseY+Math.sin(e.phase*2)*18;
+  e.phase+=dt;
+  e.x=e.baseX+Math.sin(e.phase)*40;
+  e.y=e.baseY+Math.sin(e.phase*2)*18;
 
-if(distance(player.x,player.y,e.x,e.y)<43){
-hurt(settings[difficulty].damage);
+  if(dist(hero.x,hero.y,e.x,e.y)<43){
+   hurt(difficulties[difficulty].damage);
+  }
+ }
 }
-}
-}
-
-/* PROJECTILES */
 
 function updateShots(dt){
-for(let i=shots.length-1;i>=0;i--){
-const s=shots[i];
+ for(let i=shots.length-1;i>=0;i--){
+  const s=shots[i];
 
-s.x+=s.vx*dt;
-s.y+=s.vy*dt;
-s.life-=dt;
+  s.x+=s.vx*dt;
+  s.y+=s.vy*dt;
+  s.life-=dt;
 
-let hit=false;
+  let hit=false;
 
-if(s.friendly){
-for(const e of enemies){
-if(!e.dead&&distance(s.x,s.y,e.x,e.y)<s.r+25){
-hurtEnemy(e,s.damage);
-hit=true;
-break;
-}
-}
+  if(s.friendly){
+   for(const e of enemies){
+    if(!e.dead&&dist(s.x,s.y,e.x,e.y)<s.r+25){
+     hurtEnemy(e,s.damage);
+     hit=true;
+     break;
+    }
+   }
 
-if(!hit&&bossActive&&boss&&!boss.dead&&
-distance(s.x,s.y,boss.x,boss.y)<s.r+100){
-hurtBoss(s.damage);
-hit=true;
-}
-}else{
-if(distance(s.x,s.y,player.x,player.y)<s.r+23){
-hurt(s.damage);
-hit=true;
-}
-}
+   if(!hit&&bossActive&&boss&&!boss.dead&&
+    dist(s.x,s.y,boss.x,boss.y)<s.r+105){
+    hurtBoss(s.damage);
+    hit=true;
+   }
+  }else if(dist(s.x,s.y,hero.x,hero.y)<s.r+23){
+   hurt(s.damage);
+   hit=true;
+  }
 
-if(hit||s.life<=0)shots.splice(i,1);
-
-if(mode!=="playing")break;
-}
+  if(hit||s.life<=0)shots.splice(i,1);
+  if(mode!=="playing")break;
+ }
 }
 
-/* FINAL BOSS CUTSCENE */
+/* FINAL BOSS */
 
 function enterBoss(){
-bossEntered=true;
+ bossEntered=true;
+ checkpointX=arenaX+135;
+ checkpointY=425;
 
-checkpointX=arenaX+135;
-checkpointY=425;
+ hero.x=checkpointX;
+ hero.y=checkpointY;
+ hero.vx=0;
+ hero.vy=0;
 
-player.x=checkpointX;
-player.y=checkpointY;
-player.vx=0;
-player.vy=0;
-
-cutscene([
-"NARRATOR: The hero enters a ruined battlefield beneath the blackened sun.",
-"ECLIPSE SOVEREIGN: So the last bearer of light has arrived.",
-"HERO: You're the reason both worlds have suffered.",
-"ECLIPSE SOVEREIGN: I existed before your kings, your spirits, and your fragile suns.",
-"HERO: Then you've had more than enough time to learn when to stop.",
-"ECLIPSE SOVEREIGN: Your light cannot defeat the darkness that created it.",
-"HERO: Watch me.",
-"ECLIPSE SOVEREIGN: THEN COME, BEARER. LET THE FINAL ECLIPSE BEGIN!"
-],()=>{
-bossActive=true;
-boss.timer=1.5;
-$("bossHud").style.display="block";
-notify("FINAL BOSS — THE ECLIPSE SOVEREIGN!",2.5);
-},"THE FINAL ECLIPSE");
+ cutscene([
+  "NARRATOR: The hero enters a ruined battlefield beneath the blackened sun.",
+  "ECLIPSE SOVEREIGN: So the last bearer of light has arrived.",
+  "HERO: You're the reason both worlds have suffered.",
+  "ECLIPSE SOVEREIGN: I existed before your kings, your spirits, and your fragile suns.",
+  "HERO: Then you've had more than enough time to learn when to stop.",
+  "ECLIPSE SOVEREIGN: Your light cannot defeat the darkness that created it.",
+  "HERO: Watch me.",
+  "ECLIPSE SOVEREIGN: LET THE FINAL ECLIPSE BEGIN!"
+ ],()=>{
+  bossActive=true;
+  boss.timer=1.5;
+  $("bossHud").style.display="block";
+  notify("FINAL BOSS — THE ECLIPSE SOVEREIGN!",2.5);
+ },"THE FINAL ECLIPSE");
 }
 
 function resetBoss(){
-boss.hp=boss.maxHp;
-boss.phase=1;
-boss.action="idle";
-boss.timer=1.5;
-boss.count=0;
-boss.shockwaves=[];
-boss.flames=[];
-boss.slash=null;
-shots=[];
+ boss.hp=boss.maxHp;
+ boss.phase=1;
+ boss.action="idle";
+ boss.timer=1.5;
+ boss.count=0;
+ boss.waves=[];
+ boss.flames=[];
+ boss.slash=null;
+ shots=[];
 }
 
-/* BOSS ATTACKS */
+function beginBossAttack(){
+ const attacks=["blades","orbs","slam"];
 
-function startAttack(){
-const attacks=["blades","orbs","slam"];
+ if(boss.phase>=2)attacks.push("teleport","fire");
+ if(boss.phase===3)attacks.push("blades","slam");
 
-if(boss.phase>=2)attacks.push("teleport","fire");
-if(boss.phase===3)attacks.push("blades","slam");
+ boss.attack=attacks[boss.count%attacks.length];
+ boss.count++;
+ boss.action="warning";
+ boss.timer=boss.phase===1?.85:boss.phase===2?.65:.48;
+ boss.target=hero.x;
 
-boss.attack=attacks[boss.count%attacks.length];
-boss.count++;
-
-boss.action="warning";
-boss.timer=boss.phase===1?.85:boss.phase===2?.65:.48;
-boss.target=player.x;
-
-notify("WARNING — "+boss.attack.toUpperCase(),.7);
+ notify("WARNING — "+boss.attack.toUpperCase(),.7);
 }
 
-function executeAttack(){
-boss.action="recover";
-boss.timer=boss.phase===3?.6:.95;
+function executeBossAttack(){
+ boss.action="recover";
+ boss.timer=boss.phase===3?.6:.95;
 
-const d=settings[difficulty];
+ const d=difficulties[difficulty];
 
-if(boss.attack==="blades"){
-boss.x=clamp(
-player.x+(player.x<boss.x?130:-130),
-arenaX+280,arenaX+1000
-);
+ if(boss.attack==="orbs"){
+  const count=boss.phase===1?3:boss.phase===2?5:7;
 
-boss.slash={x:player.x,life:.4};
+  for(let i=0;i<count;i++){
+   const angle=
+    Math.atan2(hero.y-boss.y,hero.x-boss.x)+
+    (i-(count-1)/2)*.16;
 
-if(distance(player.x,player.y,boss.x,boss.y)<185){
-hurt(d.damage);
-}
-}
+   const speed=(250+boss.phase*45)*d.speed;
 
-if(boss.attack==="orbs"){
-const count=boss.phase===1?3:boss.phase===2?5:7;
+   shots.push({
+    x:boss.x,y:boss.y,
+    vx:Math.cos(angle)*speed,
+    vy:Math.sin(angle)*speed,
+    r:13,damage:d.damage,
+    friendly:false,life:4
+   });
+  }
+ }
 
-for(let i=0;i<count;i++){
-const angle=
-Math.atan2(player.y-boss.y,player.x-boss.x)+
-(i-(count-1)/2)*.16;
+ if(boss.attack==="slam"){
+  boss.waves.push(
+   {x:boss.x,vx:-400*d.speed,life:2.5},
+   {x:boss.x,vx:400*d.speed,life:2.5}
+  );
 
-const speed=(250+boss.phase*45)*d.speed;
+  burst(boss.x,460,"#ffbb84",50);
+ }
 
-shots.push({
-x:boss.x,y:boss.y,
-vx:Math.cos(angle)*speed,
-vy:Math.sin(angle)*speed,
-r:13,damage:d.damage,
-friendly:false,life:4
-});
-}
-}
+ if(boss.attack==="blades"||boss.attack==="teleport"){
+  boss.x=clamp(
+   hero.x+(hero.x<boss.x?130:-130),
+   arenaX+280,arenaX+1000
+  );
 
-if(boss.attack==="slam"){
-boss.shockwaves.push({
-x:boss.x,vx:-400*d.speed,life:2.5
-},{
-x:boss.x,vx:400*d.speed,life:2.5
-});
+  boss.slash={x:hero.x,life:.43};
 
-burst(boss.x,465,"#ffcb7c",45);
-}
+  if(dist(hero.x,hero.y,boss.x,boss.y)<180){
+   hurt(d.damage);
+  }
+ }
 
-if(boss.attack==="teleport"){
-burst(boss.x,boss.y,"#d4a0ff",30);
-
-boss.x=clamp(
-player.x+(player.dir>0?-125:125),
-arenaX+280,arenaX+1000
-);
-
-boss.slash={x:player.x,life:.45};
-
-if(distance(player.x,player.y,boss.x,boss.y)<175){
-hurt(d.damage);
-}
-}
-
-if(boss.attack==="fire"){
-for(const offset of [-150,0,150]){
-boss.flames.push({
-x:clamp(boss.target+offset,arenaX+180,arenaX+1060),
-life:1.2
-});
-}
-}
+ if(boss.attack==="fire"){
+  for(const offset of [-150,0,150]){
+   boss.flames.push({
+    x:clamp(boss.target+offset,arenaX+180,arenaX+1060),
+    life:1.2
+   });
+  }
+ }
 }
 
 function updateBoss(dt){
-if(!bossActive||!boss||boss.dead)return;
+ if(!bossActive||!boss||boss.dead)return;
 
-boss.flash=Math.max(0,boss.flash-dt);
+ boss.flash=Math.max(0,boss.flash-dt);
 
-const ratio=boss.hp/boss.maxHp;
-const newPhase=ratio<=.33?3:ratio<=.66?2:1;
+ const ratio=boss.hp/boss.maxHp;
+ const phase=ratio<=.33?3:ratio<=.66?2:1;
 
-if(newPhase!==boss.phase){
-boss.phase=newPhase;
-boss.action="recover";
-boss.timer=1.2;
-burst(boss.x,boss.y,"#ffe1a1",80);
-notify("PHASE "+newPhase+" — THE ECLIPSE GROWS!",2);
+ if(phase!==boss.phase){
+  boss.phase=phase;
+  boss.action="recover";
+  boss.timer=1.2;
+  burst(boss.x,boss.y,"#ffe0ae",85);
+  notify("PHASE "+phase+" — THE ECLIPSE GROWS!",2);
+ }
+
+ $("phase").textContent="PHASE "+boss.phase+" OF 3";
+ $("bossFill").style.width=(ratio*100)+"%";
+
+ boss.timer-=dt;
+
+ if(boss.action==="idle"){
+  boss.y=340+Math.sin(time*2)*14;
+  if(boss.timer<=0)beginBossAttack();
+ }else if(boss.action==="warning"){
+  if(boss.timer<=0)executeBossAttack();
+ }else if(boss.action==="recover"&&boss.timer<=0){
+  boss.action="idle";
+  boss.timer=(boss.phase===1?.7:boss.phase===2?.45:.25)/
+   difficulties[difficulty].speed;
+ }
+
+ if(dist(hero.x,hero.y,boss.x,boss.y)<100){
+  hurt(difficulties[difficulty].damage);
+ }
+
+ if(boss.slash){
+  boss.slash.life-=dt;
+  if(boss.slash.life<=0)boss.slash=null;
+ }
+
+ for(let i=boss.waves.length-1;i>=0;i--){
+  const s=boss.waves[i];
+
+  s.x+=s.vx*dt;
+  s.life-=dt;
+
+  if(Math.abs(hero.x-s.x)<30&&hero.y+hero.h/2>435){
+   hurt(difficulties[difficulty].damage);
+  }
+
+  if(s.life<=0)boss.waves.splice(i,1);
+ }
+
+ for(let i=boss.flames.length-1;i>=0;i--){
+  const f=boss.flames[i];
+
+  f.life-=dt;
+
+  if(Math.abs(hero.x-f.x)<43&&hero.y+hero.h/2>280){
+   hurt(difficulties[difficulty].damage);
+  }
+
+  if(f.life<=0)boss.flames.splice(i,1);
+ }
 }
 
-$("phase").textContent="PHASE "+boss.phase+" OF 3";
-$("bossFill").style.width=(ratio*100)+"%";
-
-if(boss.action==="idle"){
-boss.y=340+Math.sin(time*2)*15;
-boss.timer-=dt;
-if(boss.timer<=0)startAttack();
-}else if(boss.action==="warning"){
-boss.timer-=dt;
-if(boss.timer<=0)executeAttack();
-}else if(boss.action==="recover"){
-boss.timer-=dt;
-if(boss.timer<=0){
-boss.action="idle";
-boss.timer=(boss.phase===1?.7:boss.phase===2?.45:.25)/
-settings[difficulty].speed;
-}
-}
-
-if(distance(player.x,player.y,boss.x,boss.y)<100){
-hurt(settings[difficulty].damage);
-}
-
-if(boss.slash){
-boss.slash.life-=dt;
-if(boss.slash.life<=0)boss.slash=null;
-}
-
-for(let i=boss.shockwaves.length-1;i>=0;i--){
-const s=boss.shockwaves[i];
-s.x+=s.vx*dt;
-s.life-=dt;
-
-if(Math.abs(player.x-s.x)<30&&
-player.y+player.h/2>435){
-hurt(settings[difficulty].damage);
-}
-
-if(s.life<=0)boss.shockwaves.splice(i,1);
-}
-
-for(let i=boss.flames.length-1;i>=0;i--){
-const f=boss.flames[i];
-f.life-=dt;
-
-if(Math.abs(player.x-f.x)<43&&
-player.y+player.h/2>280){
-hurt(settings[difficulty].damage);
-}
-
-if(f.life<=0)boss.flames.splice(i,1);
-}
-}
-
-/* FINAL ENDING */
+/* ENDINGS */
 
 function bossVictory(){
-boss.dead=true;
-bossActive=false;
-mode="scene";
-shots=[];
+ boss.dead=true;
+ bossActive=false;
+ shots=[];
 
-burst(boss.x,boss.y,"#ffe5ad",100);
+ burst(boss.x,boss.y,"#ffe1a4",110);
 
-cutscene([
-"NARRATOR: The Eclipse Sovereign falls. Its dark crown shatters across the battlefield.",
-"ECLIPSE SOVEREIGN: Impossible... the darkness existed before the first dawn...",
-"HERO: And the light will exist after you.",
-"ECLIPSE SOVEREIGN: Then perhaps... the world is finally ready.",
-"NARRATOR: The blackened sun begins to crack. Golden light spills through the sky.",
-"VOICE OF LIGHT: You have won. But one choice remains.",
-"VOICE OF LIGHT: Will you share the last light with every soul, or guard it for the future?"
-],endingChoice,"THE FINAL VICTORY");
+ cutscene([
+  "NARRATOR: The Eclipse Sovereign falls. Its dark crown shatters across the battlefield.",
+  "ECLIPSE SOVEREIGN: Impossible... the darkness existed before the first dawn...",
+  "HERO: And the light will exist after you.",
+  "ECLIPSE SOVEREIGN: Then perhaps... the world is finally ready.",
+  "NARRATOR: The blackened sun begins to crack. Golden light spills through the sky.",
+  "VOICE OF LIGHT: You have won. But one choice remains.",
+  "VOICE OF LIGHT: Will you share the last light with every soul, or guard it for the future?"
+ ],endingChoice,"THE FINAL VICTORY");
 }
 
 function endingChoice(){
-mode="choice";
-
-screen(
-"THE FINAL DECISION",
-"THE LAST LIGHT",
-"The Eclipse Sovereign is defeated.\n\n"+
-"Will you share the Light with the world or protect it?",
-"SHARE THE LIGHT",
-()=>ending("share"),
-"GUARD THE LIGHT",
-()=>ending("guard")
-);
+ screen(
+  "THE FINAL DECISION",
+  "THE LAST LIGHT",
+  "The Eclipse Sovereign is defeated.\n\nWill you share the Light with the world or protect it?",
+  "SHARE THE LIGHT",()=>ending("share"),
+  "GUARD THE LIGHT",()=>ending("guard")
+ );
 }
 
 function ending(choice){
-const lines=choice==="share"?
-[
-"HERO: The light doesn't belong to one person. It belongs to everyone.",
-"NARRATOR: Golden rays spread across the kingdoms and the Spirit Realm.",
-"VOICE OF LIGHT: The darkness has ended. A new dawn begins.",
-"NARRATOR: The hero watches the first true sunrise in centuries."
-]:
-[
-"HERO: This light is too powerful to leave unprotected.",
-"NARRATOR: The hero seals the last light inside a sacred sanctuary.",
-"VOICE OF LIGHT: You have chosen to become its guardian.",
-"NARRATOR: The world sees a new sunrise, while its protector remains vigilant."
-];
+ const lines=choice==="share"?[
+  "HERO: The light doesn't belong to one person. It belongs to everyone.",
+  "NARRATOR: Golden rays spread across the kingdoms and the Spirit Realm.",
+  "VOICE OF LIGHT: The darkness has ended. A new dawn begins.",
+  "NARRATOR: The hero watches the first true sunrise in centuries."
+ ]:[
+  "HERO: This light is too powerful to leave unprotected.",
+  "NARRATOR: The hero seals the last light inside a sacred sanctuary.",
+  "VOICE OF LIGHT: You have chosen to become its guardian.",
+  "NARRATOR: The world sees a new sunrise, while its protector remains vigilant."
+ ];
 
-cutscene(lines,()=>{
-mode="ending";
+ cutscene(lines,()=>{
+  try{localStorage.setItem("tdw-last-light-ending",choice)}
+  catch(e){}
 
-try{
-localStorage.setItem("tdw-last-light-ending",choice);
-}catch(e){}
-
-screen(
-"THEDARKWITHIN — THE FINALE",
-"THE END",
-"The Purple King has fallen.\n"+
-"The Spirit Realm has been freed.\n"+
-"The Eclipse Sovereign has been defeated.\n\n"+
-"After centuries of darkness, the world finally sees the light.\n\n"+
-"THANK YOU FOR PLAYING THEDARKWITHIN.",
-"RETURN TO MENU",
-menu
-);
-},"THE LAST SUNRISE");
+  screen(
+   "THEDARKWITHIN — THE FINALE",
+   "THE END",
+   "The Purple King has fallen.\n"+
+   "The Spirit Realm has been freed.\n"+
+   "The Eclipse Sovereign has been defeated.\n\n"+
+   "After centuries of darkness, the world finally sees the light.\n\n"+
+   "THANK YOU FOR PLAYING THEDARKWITHIN.",
+   "RETURN TO MENU",showMenu
+  );
+ },"THE LAST SUNRISE");
 }
 
-/* GAME UPDATE */
+/* MAIN UPDATE */
 
 function update(dt){
-time+=dt;
+ time+=dt;
+ flashTime=Math.max(0,flashTime-dt);
 
-if(noticeTime>0){
-noticeTime-=dt;
-if(noticeTime<=0)$("notice").style.display="none";
+ if(noticeTime>0){
+  noticeTime-=dt;
+  if(noticeTime<=0)$("notice").style.display="none";
+ }
+
+ for(let i=particles.length-1;i>=0;i--){
+  const p=particles[i];
+  p.x+=p.vx*dt;
+  p.y+=p.vy*dt;
+  p.life-=dt;
+  if(p.life<=0)particles.splice(i,1);
+ }
+
+ if(mode!=="playing")return;
+
+ move(dt);
+ if(mode!=="playing")return;
+
+ updateEnemies(dt);
+ updateBoss(dt);
+ updateShots(dt);
+
+ const target=clamp(hero.x-335,0,Math.max(0,worldEnd-W));
+ camera+=(target-camera)*Math.min(1,dt*6);
+
+ updateHUD();
 }
 
-for(let i=particles.length-1;i>=0;i--){
-const a=particles[i];
-a.x+=a.vx*dt;
-a.y+=a.vy*dt;
-a.life-=dt;
-if(a.life<=0)particles.splice(i,1);
+/* 2.5D BACKGROUNDS */
+
+function cloud(x,y,s,alpha){
+ ctx.save();
+ ctx.translate(x,y);
+ ctx.scale(s,s);
+ ctx.globalAlpha=alpha;
+
+ const g=ctx.createRadialGradient(0,0,0,0,0,150);
+ g.addColorStop(0,"#fff0e1");
+ g.addColorStop(1,"transparent");
+
+ ctx.fillStyle=g;
+ ctx.beginPath();
+ ctx.ellipse(0,0,175,46,0,0,TAU);
+ ctx.fill();
+ ctx.restore();
 }
 
-if(mode!=="playing")return;
+function mountain(x,y,w,h,color){
+ ctx.fillStyle=color;
+ ctx.beginPath();
+ ctx.moveTo(x-w/2,y);
+ ctx.lineTo(x,y-h);
+ ctx.lineTo(x+w/2,y);
+ ctx.closePath();
+ ctx.fill();
 
-move(dt);
-if(mode!=="playing")return;
-
-updateEnemies(dt);
-updateBoss(dt);
-updateShots(dt);
-
-const target=clamp(player.x-335,0,Math.max(0,worldEnd-W));
-camera+=(target-camera)*Math.min(1,dt*6);
-
-updateHUD();
+ ctx.fillStyle="#ffffff14";
+ ctx.beginPath();
+ ctx.moveTo(x,y-h);
+ ctx.lineTo(x-w*.21,y-h*.28);
+ ctx.lineTo(x,y-h*.5);
+ ctx.fill();
 }
 
-/* BACKGROUND */
+function ruin(x,y,s,front=false){
+ ctx.save();
+ ctx.translate(x,y);
+ ctx.scale(s,s);
 
-const skies=[
-["#56322b","#120e1b"],
-["#3c2a36","#110d19"],
-["#423044","#150f1e"],
-["#563a24","#1a1117"],
-["#50212d","#110b19"],
-["#654128","#150e14"],
-["#381f3c","#0e0a19"],
-["#2b122c","#080610"]
-];
+ // Side faces create architectural depth.
+ ctx.fillStyle=front?"#382a35":"#493846";
+ ctx.beginPath();
+ ctx.moveTo(-50,-145);
+ ctx.lineTo(-34,-160);
+ ctx.lineTo(-34,0);
+ ctx.lineTo(-50,0);
+ ctx.fill();
+
+ const g=ctx.createLinearGradient(-45,-130,40,0);
+ g.addColorStop(0,front?"#a0806c":"#8a7180");
+ g.addColorStop(1,"#37293b");
+
+ ctx.fillStyle=g;
+ ctx.fillRect(-40,-155,80,155);
+
+ ctx.fillStyle="#cfaa84";
+ ctx.fillRect(-53,-163,106,15);
+ ctx.fillRect(-49,-19,98,14);
+
+ for(let j=0;j<5;j++){
+  ctx.strokeStyle="#ffffff20";
+  ctx.beginPath();
+  ctx.moveTo(-38,-134+j*26);
+  ctx.lineTo(38,-134+j*26);
+  ctx.stroke();
+ }
+
+ ctx.fillStyle="#1c1725";
+ ctx.beginPath();
+ ctx.arc(0,-91,19,Math.PI,0);
+ ctx.lineTo(19,-51);
+ ctx.lineTo(-19,-51);
+ ctx.fill();
+
+ ctx.fillStyle="#f6d1a0";
+ ctx.shadowColor="#ffd199";
+ ctx.shadowBlur=12;
+ ctx.fillRect(-5,-81,10,20);
+ ctx.shadowBlur=0;
+
+ ctx.restore();
+}
+
+function floatingRuin(x,y,w,h){
+ const g=ctx.createLinearGradient(x,y,x,y+h);
+ g.addColorStop(0,"#8a6573");
+ g.addColorStop(.35,"#4d3546");
+ g.addColorStop(1,"#211626");
+
+ ctx.fillStyle=g;
+ ctx.beginPath();
+ ctx.moveTo(x,y);
+ ctx.lineTo(x+w,y);
+ ctx.lineTo(x+w*.81,y+h*.42);
+ ctx.lineTo(x+w*.56,y+h);
+ ctx.lineTo(x+w*.28,y+h*.67);
+ ctx.lineTo(x+w*.06,y+h*.27);
+ ctx.closePath();
+ ctx.fill();
+
+ ctx.fillStyle="#d8a77b";
+ ctx.beginPath();
+ ctx.ellipse(x+w/2,y,w/2,9,0,0,TAU);
+ ctx.fill();
+}
 
 function background(){
-const pal=skies[chapter];
-const gradient=ctx.createLinearGradient(0,0,0,H);
+ const pal=palettes[chapter];
 
-gradient.addColorStop(0,pal[0]);
-gradient.addColorStop(1,pal[1]);
+ const sky=ctx.createLinearGradient(0,0,0,H);
+ sky.addColorStop(0,pal[0]);
+ sky.addColorStop(.6,pal[1]);
+ sky.addColorStop(1,"#100c1a");
 
-ctx.fillStyle=gradient;
-ctx.fillRect(0,0,W,H);
+ ctx.fillStyle=sky;
+ ctx.fillRect(0,0,W,H);
 
-for(let i=0;i<90;i++){
-const x=((i*173-camera*.12)%1020+1020)%1020;
-const y=i*71%480;
+ const sunX=715-camera*.035;
+ const sunY=107;
 
-ctx.fillStyle="#ffe6b577";
-ctx.fillRect(x,y,2,2);
+ glow(sunX,sunY,260,pal[2]+"44");
+
+ ctx.fillStyle=chapter===7?"#160b1b":"#f6ca9a";
+ ctx.shadowColor=pal[2];
+ ctx.shadowBlur=35;
+ ctx.beginPath();
+ ctx.arc(sunX,sunY,81,0,TAU);
+ ctx.fill();
+ ctx.shadowBlur=0;
+
+ if(chapter>=4){
+  ctx.fillStyle="#180d1e";
+  ctx.beginPath();
+  ctx.arc(sunX+25,sunY-5,72,0,TAU);
+  ctx.fill();
+ }
+
+ ctx.strokeStyle=pal[2]+"77";
+ ctx.lineWidth=10;
+ ctx.beginPath();
+ ctx.arc(sunX,sunY,92,0,TAU);
+ ctx.stroke();
+
+ // Distant mountains
+ for(let layer=0;layer<3;layer++){
+  const shift=camera*[.08,.19,.39][layer];
+  const y=[360,390,414][layer];
+  const h=[135,160,120][layer];
+  const color=["#d5b0b022","#503c597a","#251e35aa"][layer];
+
+  for(let i=-2;i<13;i++){
+   const x=i*165-shift%165;
+   mountain(x,y,250,h+(i*37+layer*18)%75,color);
+  }
+ }
+
+ // Multi-depth floating city ruins
+ for(let i=0;i<13;i++){
+  const x=((i*270-camera*.12)%1650+1650)%1650-250;
+  const y=205+(i*71)%140;
+
+  floatingRuin(x,y,180+(i%3)*45,60+(i%4)*22);
+
+  if(i%3===0){
+   ruin(x+85,y,.45);
+  }
+ }
+
+ // Intermediate moving clouds
+ for(let i=0;i<9;i++){
+  const x=((i*240-camera*.21+time*5)%1500+1500)%1500-220;
+  const y=130+(i*79)%260;
+  cloud(x,y,.65+i%3*.2,.15);
+ }
+
+ // Nearest ruined architecture
+ for(let i=0;i<7;i++){
+  const x=((i*360-camera*.44)%2400+2400)%2400-250;
+  ruin(x,410,.55+(i%3)*.13,true);
+ }
+
+ if(chapter===7){
+  const x=arenaX-camera;
+
+  if(x<W+100&&x+1120>-100){
+   glow(x+830,250,260,"#e6a67b33");
+
+   ctx.strokeStyle="#e9b17877";
+   ctx.lineWidth=18;
+   ctx.beginPath();
+   ctx.ellipse(x+820,265,150,190,0,0,TAU);
+   ctx.stroke();
+
+   for(let i=0;i<5;i++){
+    ruin(x+70+i*240,467,1.05,true);
+   }
+  }
+ }
+
+ // Light shafts
+ ctx.save();
+ ctx.globalCompositeOperation="screen";
+
+ for(let i=0;i<7;i++){
+  const x=i*180+Math.sin(time*.2+i)*28;
+  const g=ctx.createLinearGradient(x,0,x+110,H);
+
+  g.addColorStop(0,"#ffffff00");
+  g.addColorStop(.5,pal[2]+"13");
+  g.addColorStop(1,"#ffffff00");
+
+  ctx.fillStyle=g;
+  ctx.beginPath();
+  ctx.moveTo(x,0);
+  ctx.lineTo(x+55,0);
+  ctx.lineTo(x+180,H);
+  ctx.lineTo(x+110,H);
+  ctx.closePath();
+  ctx.fill();
+ }
+
+ ctx.restore();
+
+ // Atmospheric dust
+ for(let i=0;i<65;i++){
+  const x=((i*157+time*(5+i%5))%1050+1050)%1050;
+  const y=(i*83+Math.sin(time+i)*10)%H;
+
+  ctx.fillStyle=pal[2]+"66";
+  ctx.beginPath();
+  ctx.arc(x,y,1+i%3*.6,0,TAU);
+  ctx.fill();
+ }
 }
 
-const sunX=720-camera*.05;
-
-ctx.fillStyle=chapter===7?"#120a1b":"#ed9b61";
-ctx.beginPath();
-ctx.arc(sunX,100,95,0,Math.PI*2);
-ctx.fill();
-
-ctx.strokeStyle="#ffcd8888";
-ctx.lineWidth=12;
-ctx.beginPath();
-ctx.arc(sunX,100,103,0,Math.PI*2);
-ctx.stroke();
-
-for(let i=0;i<18;i++){
-const x=((i*220-camera*.2)%1400+1400)%1400-120;
-const y=120+i*87%260;
-
-ctx.fillStyle="#21162599";
-ctx.beginPath();
-ctx.moveTo(x,y);
-ctx.lineTo(x+110,y);
-ctx.lineTo(x+60,y+75);
-ctx.lineTo(x+20,y+55);
-ctx.fill();
-
-ctx.fillStyle="#d29b7788";
-ctx.fillRect(x,y,110,8);
-}
-
-if(chapter===7){
-const x=arenaX-camera;
-
-if(x<W&&x+1120>0){
-for(let i=0;i<5;i++){
-const px=x+70+i*240;
-ctx.fillStyle="#382b36";
-ctx.fillRect(px,220,46,250);
-ctx.fillStyle="#99726a";
-ctx.fillRect(px-8,205,62,15);
-}
-
-ctx.strokeStyle="#ffbd7c88";
-ctx.lineWidth=16;
-ctx.beginPath();
-ctx.ellipse(x+830,270,148,183,0,0,Math.PI*2);
-ctx.stroke();
-
-if(bossActive){
-ctx.fillStyle="#a35b77";
-ctx.fillRect(x+125,225,20,245);
-ctx.fillRect(x+1090,225,20,245);
-}
-}
-}
-}
-
-/* DRAW PLATFORMS */
+/* 2.5D FLOATING PLATFORMS */
 
 function drawPlatforms(){
-for(const q of [...platforms,...player.steps]){
-if(!visible(q))continue;
+ for(const q of [...platforms,...hero.steps]){
+  if(!visible(q))continue;
 
-const x=q.x-camera;
-const y=platformY(q);
+  const x=q.x-camera;
+  const y=platformY(q);
 
-if(x>W||x+q.w<0)continue;
+  if(x>W+100||x+q.w<-100)continue;
 
-ctx.fillStyle="#281923";
-ctx.beginPath();
-ctx.moveTo(x,y+13);
-ctx.lineTo(x+q.w,y+13);
-ctx.lineTo(x+q.w*.7,y+67);
-ctx.lineTo(x+q.w*.28,y+54);
-ctx.fill();
+  if(q.type==="light"){
+   glow(x+q.w/2,y,115,"#ffe8a055");
 
-ctx.fillStyle=
-q.type==="light"?"#fff4bc":
-q.type==="boost"?"#ffeb8c":
-q.type==="moving"?"#d99673":
-q.type==="vanish"?"#c18fba":"#c58f61";
+   const g=ctx.createLinearGradient(x,y,x,y+20);
+   g.addColorStop(0,"#fffbd5");
+   g.addColorStop(1,"#d59d54");
 
-ctx.fillRect(x,y,q.w,15);
+   ctx.fillStyle=g;
+   ctx.beginPath();
+   ctx.ellipse(x+q.w/2,y,q.w/2,10,0,0,TAU);
+   ctx.fill();
 
-ctx.fillStyle="#77503f";
-ctx.fillRect(x+8,y+16,q.w-16,11);
+   ctx.strokeStyle="#fff2b9";
+   ctx.lineWidth=3;
+   ctx.shadowColor="#fff3b8";
+   ctx.shadowBlur=18;
+   ctx.beginPath();
+   ctx.ellipse(x+q.w/2,y,q.w/2,10,0,0,TAU);
+   ctx.stroke();
+   ctx.shadowBlur=0;
+   continue;
+  }
+
+  const body=ctx.createLinearGradient(x,y,x,y+96);
+  body.addColorStop(0,"#a5806a");
+  body.addColorStop(.25,"#655063");
+  body.addColorStop(1,"#211728");
+
+  ctx.fillStyle=body;
+  ctx.beginPath();
+  ctx.moveTo(x,y);
+  ctx.lineTo(x+q.w,y);
+  ctx.lineTo(x+q.w*.81,y+53);
+  ctx.lineTo(x+q.w*.58,y+91);
+  ctx.lineTo(x+q.w*.27,y+63);
+  ctx.lineTo(x+q.w*.07,y+31);
+  ctx.closePath();
+  ctx.fill();
+
+  ctx.fillStyle=
+   q.type==="boost"?"#ffebaa":
+   q.type==="moving"?"#f0bb93":
+   q.type==="vanish"?"#cb9fc8":"#dfb384";
+
+  ctx.beginPath();
+  ctx.ellipse(x+q.w/2,y,q.w/2,10,0,0,TAU);
+  ctx.fill();
+
+  ctx.strokeStyle="#ffffff25";
+  ctx.lineWidth=2;
+
+  ctx.beginPath();
+  ctx.moveTo(x+q.w*.2,y+20);
+  ctx.lineTo(x+q.w*.4,y+47);
+  ctx.lineTo(x+q.w*.64,y+31);
+  ctx.stroke();
+
+  if(q.type==="boost"){
+   glow(x+q.w/2,y-15,55,"#ffe7a866");
+  }
+ }
 }
-}
 
-/* DRAW COLLECTIBLES */
+/* 2.5D OBJECTS AND ENEMIES */
+
+function crystal(x,y,s,color){
+ ctx.save();
+ ctx.translate(x,y);
+
+ ctx.shadowColor=color;
+ ctx.shadowBlur=19;
+ ctx.fillStyle=color;
+
+ ctx.beginPath();
+ ctx.moveTo(0,-s);
+ ctx.lineTo(s*.52,-s*.13);
+ ctx.lineTo(s*.28,s*.74);
+ ctx.lineTo(0,s);
+ ctx.lineTo(-s*.38,s*.18);
+ ctx.closePath();
+ ctx.fill();
+
+ ctx.fillStyle="#ffffff99";
+ ctx.beginPath();
+ ctx.moveTo(0,-s);
+ ctx.lineTo(0,s);
+ ctx.lineTo(-s*.38,s*.18);
+ ctx.fill();
+
+ ctx.restore();
+}
 
 function drawItems(){
-for(const s of fragments){
-if(s.taken)continue;
+ for(const s of fragments){
+  if(s.taken)continue;
 
-const x=s.x-camera;
-const y=s.y+Math.sin(time*4)*7;
+  const x=s.x-camera;
+  const y=s.y+Math.sin(time*4)*7;
 
-ctx.fillStyle="#ffeb9960";
-ctx.beginPath();
-ctx.arc(x,y,24,0,Math.PI*2);
-ctx.fill();
+  glow(x,y,62,"#ffeebc99");
+  crystal(x,y,20,"#ffebad");
+ }
 
-ctx.fillStyle="#fff6c0";
-ctx.beginPath();
-ctx.moveTo(x,y-18);
-ctx.lineTo(x+12,y);
-ctx.lineTo(x,y+18);
-ctx.lineTo(x-12,y);
-ctx.fill();
+ for(const c of checkpoints){
+  const x=c.x-camera;
+
+  glow(x,c.y-60,45,c.active?"#b2ffe077":"#ffd6a077");
+
+  ctx.strokeStyle=c.active?"#b5ffdf":"#e9b481";
+  ctx.lineWidth=5;
+  ctx.beginPath();
+  ctx.moveTo(x,c.y);
+  ctx.lineTo(x,c.y-76);
+  ctx.stroke();
+
+  crystal(x,c.y-83,18,c.active?"#bdffe4":"#ffd39d");
+ }
+
+ for(const e of enemies){
+  if(e.dead)continue;
+
+  const x=e.x-camera;
+  const y=e.y;
+
+  glow(x,y,62,"#ab6cde55");
+
+  // Spectral flowing mantle
+  const g=ctx.createLinearGradient(x-25,y-35,x+25,y+35);
+  g.addColorStop(0,"#9067b1");
+  g.addColorStop(.45,"#42304e");
+  g.addColorStop(1,"#171025");
+
+  ctx.fillStyle=g;
+  ctx.beginPath();
+  ctx.moveTo(x-25,y);
+  ctx.quadraticCurveTo(x-27,y-38,x,y-37);
+  ctx.quadraticCurveTo(x+27,y-38,x+25,y);
+  ctx.lineTo(x+15,y+29);
+  ctx.lineTo(x+4,y+12);
+  ctx.lineTo(x-9,y+28);
+  ctx.lineTo(x-17,y+10);
+  ctx.closePath();
+  ctx.fill();
+
+  ctx.fillStyle="#f7acdb";
+  ctx.shadowColor="#f7acdb";
+  ctx.shadowBlur=13;
+  ctx.fillRect(x-13,y-8,8,5);
+  ctx.fillRect(x+5,y-8,8,5);
+  ctx.shadowBlur=0;
+ }
 }
 
-for(const c of checkpoints){
-const x=c.x-camera;
-
-ctx.fillStyle=c.active?"#aaffdb":"#ddac7a";
-ctx.fillRect(x-5,c.y-55,10,56);
-
-ctx.beginPath();
-ctx.moveTo(x,c.y-80);
-ctx.lineTo(x+18,c.y-53);
-ctx.lineTo(x,c.y-29);
-ctx.lineTo(x-18,c.y-53);
-ctx.fill();
-}
-
-for(const e of enemies){
-if(e.dead)continue;
-
-const x=e.x-camera;
-
-ctx.fillStyle="#211224";
-ctx.beginPath();
-ctx.arc(x,e.y,24,0,Math.PI*2);
-ctx.fill();
-
-ctx.fillStyle="#d982ae";
-ctx.fillRect(x-12,e.y-4,8,5);
-ctx.fillRect(x+4,e.y-4,8,5);
-}
-}
-
-/* DRAW HERO */
+/* DETAILED HERO */
 
 function drawHero(){
-if(player.inv>0&&Math.floor(time*12)%2===0)return;
+ if(hero.inv>0&&Math.floor(time*12)%2===0)return;
 
-const x=player.x-camera;
-const y=player.y;
+ const x=hero.x-camera;
+ const y=hero.y;
+ const bob=hero.ground?Math.sin(time*8)*1.2:0;
 
-ctx.save();
-ctx.translate(Math.round(x),Math.round(y));
+ ctx.save();
+ ctx.translate(x,y+bob);
 
-ctx.fillStyle="#bd7a42";
-ctx.beginPath();
-ctx.moveTo(-13,-9);
-ctx.lineTo(-23,24);
-ctx.lineTo(13,16);
-ctx.fill();
+ ellipse(0,25,22,7,"#0008");
 
-ctx.fillStyle="#32222d";
-ctx.fillRect(-10,9,8,14);
-ctx.fillRect(3,9,8,14);
+ // Flowing ceremonial cape
+ const cape=ctx.createLinearGradient(-29,-25,18,28);
+ cape.addColorStop(0,"#f0b76e");
+ cape.addColorStop(.5,"#9b4d44");
+ cape.addColorStop(1,"#33212f");
 
-ctx.fillStyle="#f0c586";
-ctx.fillRect(-15,-20,30,31);
+ ctx.fillStyle=cape;
+ ctx.beginPath();
+ ctx.moveTo(-13,-24);
+ ctx.quadraticCurveTo(-33,-6,-27,25+Math.sin(time*5)*4);
+ ctx.lineTo(14,22);
+ ctx.lineTo(16,-24);
+ ctx.fill();
 
-ctx.fillStyle="#fff0b6";
-ctx.fillRect(-9,-14,18,17);
+ // Boots
+ ctx.fillStyle="#302636";
+ ctx.fillRect(-13,8,11,17);
+ ctx.fillRect(3,8,11,17);
 
-ctx.fillStyle="#e8d4c3";
-ctx.fillRect(-12,-42,24,22);
+ ctx.fillStyle="#b38c64";
+ ctx.fillRect(-14,19,13,6);
+ ctx.fillRect(3,19,13,6);
 
-ctx.fillStyle="#6c3d35";
-ctx.fillRect(-14,-45,28,11);
+ // Golden chest armor
+ const armor=ctx.createLinearGradient(-20,-32,21,15);
+ armor.addColorStop(0,"#fff5ca");
+ armor.addColorStop(.32,"#f3c97d");
+ armor.addColorStop(.65,"#bd8349");
+ armor.addColorStop(1,"#4b3236");
 
-ctx.fillStyle="#fffbd0";
-ctx.fillRect(player.dir>0?4:-9,-34,6,4);
+ ctx.fillStyle=armor;
+ ctx.beginPath();
+ ctx.moveTo(-18,-26);
+ ctx.quadraticCurveTo(0,-35,18,-26);
+ ctx.lineTo(20,8);
+ ctx.quadraticCurveTo(0,23,-20,8);
+ ctx.closePath();
+ ctx.fill();
 
-const swordX=player.dir>0?19:-24;
+ ctx.strokeStyle="#ffe5ae";
+ ctx.lineWidth=2;
+ ctx.stroke();
 
-ctx.fillStyle="#fff3ba";
-ctx.fillRect(swordX,-31,6,40);
-ctx.fillRect(swordX-5,-28,16,5);
+ // Shoulder plates
+ for(const s of [-1,1]){
+  const shoulder=ctx.createLinearGradient(s*12,-28,s*30,-8);
+  shoulder.addColorStop(0,"#ffe9b8");
+  shoulder.addColorStop(1,"#9e674f");
 
-if(player.domain>0){
-ctx.strokeStyle="#ffe4a4";
-ctx.lineWidth=6;
-ctx.beginPath();
-ctx.arc(0,-4,54+Math.sin(time*9)*4,0,Math.PI*2);
-ctx.stroke();
+  ctx.fillStyle=shoulder;
+  ctx.beginPath();
+  ctx.ellipse(s*21,-18,12,14,s*.18,0,TAU);
+  ctx.fill();
+ }
+
+ // Face
+ ellipse(0,-41,12,15,"#eacbb4");
+
+ // Styled headpiece
+ ctx.fillStyle="#583d3a";
+ ctx.beginPath();
+ ctx.moveTo(-16,-42);
+ ctx.quadraticCurveTo(-15,-65,0,-59);
+ ctx.quadraticCurveTo(17,-64,16,-41);
+ ctx.lineTo(10,-34);
+ ctx.lineTo(-10,-34);
+ ctx.fill();
+
+ // Golden crest
+ ctx.fillStyle="#f8d49a";
+ ctx.beginPath();
+ ctx.moveTo(-4,-60);
+ ctx.lineTo(0,-72);
+ ctx.lineTo(4,-60);
+ ctx.fill();
+
+ ctx.fillStyle="#fff6cb";
+ ctx.shadowColor="#ffe9b4";
+ ctx.shadowBlur=10;
+ ctx.fillRect(hero.dir>0?3:-9,-43,6,4);
+ ctx.shadowBlur=0;
+
+ // Light sword with tapered blade
+ ctx.save();
+ ctx.translate(hero.dir*20,-5);
+ ctx.rotate(hero.dir>0?-.3:Math.PI+.3);
+
+ ctx.fillStyle="#fff5c2";
+ ctx.shadowColor="#ffe39c";
+ ctx.shadowBlur=20;
+
+ ctx.beginPath();
+ ctx.moveTo(-5,0);
+ ctx.lineTo(-6,-53);
+ ctx.lineTo(0,-73);
+ ctx.lineTo(6,-53);
+ ctx.lineTo(5,0);
+ ctx.closePath();
+ ctx.fill();
+
+ ctx.shadowBlur=0;
+ ctx.fillStyle="#f1b96f";
+ ctx.fillRect(-13,-5,26,7);
+ ctx.fillStyle="#59403d";
+ ctx.fillRect(-4,2,8,18);
+ ctx.restore();
+
+ if(hero.slash>0){
+  ctx.strokeStyle="#fff2b9";
+  ctx.shadowColor="#ffe3a0";
+  ctx.shadowBlur=35;
+  ctx.lineWidth=17;
+
+  const a=hero.dir>0?0:Math.PI;
+  ctx.beginPath();
+  ctx.arc(hero.dir*64,-5,92,a-.84,a+.84);
+  ctx.stroke();
+
+  ctx.strokeStyle="#ffffff";
+  ctx.lineWidth=5;
+  ctx.beginPath();
+  ctx.arc(hero.dir*64,-5,92,a-.84,a+.84);
+  ctx.stroke();
+  ctx.shadowBlur=0;
+ }
+
+ if(hero.beamEffect>0){
+  const xx=hero.dir>0?20:-190;
+
+  glow(hero.dir*100,-10,115,"#ffedba88");
+  ctx.shadowColor="#fff5cb";
+  ctx.shadowBlur=25;
+  ctx.fillStyle="#ffefab";
+  ctx.fillRect(xx,-14,175,13);
+  ctx.fillStyle="#ffffff";
+  ctx.fillRect(xx,-11,175,5);
+  ctx.shadowBlur=0;
+ }
+
+ if(hero.shield>0){
+  ctx.strokeStyle="#ffe4a1";
+  ctx.shadowColor="#ffcf80";
+  ctx.shadowBlur=25;
+  ctx.lineWidth=5;
+  ctx.beginPath();
+  ctx.arc(0,-4,40,0,TAU);
+  ctx.stroke();
+ }
+
+ if(hero.reverse>0){
+  glow(0,-5,100,"#7d44de77");
+  ctx.strokeStyle="#aa74fa";
+  ctx.shadowColor="#a36aff";
+  ctx.lineWidth=5;
+
+  for(let i=0;i<3;i++){
+   ctx.beginPath();
+   ctx.arc(0,-4,45+i*16,0,TAU);
+   ctx.stroke();
+  }
+ }
+
+ if(hero.dash>0){
+  for(let i=1;i<=4;i++){
+   const xx=-hero.dir*i*24;
+   ctx.globalAlpha=.32-i*.055;
+   ctx.fillStyle="#fff4cb";
+   ctx.beginPath();
+   ctx.ellipse(xx,-5,14,27,0,0,TAU);
+   ctx.fill();
+  }
+  ctx.globalAlpha=1;
+ }
+
+ if(hero.domain>0){
+  ctx.strokeStyle="#ffebad";
+  ctx.shadowColor="#ffdc90";
+  ctx.shadowBlur=28;
+  ctx.lineWidth=5;
+  ctx.beginPath();
+  ctx.arc(0,-4,56+Math.sin(time*8)*5,0,TAU);
+  ctx.stroke();
+ }
+
+ ctx.restore();
 }
 
-if(player.reverse>0){
-ctx.fillStyle="#8253e54d";
-ctx.beginPath();
-ctx.arc(0,-5,60,0,Math.PI*2);
-ctx.fill();
-}
-
-if(player.shield>0){
-ctx.strokeStyle="#fff6a9";
-ctx.lineWidth=4;
-ctx.beginPath();
-ctx.arc(0,-4,37,0,Math.PI*2);
-ctx.stroke();
-}
-
-if(player.slash>0){
-ctx.strokeStyle="#fff2aa";
-ctx.lineWidth=13;
-ctx.beginPath();
-const a=player.dir>0?0:Math.PI;
-ctx.arc(player.dir*60,-5,96,a-.85,a+.85);
-ctx.stroke();
-}
-
-if(player.beamEffect>0){
-ctx.fillStyle="#fff8bb99";
-ctx.fillRect(player.dir>0?18:-165,-15,150,12);
-}
-
-if(player.dash>0){
-ctx.fillStyle="#ffe99566";
-ctx.fillRect(-player.dir*55,-25,35,40);
-}
-
-ctx.restore();
-}
-
-/* DRAW FINAL BOSS */
+/* COLOSSAL ECLIPSE SOVEREIGN */
 
 function drawBoss(){
-if(!boss||boss.dead)return;
+ if(!boss||boss.dead)return;
 
-const x=boss.x-camera;
-const y=boss.y;
+ const x=boss.x-camera;
+ const y=boss.y;
 
-ctx.save();
-ctx.translate(x,y);
+ glow(x,y,260,"#d47b9b33");
 
-ctx.fillStyle="#ffbd6a22";
-ctx.beginPath();
-ctx.ellipse(0,5,155,190,0,0,Math.PI*2);
-ctx.fill();
+ ctx.save();
+ ctx.translate(x,y);
 
-ctx.fillStyle="#241527";
-ctx.beginPath();
-ctx.moveTo(-80,-60);
-ctx.lineTo(-110,55);
-ctx.lineTo(-46,130);
-ctx.lineTo(0,235);
-ctx.lineTo(46,130);
-ctx.lineTo(110,55);
-ctx.lineTo(80,-60);
-ctx.fill();
+ // Shadow cape
+ ctx.fillStyle="#1b1124";
+ ctx.beginPath();
+ ctx.moveTo(-88,-59);
+ ctx.lineTo(-125,74);
+ ctx.lineTo(-62,151);
+ ctx.lineTo(0,230);
+ ctx.lineTo(62,151);
+ ctx.lineTo(125,74);
+ ctx.lineTo(88,-59);
+ ctx.closePath();
+ ctx.fill();
 
-ctx.fillStyle=boss.flash>0?"#fff6bd":"#514056";
-ctx.beginPath();
-ctx.moveTo(-80,-65);
-ctx.lineTo(0,-100);
-ctx.lineTo(80,-65);
-ctx.lineTo(58,15);
-ctx.lineTo(0,48);
-ctx.lineTo(-58,15);
-ctx.fill();
+ // Ancient chest armor
+ const armor=ctx.createLinearGradient(-100,-90,100,80);
+ armor.addColorStop(0,"#a78a98");
+ armor.addColorStop(.3,boss.flash>0?"#ffffff":"#6f5069");
+ armor.addColorStop(.8,"#2c2038");
+ armor.addColorStop(1,"#120f20");
 
-ctx.strokeStyle="#dda76d";
-ctx.lineWidth=6;
-ctx.stroke();
+ ctx.fillStyle=armor;
+ ctx.beginPath();
+ ctx.moveTo(-85,-67);
+ ctx.lineTo(0,-110);
+ ctx.lineTo(85,-67);
+ ctx.lineTo(63,27);
+ ctx.lineTo(0,71);
+ ctx.lineTo(-63,27);
+ ctx.closePath();
+ ctx.fill();
 
-for(const side of [-1,1]){
-ctx.fillStyle="#382739";
-ctx.beginPath();
-ctx.moveTo(side*35,-70);
-ctx.lineTo(side*105,-145);
-ctx.lineTo(side*142,-75);
-ctx.lineTo(side*95,-27);
-ctx.fill();
+ ctx.strokeStyle="#d5a174";
+ ctx.lineWidth=7;
+ ctx.stroke();
+
+ // Giant horned pauldrons
+ for(const s of [-1,1]){
+  ctx.fillStyle="#463145";
+  ctx.beginPath();
+  ctx.moveTo(s*46,-75);
+  ctx.lineTo(s*108,-151);
+  ctx.lineTo(s*149,-72);
+  ctx.lineTo(s*90,-23);
+  ctx.closePath();
+  ctx.fill();
+
+  ctx.strokeStyle="#996c65";
+  ctx.lineWidth=4;
+  ctx.stroke();
+ }
+
+ // Neck and head
+ ctx.fillStyle="#e0ae77";
+ ctx.beginPath();
+ ctx.ellipse(0,-145,52,57,0,0,TAU);
+ ctx.fill();
+
+ ctx.fillStyle="#190f22";
+ ctx.beginPath();
+ ctx.ellipse(0,-151,41,46,0,0,TAU);
+ ctx.fill();
+
+ // Eyes
+ ctx.fillStyle="#ffecac";
+ ctx.shadowColor="#ffc77e";
+ ctx.shadowBlur=28;
+ ctx.fillRect(-31,-159,21,10);
+ ctx.fillRect(10,-159,21,10);
+ ctx.shadowBlur=0;
+
+ // Jagged eclipse crown
+ ctx.fillStyle="#d9a36e";
+ ctx.shadowColor="#d6a57f";
+ ctx.shadowBlur=14;
+ ctx.beginPath();
+ ctx.moveTo(-49,-159);
+ ctx.lineTo(-67,-215);
+ ctx.lineTo(-19,-185);
+ ctx.lineTo(0,-239);
+ ctx.lineTo(19,-185);
+ ctx.lineTo(67,-215);
+ ctx.lineTo(49,-159);
+ ctx.closePath();
+ ctx.fill();
+ ctx.shadowBlur=0;
+
+ // Floating heart crystal
+ glow(0,-8,65,"#f4b06a66");
+ crystal(0,-7,37,"#ffc180");
+
+ ctx.restore();
+
+ ctx.fillStyle="#ffe6bf";
+ ctx.font="bold 19px Arial";
+ ctx.textAlign="center";
+ ctx.fillText("THE ECLIPSE SOVEREIGN",x,y-260);
+ ctx.textAlign="left";
 }
 
-ctx.fillStyle="#edb76d";
-ctx.beginPath();
-ctx.arc(0,-140,48,0,Math.PI*2);
-ctx.fill();
-
-ctx.fillStyle="#201325";
-ctx.beginPath();
-ctx.arc(0,-145,38,0,Math.PI*2);
-ctx.fill();
-
-ctx.fillStyle="#ffecaa";
-ctx.fillRect(-28,-152,19,8);
-ctx.fillRect(9,-152,19,8);
-
-ctx.fillStyle="#e3a760";
-ctx.beginPath();
-ctx.moveTo(-47,-159);
-ctx.lineTo(-58,-210);
-ctx.lineTo(-12,-183);
-ctx.lineTo(0,-226);
-ctx.lineTo(12,-183);
-ctx.lineTo(58,-210);
-ctx.lineTo(47,-159);
-ctx.fill();
-
-ctx.strokeStyle="#fbc979";
-ctx.lineWidth=7;
-ctx.beginPath();
-ctx.moveTo(-29,-40);
-ctx.lineTo(0,-5);
-ctx.lineTo(29,-40);
-ctx.stroke();
-
-ctx.restore();
-
-ctx.textAlign="center";
-ctx.font="bold 19px Arial";
-ctx.fillStyle="#ffe7bd";
-ctx.fillText("THE ECLIPSE SOVEREIGN",x,y-245);
-ctx.textAlign="left";
-}
-
-/* BOSS ATTACK EFFECTS */
+/* BOSS EFFECTS */
 
 function drawBossAttacks(){
-if(!boss||!bossActive)return;
+ if(!boss||!bossActive)return;
 
-if(boss.action==="warning"){
-ctx.globalAlpha=.4+.23*Math.sin(time*24);
-ctx.fillStyle="#ff6486";
+ if(boss.action==="warning"){
+  ctx.globalAlpha=.25+.2*Math.sin(time*23);
+  ctx.fillStyle="#ff688f";
 
-if(boss.attack==="blades"){
-ctx.fillRect(boss.target-camera-140,286,280,184);
+  if(boss.attack==="slam"){
+   ctx.fillRect(arenaX+130-camera,448,970,22);
+  }else if(boss.attack==="blades"||
+    boss.attack==="teleport"){
+   ctx.fillRect(boss.target-camera-105,290,210,180);
+  }else if(boss.attack==="fire"){
+   for(const offset of [-150,0,150]){
+    const x=clamp(
+     boss.target+offset,arenaX+180,arenaX+1060
+    )-camera;
+    ctx.fillRect(x-45,430,90,40);
+   }
+  }else{
+   ctx.beginPath();
+   ctx.arc(boss.x-camera,boss.y,115,0,TAU);
+   ctx.fill();
+  }
+
+  ctx.globalAlpha=1;
+ }
+
+ if(boss.slash){
+  ctx.strokeStyle="#ffd69e";
+  ctx.shadowColor="#ffad75";
+  ctx.shadowBlur=30;
+  ctx.lineWidth=18;
+  ctx.beginPath();
+  ctx.arc(boss.slash.x-camera,boss.y,95,-1.4,1.45);
+  ctx.stroke();
+  ctx.shadowBlur=0;
+ }
+
+ for(const wave of boss.waves){
+  const x=wave.x-camera;
+  glow(x,455,65,"#ffba7c77");
+  ctx.fillStyle="#ffcf83";
+  ctx.beginPath();
+  ctx.arc(x,450,27,Math.PI,0);
+  ctx.fill();
+ }
+
+ for(const fire of boss.flames){
+  const x=fire.x-camera;
+
+  glow(x,365,95,"#ff946e77");
+
+  ctx.fillStyle="#fa936ca8";
+  ctx.beginPath();
+  ctx.moveTo(x-45,470);
+  ctx.lineTo(x,257+Math.sin(time*12)*15);
+  ctx.lineTo(x+45,470);
+  ctx.closePath();
+  ctx.fill();
+
+  ctx.fillStyle="#ffe4a088";
+  ctx.beginPath();
+  ctx.moveTo(x-18,470);
+  ctx.lineTo(x,325);
+  ctx.lineTo(x+18,470);
+  ctx.fill();
+ }
 }
 
-if(boss.attack==="slam"){
-ctx.fillRect(arenaX+130-camera,452,970,18);
-}
-
-if(boss.attack==="fire"){
-for(const offset of [-150,0,150]){
-const x=clamp(
-boss.target+offset,arenaX+180,arenaX+1060
-)-camera;
-ctx.fillRect(x-43,450,86,20);
-}
-}
-
-if(boss.attack==="teleport"){
-ctx.fillRect(boss.target-camera-75,285,150,185);
-}
-
-if(boss.attack==="orbs"){
-ctx.beginPath();
-ctx.arc(boss.x-camera,boss.y,95,0,Math.PI*2);
-ctx.fill();
-}
-
-ctx.globalAlpha=1;
-}
-
-if(boss.slash){
-ctx.strokeStyle="#ffdab0";
-ctx.lineWidth=16;
-ctx.beginPath();
-ctx.arc(boss.slash.x-camera,boss.y,92,-1.35,1.5);
-ctx.stroke();
-}
-
-for(const s of boss.shockwaves){
-ctx.fillStyle="#ffcd77";
-ctx.beginPath();
-ctx.arc(s.x-camera,450,26,Math.PI,0);
-ctx.fill();
-}
-
-for(const f of boss.flames){
-const x=f.x-camera;
-
-ctx.fillStyle="#ff9a71b0";
-ctx.beginPath();
-ctx.moveTo(x-43,470);
-ctx.lineTo(x,260+Math.sin(time*12)*12);
-ctx.lineTo(x+43,470);
-ctx.fill();
-}
-}
-
-/* DRAW EVERYTHING */
+/* COMPLETE RENDER */
 
 function draw(){
-ctx.clearRect(0,0,W,H);
+ ctx.clearRect(0,0,W,H);
 
-background();
+ background();
 
-if(player.domain>0&&mode==="playing"){
-ctx.fillStyle="#ffe18f15";
-ctx.fillRect(0,0,W,H);
+ if(hero.domain>0&&mode==="playing"){
+  glow(hero.x-camera,hero.y,290,"#ffda8966");
 
-ctx.strokeStyle="#f9e8ab66";
-ctx.lineWidth=9;
-ctx.beginPath();
-ctx.arc(player.x-camera,player.y,220,0,Math.PI*2);
-ctx.stroke();
+  ctx.strokeStyle="#ffecaf66";
+  ctx.shadowColor="#ffc982";
+  ctx.shadowBlur=18;
+  ctx.lineWidth=8;
+
+  ctx.beginPath();
+  ctx.arc(hero.x-camera,hero.y,220,0,TAU);
+  ctx.stroke();
+  ctx.shadowBlur=0;
+ }
+
+ drawPlatforms();
+ drawItems();
+ drawBoss();
+ drawBossAttacks();
+ drawHero();
+
+ for(const shot of shots){
+  const x=shot.x-camera;
+  const color=shot.friendly?"#fff4bd":"#ed81a7";
+
+  glow(x,shot.y,shot.r*4,color+"66");
+
+  ctx.fillStyle=color;
+  ctx.shadowColor=color;
+  ctx.shadowBlur=17;
+  ctx.beginPath();
+  ctx.arc(x,shot.y,shot.r,0,TAU);
+  ctx.fill();
+
+  ctx.fillStyle="#ffffffaa";
+  ctx.beginPath();
+  ctx.arc(x-3,shot.y-3,shot.r*.35,0,TAU);
+  ctx.fill();
+
+  ctx.shadowBlur=0;
+ }
+
+ for(const p of particles){
+  ctx.globalAlpha=clamp(p.life*2,0,1);
+  ctx.fillStyle=p.color;
+  ctx.shadowColor=p.color;
+  ctx.shadowBlur=9;
+
+  ctx.beginPath();
+  ctx.arc(p.x-camera,p.y,p.size,0,TAU);
+  ctx.fill();
+ }
+
+ ctx.globalAlpha=1;
+ ctx.shadowBlur=0;
+
+ if(chapter<7){
+  const x=worldEnd-150-camera;
+
+  ctx.strokeStyle=collected===3?"#fff0b7":"#7d5b76";
+  ctx.shadowColor="#ffde91";
+  ctx.shadowBlur=collected===3?26:0;
+  ctx.lineWidth=8;
+  ctx.beginPath();
+  ctx.ellipse(x,385,35,68,0,0,TAU);
+  ctx.stroke();
+  ctx.shadowBlur=0;
+
+  ctx.fillStyle="#fff4d5";
+  ctx.font="13px Arial";
+  ctx.textAlign="center";
+  ctx.fillText(
+   collected===3?"EXIT OPEN":"3 SPARKS REQUIRED",
+   x,283
+  );
+  ctx.textAlign="left";
+ }
+
+ // Foreground mist and cinematic vignette
+ const mist=ctx.createLinearGradient(0,380,0,H);
+ mist.addColorStop(0,"#ffd6a000");
+ mist.addColorStop(1,"#3c243e44");
+ ctx.fillStyle=mist;
+ ctx.fillRect(0,380,W,H-380);
+
+ const vignette=ctx.createRadialGradient(
+  W/2,H*.45,170,W/2,H*.45,610
+ );
+ vignette.addColorStop(0,"#00000000");
+ vignette.addColorStop(1,"#08051099");
+ ctx.fillStyle=vignette;
+ ctx.fillRect(0,0,W,H);
+
+ if(flashTime>0){
+  ctx.fillStyle="#b26aff22";
+  ctx.fillRect(0,0,W,H);
+ }
 }
-
-drawPlatforms();
-drawItems();
-drawBoss();
-drawBossAttacks();
-drawHero();
-
-for(const s of shots){
-ctx.fillStyle=s.friendly?"#fff7b3":"#e86d9b";
-ctx.beginPath();
-ctx.arc(s.x-camera,s.y,s.r,0,Math.PI*2);
-ctx.fill();
-}
-
-for(const a of particles){
-ctx.globalAlpha=clamp(a.life*2,0,1);
-ctx.fillStyle=a.color;
-ctx.fillRect(a.x-camera,a.y,5,5);
-}
-
-ctx.globalAlpha=1;
-
-if(chapter<7){
-const x=worldEnd-150-camera;
-
-ctx.strokeStyle=collected===3?"#ffeeab":"#725263";
-ctx.lineWidth=8;
-ctx.beginPath();
-ctx.ellipse(x,385,35,68,0,0,Math.PI*2);
-ctx.stroke();
-
-ctx.textAlign="center";
-ctx.fillStyle="#fff3cb";
-ctx.font="13px Arial";
-ctx.fillText(
-collected===3?"EXIT OPEN":"3 SPARKS NEEDED",
-x,288
-);
-ctx.textAlign="left";
-}
-}
-
-/* MAIN LOOP */
 
 function loop(timestamp){
-const dt=Math.min(
-(timestamp-(previousTime||timestamp))/1000,
-.04
-);
+ const dt=Math.min(
+  (timestamp-(lastFrame||timestamp))/1000,
+  .04
+ );
 
-previousTime=timestamp;
-
-update(dt);
-draw();
-
-requestAnimationFrame(loop);
+ lastFrame=timestamp;
+ update(dt);
+ draw();
+ requestAnimationFrame(loop);
 }
 
-/* KEYBOARD */
+/* CONTROLS */
 
 window.addEventListener("keydown",e=>{
-const key=e.key.toLowerCase();
+ const key=e.key.toLowerCase();
 
-if([" ","arrowup","arrowdown","arrowleft","arrowright"].includes(key)){
-e.preventDefault();
-}
+ if([" ","arrowup","arrowdown","arrowleft","arrowright"].includes(key)){
+  e.preventDefault();
+ }
 
-keys[key]=true;
+ keys[key]=true;
 
-if(e.repeat||mode!=="playing")return;
+ if(e.repeat||mode!=="playing")return;
 
-if(key===" "||key==="w"||key==="arrowup")jump();
-if(key==="shift")photonRush();
-if(key==="j")radiantLance();
-if(key==="k")piercingLight();
-if(key==="n")solarGuard();
-if(key==="e")hardLightStep();
-if(key==="f")darkReversal();
-if(key==="r")eclipseDomain();
+ if(key===" "||key==="w"||key==="arrowup")jump();
+ if(key==="shift")photonRush();
+ if(key==="j")radiantLance();
+ if(key==="k")piercingLight();
+ if(key==="e")hardLightStep();
+ if(key==="f")darkReversal();
+ if(key==="n")solarGuard();
+ if(key==="r")eclipseDomain();
 });
 
 window.addEventListener("keyup",e=>{
-keys[e.key.toLowerCase()]=false;
+ keys[e.key.toLowerCase()]=false;
 });
 
 window.addEventListener("blur",()=>{
-for(const key in keys)keys[key]=false;
+ for(const key in keys)keys[key]=false;
 });
 
-/* BUTTON CONTROLS */
-
 $("jump").onclick=jump;
-$("dash").onclick=photonRush;
-$("slash").onclick=radiantLance;
+$("rush").onclick=photonRush;
+$("lance").onclick=radiantLance;
 $("beam").onclick=piercingLight;
-$("shield").onclick=solarGuard;
 $("step").onclick=hardLightStep;
 $("reverse").onclick=darkReversal;
+$("guard").onclick=solarGuard;
 $("domain").onclick=eclipseDomain;
 
 $("difficulty").onchange=e=>{
-difficulty=e.target.value;
-if(mode!=="menu")startChapter(chapter);
+ difficulty=e.target.value;
+ if(mode!=="menu")startChapter(chapter);
 };
 
 $("restart").onclick=()=>{
-if(mode!=="menu")startChapter(chapter);
+ if(mode!=="menu")startChapter(chapter);
 };
 
-$("menu").onclick=menu;
+$("menu").onclick=showMenu;
 
 $("fullscreen").onclick=async()=>{
-try{
-if(document.fullscreenElement){
-await document.exitFullscreen();
-}else{
-await $("stage").requestFullscreen();
-}
-}catch(e){
-alert("Fullscreen is unavailable in this browser.");
-}
+ try{
+  if(document.fullscreenElement){
+   await document.exitFullscreen();
+  }else{
+   await $("stage").requestFullscreen();
+  }
+ }catch(e){
+  alert("Fullscreen is unavailable in this browser.");
+ }
 };
 
 /* MAIN MENU */
 
-function menu(){
-mode="menu";
+function showMenu(){
+ mode="menu";
+ const progress=savedChapter();
 
-const progress=saved();
-
-screen(
-"THEDARKWITHIN — DLC III",
-"THE LAST LIGHT",
-"The final eclipse is swallowing the world.\n\n"+
-"Cross floating ruins, recover the sparks of dawn, "+
-"master light and darkness, and defeat the Eclipse Sovereign.\n\n"+
-"8 CHAPTERS • LIGHT CONSTRUCTS • DARK REVERSAL • "+
-"ECLIPSE DOMAIN • FINAL BOSS",
-progress>0?"CONTINUE — CHAPTER "+(progress+1):"BEGIN STORY",
-()=>{
-Music.start();
-startChapter(progress);
-},
-"NEW GAME",
-()=>{
-if(!confirm("Restart the story from Chapter 1?"))return;
-
-try{localStorage.removeItem(SAVE);}catch(e){}
-
-Music.start();
-startChapter(0);
-}
-);
+ screen(
+  "THEDARKWITHIN — DLC III",
+  "THE LAST LIGHT",
+  "The final eclipse is swallowing the world.\n\n"+
+  "Cross floating ruins, recover the sparks of dawn, "+
+  "master light and darkness, and defeat the Eclipse Sovereign.\n\n"+
+  "8 CHAPTERS • 2.5D ENVIRONMENTS • 3-PHASE BOSS • MUSIC",
+  progress>0?"CONTINUE — CHAPTER "+(progress+1):"BEGIN STORY",
+  ()=>{
+   Music.start();
+   startChapter(progress);
+  },
+  "NEW GAME",
+  ()=>{
+   if(!confirm("Restart the story from Chapter 1?"))return;
+   try{localStorage.removeItem(SAVE)}catch(e){}
+   Music.start();
+   startChapter(0);
+  }
+ );
 }
 
-/* START */
+/* START GAME */
 
-createLevel(0);
-menu();
+makeLevel(0);
+showMenu();
 requestAnimationFrame(loop);
 
 })();
 </script>
-
 </body>
 </html>
