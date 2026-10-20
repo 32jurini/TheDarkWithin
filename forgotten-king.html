@@ -1,1694 +1,2090 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>The Forgotten King — 2.5D Edition</title>
-<style>
-*{box-sizing:border-box}
-body{
- margin:0;
- color:#fff0dc;
- background:radial-gradient(ellipse at top,#392441,#090711 75%);
- font-family:Georgia,serif;
- min-height:100vh;
-}
-header{
- padding:17px 5%;
- display:flex;
- justify-content:space-between;
- align-items:center;
- gap:15px;
- flex-wrap:wrap;
- background:#120e1be8;
- border-bottom:1px solid #b48d67;
- box-shadow:0 8px 35px #0008;
-}
-header h1{
- margin:0;
- color:#ffe2a8;
- font-size:clamp(20px,4vw,34px);
- letter-spacing:2px;
-}
-a{color:#ffdaa0;text-decoration:none;font:13px Arial}
-main{max-width:1130px;margin:24px auto;padding:0 14px}
-.controls{
- display:flex;
- justify-content:center;
- align-items:center;
- flex-wrap:wrap;
- gap:10px;
- padding:13px;
- margin:12px 0;
- background:#201727d9;
- border:1px solid #8b6885;
- border-radius:12px;
-}
-button,select{
- cursor:pointer;
- border-radius:8px;
- border:1px solid #cb9d6f;
- background:linear-gradient(#60475d,#302238);
- color:#fff0d6;
- font-weight:bold;
- padding:12px 15px;
- font-family:Arial;
- transition:.2s;
-}
-button:hover{
- background:linear-gradient(#86617d,#4b3052);
- transform:translateY(-1px);
-}
-label{font:13px Arial}
-#stage{
- position:relative;
- overflow:hidden;
- background:#0c0a19;
- border:2px solid #d2aa75;
- border-radius:10px;
- box-shadow:0 0 50px #b56dca27,0 25px 70px #0009;
-}
-canvas{
- display:block;
- width:100%;
- height:auto;
- image-rendering:auto;
-}
-#hud{
- position:absolute;
- top:12px;
- left:12px;
- z-index:3;
- display:none;
- padding:12px;
- background:#100c1cd9;
- border:1px solid #cda679;
- border-radius:10px;
- backdrop-filter:blur(10px);
- font:13px Arial;
- max-width:65%;
-}
-#hudTitle{color:#ffdda0;font-weight:bold}
-#objective{margin:7px 0}
-#health{
- background:#3b2537;
- width:185px;
- height:13px;
- border-radius:15px;
- overflow:hidden;
- border:1px solid #ae6e71;
-}
-#healthFill{
- background:linear-gradient(90deg,#f25273,#ffb781);
- height:100%;
- width:100%;
- transition:width .2s;
-}
-#bossHud{
- display:none;
- position:absolute;
- top:12px;
- right:12px;
- width:32%;
- z-index:3;
- background:#100c1cdd;
- border:1px solid #b77bd7;
- padding:12px;
- border-radius:10px;
- text-align:center;
- font:12px Arial;
-}
-#bossBar{
- height:13px;
- background:#2b1736;
- margin-top:8px;
- border-radius:10px;
- overflow:hidden;
-}
-#bossFill{
- width:100%;
- height:100%;
- background:linear-gradient(90deg,#963edf,#ff77bb);
-}
-#overlay{
- position:absolute;
- inset:0;
- display:flex;
- flex-direction:column;
- align-items:center;
- justify-content:center;
- text-align:center;
- z-index:10;
- padding:25px;
- background:radial-gradient(ellipse at center,#44284af1,#080711f9 80%);
- backdrop-filter:blur(7px);
-}
-#smallTitle{
- color:#dcb781;
- letter-spacing:3px;
- font:12px Arial;
-}
-#bigTitle{
- font-size:clamp(29px,5vw,59px);
- color:#ffe3ad;
- text-shadow:0 0 32px #f6b96d77;
- margin:17px 0;
-}
-#story{
- max-width:740px;
- white-space:pre-line;
- line-height:1.75;
- font-size:clamp(14px,2vw,19px);
-}
-#notice{
- display:none;
- position:absolute;
- bottom:20px;
- left:50%;
- transform:translateX(-50%);
- padding:11px 18px;
- background:#181024e8;
- border:1px solid #e5b77d;
- border-radius:7px;
- text-align:center;
- font:bold 13px Arial;
- z-index:5;
-}
-.help{
- text-align:center;
- color:#bcaebf;
- font:12px/2 Arial;
- margin:15px;
-}
-#stage:fullscreen{
- width:100vw;
- height:100vh;
- border:0;
- display:flex;
- align-items:center;
- background:#080710;
-}
-#stage:fullscreen canvas{
- width:100%;
- height:100%;
- object-fit:contain;
-}
-footer{
- text-align:center;
- color:#a797ad;
- font:12px Arial;
- padding:27px;
-}
-@media(max-width:650px){
- #hud{font-size:10px;padding:7px}
- #health{width:105px}
- #bossHud{font-size:9px;padding:7px}
- button{font-size:11px;padding:9px}
-}
-</style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>The Forgotten King — Reforged</title>
+  <style>
+    * { box-sizing: border-box; }
+    html, body {
+      margin: 0;
+      padding: 0;
+      background: radial-gradient(circle at top, #2d1d38 0%, #0b0810 70%);
+      color: #f7ecd9;
+      font-family: Arial, Helvetica, sans-serif;
+      min-height: 100%;
+    }
+
+    body {
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+    }
+
+    header {
+      padding: 18px 22px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 16px;
+      flex-wrap: wrap;
+      border-bottom: 1px solid rgba(255, 207, 138, 0.22);
+      background: linear-gradient(180deg, rgba(34, 21, 41, 0.95), rgba(17, 12, 22, 0.92));
+      box-shadow: 0 12px 40px rgba(0,0,0,0.35);
+    }
+
+    .logo {
+      font-size: clamp(24px, 4vw, 38px);
+      font-weight: 900;
+      letter-spacing: 2px;
+      color: #ffe4ad;
+      text-shadow: 0 0 16px rgba(255, 212, 133, 0.16);
+    }
+
+    .logo span {
+      color: #c9a3ff;
+    }
+
+    a.back-link {
+      color: #ffe3b5;
+      text-decoration: none;
+      padding: 10px 14px;
+      border-radius: 10px;
+      border: 1px solid rgba(255, 208, 134, 0.28);
+      background: rgba(255,255,255,0.04);
+      font-weight: bold;
+    }
+
+    main {
+      width: min(1180px, calc(100% - 20px));
+      margin: 18px auto 30px;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    .top-panel, .bottom-panel {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      align-items: center;
+      justify-content: center;
+      padding: 12px;
+      border: 1px solid rgba(255, 208, 137, 0.18);
+      border-radius: 14px;
+      background: linear-gradient(180deg, rgba(38,25,48,0.88), rgba(21,15,29,0.92));
+      box-shadow: 0 12px 30px rgba(0,0,0,0.18);
+    }
+
+    button, select {
+      padding: 10px 13px;
+      border-radius: 10px;
+      border: 1px solid rgba(255, 208, 137, 0.32);
+      background: linear-gradient(180deg, #5d4062, #2c2235);
+      color: #fff3dd;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    button:hover, select:hover {
+      filter: brightness(1.1);
+    }
+
+    #stage {
+      position: relative;
+      border-radius: 16px;
+      overflow: hidden;
+      border: 2px solid rgba(255, 208, 137, 0.38);
+      box-shadow:
+        0 24px 80px rgba(0,0,0,0.4),
+        0 0 80px rgba(198, 162, 255, 0.08);
+      background: #09070d;
+    }
+
+    canvas {
+      display: block;
+      width: 100%;
+      height: auto;
+      background: #0d0b11;
+    }
+
+    #overlay {
+      position: absolute;
+      inset: 0;
+      z-index: 20;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      padding: 24px;
+      text-align: center;
+      background:
+        radial-gradient(circle at center, rgba(78, 48, 83, 0.75), rgba(8,7,12,0.95));
+      backdrop-filter: blur(6px);
+    }
+
+    #overlayTag {
+      font-size: 12px;
+      letter-spacing: 3px;
+      color: #f7cb86;
+      margin-bottom: 8px;
+    }
+
+    #overlayTitle {
+      margin: 8px 0 12px;
+      font-size: clamp(28px, 5vw, 60px);
+      line-height: 1;
+      font-weight: 900;
+      color: #ffe0a9;
+      text-shadow: 0 0 24px rgba(255, 203, 108, 0.18);
+    }
+
+    #overlayText {
+      max-width: 760px;
+      line-height: 1.8;
+      font-size: clamp(14px, 2vw, 19px);
+      white-space: pre-line;
+      color: #f8eedf;
+    }
+
+    #overlayButtons {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 12px;
+      margin-top: 18px;
+    }
+
+    #hud {
+      position: absolute;
+      top: 14px;
+      left: 14px;
+      z-index: 10;
+      min-width: 300px;
+      max-width: calc(100% - 28px);
+      padding: 12px;
+      background: rgba(17, 12, 23, 0.78);
+      border: 1px solid rgba(255, 211, 145, 0.18);
+      border-radius: 12px;
+      backdrop-filter: blur(6px);
+      display: none;
+    }
+
+    #bossHud {
+      position: absolute;
+      top: 14px;
+      right: 14px;
+      z-index: 10;
+      min-width: 260px;
+      padding: 12px;
+      text-align: center;
+      background: rgba(17, 12, 23, 0.82);
+      border: 1px solid rgba(201, 163, 255, 0.25);
+      border-radius: 12px;
+      backdrop-filter: blur(6px);
+      display: none;
+    }
+
+    .bar-bg {
+      width: 100%;
+      height: 12px;
+      background: rgba(255,255,255,0.09);
+      border-radius: 999px;
+      overflow: hidden;
+      margin-top: 8px;
+    }
+
+    .bar-fill {
+      height: 100%;
+      width: 100%;
+      background: linear-gradient(90deg, #f26c7c, #ffcf8b);
+      border-radius: 999px;
+    }
+
+    .boss-fill {
+      background: linear-gradient(90deg, #a46dff, #f8be77);
+    }
+
+    #notice {
+      position: absolute;
+      bottom: 16px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 11;
+      padding: 10px 14px;
+      border-radius: 10px;
+      background: rgba(20, 14, 28, 0.88);
+      border: 1px solid rgba(255, 211, 145, 0.25);
+      font-weight: bold;
+      display: none;
+      text-align: center;
+      pointer-events: none;
+    }
+
+    .controls {
+      font-size: 12px;
+      color: #ccbdb0;
+      text-align: center;
+      line-height: 1.9;
+      padding-bottom: 6px;
+    }
+
+    #stage:fullscreen {
+      width: 100vw;
+      height: 100vh;
+      border-radius: 0;
+      border: none;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: #07050b;
+    }
+
+    #stage:fullscreen canvas {
+      width: 100%;
+      height: auto;
+      max-height: 100vh;
+      object-fit: contain;
+    }
+
+    footer {
+      margin-top: auto;
+      text-align: center;
+      padding: 22px 14px 28px;
+      color: #9e8d8d;
+      font-size: 12px;
+      letter-spacing: 1px;
+    }
+
+    @media (max-width: 760px) {
+      #hud, #bossHud {
+        font-size: 11px;
+      }
+      .controls {
+        font-size: 11px;
+      }
+    }
+  </style>
 </head>
 <body>
-
-<header>
-<h1>♛ THE FORGOTTEN KING</h1>
-<a href="index.html">← BACK TO THE DARK WITHIN</a>
-</header>
-
-<main>
-
-<div class="controls">
-<label>DIFFICULTY
-<select id="difficulty">
-<option value="easy">Easy</option>
-<option value="medium" selected>Medium</option>
-<option value="hard">Hard</option>
-<option value="extreme">Extreme</option>
-</select>
-</label>
-<button id="fullButton">⛶ FULLSCREEN</button>
-<button id="restartButton">↻ RESTART CHAPTER</button>
-<button id="menuButton">☰ MENU</button>
-</div>
-
-<div id="stage">
-<canvas id="canvas" width="960" height="540"></canvas>
-
-<div id="hud">
-<div id="hudTitle"></div>
-<div id="objective"></div>
-<div id="health"><div id="healthFill"></div></div>
-</div>
-
-<div id="bossHud">
-<strong id="bossName">THE CORRUPTED KING</strong>
-<div id="bossBar"><div id="bossFill"></div></div>
-</div>
-
-<div id="notice"></div>
-
-<div id="overlay">
-<div id="smallTitle">THEDARKWITHIN — DLC I</div>
-<h2 id="bigTitle">THE FORGOTTEN KING</h2>
-<p id="story"></p>
-<div class="controls">
-<button id="continueButton">BEGIN STORY</button>
-<button id="newButton">NEW GAME</button>
-</div>
-</div>
-</div>
-
-<div class="controls">
-<button id="swordButton">SPACE / J — SWORD</button>
-<button id="goldButton">M — GOLDEN SLASH</button>
-<button id="shieldButton">N — KING'S SHIELD</button>
-<button id="flameButton">K — SACRED FLAME</button>
-<button id="interactButton">E — INTERACT</button>
-</div>
-
-<div class="controls">
-<button id="musicButton">♫ MUSIC: ON</button>
-<label>VOLUME
-<input id="volume" type="range" min="0" max="100" value="35">
-</label>
-</div>
-
-<p class="help">
-WASD / ARROWS — MOVE |
-E — INTERACT |
-SPACE / J — SWORD |
-M — GOLDEN SLASH |
-N — SHIELD |
-K — SACRED FLAME
-</p>
-
-</main>
-
-<footer>
-THE FORGOTTEN KING — CINEMATIC 2.5D EDITION
-</footer>
-
-<script>
-(()=>{
-"use strict";
-
-const $=id=>document.getElementById(id);
-const canvas=$("canvas");
-const ctx=canvas.getContext("2d");
-ctx.imageSmoothingEnabled=true;
-
-const W=960,H=540;
-const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
-const dist=(a,b,c,d)=>Math.hypot(a-c,b-d);
-const keys={};
-const SAVE="tdw-fk-25d-save";
-
-const difficulties={
- easy:{hp:180,enemy:.65,damage:.5,speed:.8},
- medium:{hp:120,enemy:1,damage:1,speed:1},
- hard:{hp:85,enemy:1.5,damage:1.5,speed:1.2},
- extreme:{hp:60,enemy:2,damage:2.3,speed:1.45}
-};
-
-const chapters=[
-{
- name:"The Golden Kingdom",
- theme:"kingdom",
- intro:[
- "NARRATOR: Hundreds of years before TheDarkWithin, King Aldric ruled a peaceful kingdom.",
- "SIR AERON: Your Majesty, strange discoveries have been reported beneath the castle.",
- "KING ALDRIC: Then we shall investigate them together."
- ],
- tasks:[
- ["Speak to the Royal Guard","talk","ROYAL GUARD: Miners have discovered an ancient chamber beneath the castle."],
- ["Speak to the Villager","talk","VILLAGER: My brother disappeared after seeing a strange purple crystal."],
- ["Report to King Aldric","talk","KING ALDRIC: This discovery could change our kingdom forever."]
- ],
- ending:"Deep beneath the golden kingdom, something ancient waits."
-},
-{
- name:"Beneath the Castle",
- theme:"mines",
- intro:[
- "NARRATOR: Aeron and Aldric descend into forgotten tunnels.",
- "SIR AERON: These tunnels were sealed centuries ago.",
- "KING ALDRIC: Something down here is calling to me."
- ],
- tasks:[
- ["Find the Injured Miner","talk","MINER: The crystal speaks! It knows the king's name!"],
- ["Examine the Purple Crystal","talk","BLACK SPIRIT: At last... the king has come."],
- ["Warn King Aldric","talk","SIR AERON: Your Majesty, we must destroy this crystal!"],
- ["Confront the Crystal Guardians","fight",3,"spirit"]
- ],
- ending:"King Aldric reaches toward the crystal, and purple light consumes the chamber."
-},
-{
- name:"The King's Secret",
- theme:"castle",
- intro:[
- "NARRATOR: King Aldric has begun to change.",
- "ROYAL STEWARD: His Majesty spends every night speaking to an unseen voice.",
- "SIR AERON: I will discover the truth."
- ],
- tasks:[
- ["Question the Royal Steward","talk","STEWARD: The king has forbidden anyone from entering his chambers."],
- ["Read the Forbidden Journal","talk","JOURNAL: The crystal contains an entity called the Black Spirit."],
- ["Confront King Aldric","talk","KING ALDRIC: You question my loyalty to this kingdom? Leave!"],
- ["Defeat the Corrupted Guards","fight",4,"guard"]
- ],
- ending:"Aeron learns that the Black Spirit is slowly taking control of his oldest friend."
-},
-{
- name:"The Corrupted Guard",
- theme:"corrupted",
- intro:[
- "NARRATOR: The king orders innocent villagers imprisoned.",
- "SIR AERON: I will not harm the people I swore to protect.",
- "CAPTAIN ROWAN: Then we must stand against the corrupted guards."
- ],
- tasks:[
- ["Speak to Captain Rowan","talk","CAPTAIN ROWAN: The soldiers are not themselves!"],
- ["Defend the Courtyard","fight",5,"guard"],
- ["Defeat the Corrupted Captain","fight",1,"captain"]
- ],
- ending:"The corrupted guards fall. Smoke rises from the eastern village."
-},
-{
- name:"The Fallen Village",
- theme:"village",
- intro:[
- "NARRATOR: The eastern village burns beneath a blood-red sky.",
- "VILLAGE ELDER: Our families are trapped!",
- "SIR AERON: I will clear a path."
- ],
- tasks:[
- ["Find the Village Elder","talk","VILLAGE ELDER: Please save our people!"],
- ["Protect the Villagers","fight",5,"beast"],
- ["Rescue the Survivors","talk","SURVIVOR: Thank you, Sir Aeron!"],
- ["Defeat the Shadow Beast","fight",1,"beastBoss"]
- ],
- ending:"The villagers survive, but Aeron knows the king must be stopped."
-},
-{
- name:"The Forbidden Ritual",
- theme:"ritual",
- intro:[
- "NARRATOR: An ancient altar reveals the Black Spirit's true intentions.",
- "BLACK SPIRIT: Your king desired immortality. I merely gave him what he wanted.",
- "SIR AERON: You deceived him!"
- ],
- tasks:[
- ["Examine the Ancient Altar","talk","BLACK SPIRIT: Nothing can undo the king's choice."],
- ["Destroy the Ritual Guardians","fight",5,"spirit"],
- ["Defeat the Shadow Herald","fight",1,"herald"]
- ],
- ending:"The ritual is broken, but Aldric's transformation is almost complete."
-},
-{
- name:"The Last Loyal Knight",
- theme:"ruins",
- intro:[
- "NARRATOR: The castle falls into ruin.",
- "CAPTAIN ROWAN: The throne room is almost unreachable!",
- "SIR AERON: I made a promise to protect my king. Now I must protect the world."
- ],
- tasks:[
- ["Speak to Captain Rowan","talk","CAPTAIN ROWAN: This may be our final battle."],
- ["Break Through the Royal Guard","fight",6,"guard"],
- ["Defeat the Throne Guardian","fight",1,"guardian"],
- ["Open the Throne Room","talk","BLACK SPIRIT: Your loyalty will destroy you."]
- ],
- ending:"Aeron stands before the final door. Beyond it, his friend awaits."
-},
-{
- name:"Birth of the Purple King",
- theme:"final",
- intro:[
- "NARRATOR: The ruined throne room trembles beneath an unnatural eclipse.",
- "KING ALDRIC: Join me, Aeron. Together we can save everyone.",
- "SIR AERON: I came to save you, not serve the darkness.",
- "KING ALDRIC: Then you leave me no choice."
- ],
- tasks:[
- ["Confront King Aldric","talk","SIR AERON: Forgive me, old friend."],
- ["Defeat King Aldric","fight",1,"aldric"],
- ["Defeat the Purple King","fight",1,"purpleKing"]
- ],
- ending:"The kingdom is lost. The Purple King is born. Centuries later, TheDarkWithin will begin."
-}
-];
-
-const palettes={
- kingdom:["#e4a97a","#ad7593","#403052","#ffe0a2"],
- mines:["#4b365d","#22213c","#101323","#cc91ff"],
- castle:["#a28ca8","#504567","#201a31","#f4c885"],
- corrupted:["#91426a","#47244b","#1b112c","#ea79f7"],
- village:["#e49b67","#88516a","#382439","#ffc58a"],
- ritual:["#684280","#30203f","#160e27","#e27bff"],
- ruins:["#ba6d72","#593747","#271a2d","#ffb09a"],
- final:["#674581","#351f4e","#140d23","#f19aff"]
-};
-
-let chapter=0;
-let stage=0;
-let mode="menu";
-let difficulty="medium";
-let time=0;
-let previousTime=0;
-let storyLines=[];
-let storyIndex=0;
-let onSceneEnd=null;
-let enemies=[];
-let projectiles=[];
-let particles=[];
-let noticeTime=0;
-let battleStarted=false;
-
-const player={
- x:480,y:420,r:17,
- dir:1,hp:120,maxHp:120,
- swordCd:0,goldCd:0,
- shieldCd:0,shield:0,
- flameCd:0,slash:0,
- inv:0
-};
-
-function save(){
- try{
- const old=Number(localStorage.getItem(SAVE)||0);
- localStorage.setItem(SAVE,String(Math.max(chapter,old)));
- }catch(e){}
-}
-
-function progress(){
- try{
- return clamp(Number(localStorage.getItem(SAVE)||0),0,7);
- }catch(e){return 0;}
-}
-
-function notify(msg,duration=1.7){
- $("notice").textContent=msg;
- $("notice").style.display="block";
- noticeTime=duration;
-}
-
-function showScreen(label,title,text,button,action,secondary){
- mode="scene";
- $("overlay").style.display="flex";
- $("smallTitle").textContent=label;
- $("bigTitle").textContent=title;
- $("story").textContent=text;
- $("continueButton").textContent=button;
- $("continueButton").onclick=action;
- $("newButton").style.display=secondary?"inline-block":"none";
- $("hud").style.display="none";
- $("bossHud").style.display="none";
-}
-
-function cutscene(lines,done,title){
- storyLines=lines;
- storyIndex=0;
- onSceneEnd=done;
- function next(){
-  if(storyIndex>=storyLines.length){
-   $("overlay").style.display="none";
-   $("hud").style.display="block";
-   mode="playing";
-   const cb=onSceneEnd;
-   onSceneEnd=null;
-   if(cb)cb();
-   return;
-  }
-  const line=storyLines[storyIndex++];
-  showScreen(
-   "STORY CUTSCENE",
-   title||chapters[chapter].name,
-   line,
-   storyIndex===storyLines.length?"CONTINUE":"NEXT →",
-   next
-  );
- }
- next();
-}
-
-function menu(){
- mode="menu";
- $("overlay").style.display="flex";
- $("smallTitle").textContent="THEDARKWITHIN — DLC I";
- $("bigTitle").textContent="THE FORGOTTEN KING";
- $("story").textContent=
- "Hundreds of years before TheDarkWithin, "+
- "a loyal knight attempts to save his kingdom from an ancient darkness.\n\n"+
- "Eight chapters • 2.5D environments • Cinematic battles • Royal soundtrack";
- $("continueButton").textContent=progress()?
- "CONTINUE — CHAPTER "+(progress()+1):"BEGIN STORY";
- $("continueButton").onclick=()=>{
-  Music.start();
-  startChapter(progress());
- };
- $("newButton").style.display="inline-block";
- $("newButton").onclick=()=>{
-  if(!confirm("Begin again from Chapter 1?"))return;
-  try{localStorage.removeItem(SAVE);}catch(e){}
-  Music.start();
-  startChapter(0);
- };
- $("hud").style.display="none";
- $("bossHud").style.display="none";
-}
-
-function startChapter(n){
- chapter=n;
- stage=0;
- enemies=[];
- projectiles=[];
- particles=[];
- battleStarted=false;
- const d=difficulties[difficulty];
- Object.assign(player,{
-  x:480,y:420,dir:1,
-  hp:d.hp,maxHp:d.hp,
-  swordCd:0,goldCd:0,
-  shieldCd:0,shield:0,
-  flameCd:0,slash:0,inv:1
- });
- save();
- Music.reset();
- cutscene(
-  chapters[n].intro,
-  beginTask,
-  "CHAPTER "+(n+1)+": "+chapters[n].name
- );
-}
-
-function currentTask(){
- return chapters[chapter].tasks[stage];
-}
-
-function beginTask(){
- battleStarted=false;
- const task=currentTask();
- if(task&&task[1]==="fight")spawnEnemies(task);
- updateHUD();
-}
-
-function nextTask(){
- stage++;
- if(stage>=chapters[chapter].tasks.length){
-  finishChapter();
- }else{
-  beginTask();
- }
-}
-
-function finishChapter(){
- cutscene([
-  "CHAPTER "+(chapter+1)+" COMPLETE",
-  chapters[chapter].ending
- ],()=>{
-  if(chapter<7)startChapter(chapter+1);
-  else victory();
- },"THE FORGOTTEN KING");
-}
-
-function victory(){
- showScreen(
-  "THE FORGOTTEN KING — FINALE",
-  "THE END",
-  "King Aldric has fallen.\n"+
-  "The Black Spirit survives beneath the ruins.\n"+
-  "The kingdom is forgotten, but its darkness will return.\n\n"+
-  "THANK YOU FOR PLAYING THE FORGOTTEN KING.",
-  "RETURN TO MENU",
-  menu
- );
-}
-
-function interact(){
- if(mode!=="playing")return;
- const task=currentTask();
- if(task&&task[1]==="talk"){
-  cutscene([task[2]],nextTask,task[0]);
- }
-}
-
-function updateHUD(){
- $("hudTitle").textContent=
- "CHAPTER "+(chapter+1)+" — "+chapters[chapter].name;
- const task=currentTask();
- $("objective").textContent=task?
- "OBJECTIVE: "+task[0]:"CHAPTER COMPLETE";
- $("healthFill").style.width=
- clamp(player.hp/player.maxHp*100,0,100)+"%";
-}
-
-function burst(x,y,color,count=14){
- for(let i=0;i<count;i++){
-  const a=Math.random()*Math.PI*2;
-  const speed=35+Math.random()*165;
-  particles.push({
-   x,y,vx:Math.cos(a)*speed,
-   vy:Math.sin(a)*speed,
-   life:.3+Math.random()*.5,color,
-   size:2+Math.random()*4
-  });
- }
-}
-
-const enemyTypes={
- guard:[80,11,75,22,"#936ab4"],
- captain:[300,18,80,32,"#a858d4"],
- beast:[105,13,100,25,"#954f96"],
- beastBoss:[420,22,75,42,"#b64d9a"],
- spirit:[115,15,95,24,"#b05fe6"],
- herald:[480,22,85,40,"#c363ef"],
- guardian:[590,26,85,43,"#9b82bc"],
- aldric:[750,24,95,45,"#d1a2df"],
- purpleKing:[1350,30,90,62,"#963fdf"]
-};
-
-function spawnEnemies(task){
- enemies=[];
- projectiles=[];
- battleStarted=true;
- const type=task[3];
- const data=enemyTypes[type];
- const d=difficulties[difficulty];
-
- for(let i=0;i<task[2];i++){
-  const angle=2*Math.PI*i/task[2];
-  const boss=task[2]===1;
-  const hp=data[0]*d.enemy;
-  enemies.push({
-   x:boss?480:480+250*Math.cos(angle),
-   y:boss?230:290+110*Math.sin(angle),
-   vx:0,
-   hp,maxHp:hp,
-   damage:data[1]*d.damage,
-   speed:data[2]*d.speed,
-   r:data[3],color:data[4],
-   type,flash:0,
-   attack:1,shoot:1.5,
-   dead:false
-  });
- }
-
- if(task[3]==="purpleKing"){
-  cutscene([
-   "BLACK SPIRIT: Your friend is gone. Behold the Purple King!",
-   "SIR AERON: Aldric... I am sorry.",
-   "THE PURPLE KING: THE KINGDOM IS MINE FOREVER!"
-  ],()=>{},"THE FINAL TRANSFORMATION");
- }
-}
-
-function hurtEnemy(e,dmg){
- if(e.dead)return;
- e.hp-=dmg;
- e.flash=.15;
- burst(e.x,e.y,"#ffe3b1",8);
- if(e.hp<=0){
-  e.dead=true;
-  burst(e.x,e.y,e.color,40);
- }
-}
-
-function hurtPlayer(dmg){
- if(player.inv>0||player.shield>0||mode!=="playing")return;
- player.hp-=dmg;
- player.inv=.8;
- burst(player.x,player.y,"#ff8198",15);
- if(player.hp<=0){
-  cutscene([
-   "SIR AERON: I cannot fall... not while the kingdom needs me.",
-   "NARRATOR: The loyal knight rises to fight once more."
-  ],()=>{
-   player.hp=player.maxHp;
-   player.inv=2;
-   player.x=480;
-   player.y=420;
-   if(currentTask()?.[1]==="fight")spawnEnemies(currentTask());
-  },"YOU HAVE FALLEN");
- }
-}
-
-function sword(){
- if(mode!=="playing"||player.swordCd>0)return;
- player.swordCd=.36;
- player.slash=.23;
- burst(player.x+player.dir*45,player.y-10,"#f2efff",18);
- for(const e of enemies){
-  if(!e.dead&&
-    dist(player.x,player.y,e.x,e.y)<105+e.r&&
-    (e.x-player.x)*player.dir>-35){
-   hurtEnemy(e,37);
-  }
- }
- checkBattle();
-}
-
-function goldenSlash(){
- if(mode!=="playing"||player.goldCd>0)return;
- player.goldCd=2.5;
- burst(player.x,player.y,"#ffdc85",55);
- for(const e of enemies){
-  if(!e.dead&&dist(player.x,player.y,e.x,e.y)<180+e.r){
-   hurtEnemy(e,95);
-  }
- }
- notify("GOLDEN SLASH!");
- checkBattle();
-}
-
-function kingsShield(){
- if(mode!=="playing"||player.shieldCd>0)return;
- player.shieldCd=5;
- player.shield=2.3;
- burst(player.x,player.y,"#ffe0a0",35);
- notify("KING'S SHIELD!");
-}
-
-function sacredFlame(){
- if(mode!=="playing"||player.flameCd>0)return;
- player.flameCd=1.25;
- projectiles.push({
-  x:player.x+player.dir*25,
-  y:player.y-16,
-  vx:player.dir*550,vy:0,
-  r:15,damage:85,life:2,
-  good:true
- });
- burst(player.x,player.y,"#ffb66b",15);
-}
-
-function checkBattle(){
- if(mode!=="playing")return;
- const task=currentTask();
- if(!task||task[1]!=="fight")return;
- if(enemies.some(e=>!e.dead))return;
- if(!battleStarted)return;
- battleStarted=false;
- if(task[3]==="aldric"){
-  cutscene([
-   "NARRATOR: King Aldric collapses to his knees.",
-   "SIR AERON: It is over. Please come back.",
-   "BLACK SPIRIT: FOOLISH KNIGHT! THE KING HAS ONLY JUST BEGUN!",
-   "NARRATOR: Purple fire engulfs Aldric's crown."
-  ],nextTask,"THE KING'S TRANSFORMATION");
- }else nextTask();
-}
-
-function update(dt){
- time+=dt;
-
- if(noticeTime>0){
-  noticeTime-=dt;
-  if(noticeTime<=0)$("notice").style.display="none";
- }
-
- for(let i=particles.length-1;i>=0;i--){
-  const p=particles[i];
-  p.x+=p.vx*dt;
-  p.y+=p.vy*dt;
-  p.life-=dt;
-  if(p.life<=0)particles.splice(i,1);
- }
-
- if(mode!=="playing")return;
-
- for(const k of ["swordCd","goldCd","shieldCd","shield","flameCd","slash","inv"]){
-  player[k]=Math.max(0,player[k]-dt);
- }
-
- let mx=Number(!!(keys.d||keys.arrowright))-
-        Number(!!(keys.a||keys.arrowleft));
- let my=Number(!!(keys.s||keys.arrowdown))-
-        Number(!!(keys.w||keys.arrowup));
- const len=Math.hypot(mx,my);
-
- if(len){
-  mx/=len;
-  my/=len;
-  player.x+=mx*205*dt;
-  player.y+=my*205*dt;
-  if(mx)player.dir=mx>0?1:-1;
- }
-
- player.x=clamp(player.x,30,930);
- player.y=clamp(player.y,220,495);
-
- if(currentTask()?.[1]==="fight"){
-  for(const e of enemies){
-   if(e.dead)continue;
-
-   e.attack-=dt;
-   e.shoot-=dt;
-   e.flash=Math.max(0,e.flash-dt);
-
-   const dx=player.x-e.x;
-   const dy=player.y-e.y;
-   const d=Math.hypot(dx,dy)||1;
-
-   if(d>player.r+e.r+6){
-    e.x+=dx/d*e.speed*dt;
-    e.y+=dy/d*e.speed*dt;
-   }else if(e.attack<=0){
-    hurtPlayer(e.damage);
-    e.attack=1.2;
-   }
-
-   if(mode!=="playing")break;
-
-   if(e.r>=30&&e.shoot<=0){
-    projectiles.push({
-     x:e.x,y:e.y,
-     vx:dx/d*235,
-     vy:dy/d*235,
-     r:12,damage:e.damage,
-     life:3,good:false
-    });
-    e.shoot=1.6;
-   }
-  }
- }
-
- for(let i=projectiles.length-1;i>=0;i--){
-  const p=projectiles[i];
-
-  p.x+=p.vx*dt;
-  p.y+=p.vy*dt;
-  p.life-=dt;
-  let hit=false;
-
-  if(p.good){
-   for(const e of enemies){
-    if(!e.dead&&dist(p.x,p.y,e.x,e.y)<p.r+e.r){
-     hurtEnemy(e,p.damage);
-     hit=true;
-     break;
-    }
-   }
-  }else if(dist(p.x,p.y,player.x,player.y)<p.r+player.r){
-   hurtPlayer(p.damage);
-   hit=true;
-  }
-
-  if(hit||p.life<=0||
-    p.x<0||p.x>W||p.y<0||p.y>H){
-   projectiles.splice(i,1);
-  }
- }
-
- checkBattle();
- updateHUD();
-
- const boss=enemies.find(e=>!e.dead&&e.r>=32);
- $("bossHud").style.display=boss?"block":"none";
- if(boss){
-  $("bossName").textContent=boss.type.toUpperCase();
-  $("bossFill").style.width=
-   Math.max(0,boss.hp/boss.maxHp*100)+"%";
- }
-}
-
-/* 2.5D ENVIRONMENT */
-
-function glow(x,y,r,color){
- const g=ctx.createRadialGradient(x,y,0,x,y,r);
- g.addColorStop(0,color);
- g.addColorStop(1,"transparent");
- ctx.fillStyle=g;
- ctx.fillRect(x-r,y-r,r*2,r*2);
-}
-
-function mountain(x,y,w,h,color){
- ctx.fillStyle=color;
- ctx.beginPath();
- ctx.moveTo(x-w/2,y);
- ctx.lineTo(x,y-h);
- ctx.lineTo(x+w/2,y);
- ctx.closePath();
- ctx.fill();
-
- ctx.fillStyle="#ffffff12";
- ctx.beginPath();
- ctx.moveTo(x,y-h);
- ctx.lineTo(x-w*.22,y-h*.35);
- ctx.lineTo(x,y-h*.5);
- ctx.closePath();
- ctx.fill();
-}
-
-function tower(x,y,s,color){
- ctx.save();
- ctx.translate(x,y);
- ctx.scale(s,s);
-
- const g=ctx.createLinearGradient(-42,0,48,0);
- g.addColorStop(0,"#211827");
- g.addColorStop(.3,color);
- g.addColorStop(.75,color);
- g.addColorStop(1,"#281a31");
-
- ctx.fillStyle=g;
- ctx.fillRect(-42,-180,84,180);
-
- ctx.fillStyle="#39203e";
- ctx.beginPath();
- ctx.moveTo(-54,-180);
- ctx.lineTo(0,-250);
- ctx.lineTo(54,-180);
- ctx.fill();
-
- ctx.fillStyle="#c6a0d0";
- ctx.beginPath();
- ctx.moveTo(-47,-182);
- ctx.lineTo(0,-246);
- ctx.lineTo(0,-182);
- ctx.fill();
-
- ctx.fillStyle="#f8d08b";
- ctx.shadowColor="#ffe0a4";
- ctx.shadowBlur=20;
- ctx.fillRect(-12,-130,24,55);
- ctx.shadowBlur=0;
-
- for(let i=0;i<7;i++){
-  ctx.strokeStyle="#18121c33";
-  ctx.beginPath();
-  ctx.moveTo(-42,-150+i*22);
-  ctx.lineTo(42,-150+i*22);
-  ctx.stroke();
- }
-
- ctx.restore();
-}
-
-function drawTree(x,y,s){
- ctx.save();
- ctx.translate(x,y);
- ctx.scale(s,s);
-
- ctx.fillStyle="#241c29";
- ctx.fillRect(-8,-120,16,150);
-
- for(const [dx,dy,r] of [
-  [0,-150,55],
-  [-30,-125,36],
-  [31,-119,40]
- ]){
-  const g=ctx.createRadialGradient(dx-18,dy-20,2,dx,dy,r);
-  g.addColorStop(0,"#7c6886");
-  g.addColorStop(.4,"#393249");
-  g.addColorStop(1,"#171827");
-  ctx.fillStyle=g;
-  ctx.beginPath();
-  ctx.arc(dx,dy,r,0,Math.PI*2);
-  ctx.fill();
- }
-
- ctx.restore();
-}
-
-function drawCrystal(x,y){
- const pulse=Math.sin(time*4)*7;
- glow(x,y,110+pulse,"#a855ff65");
-
- ctx.fillStyle="#6630a0";
- ctx.shadowColor="#d67bff";
- ctx.shadowBlur=35;
- ctx.beginPath();
- ctx.moveTo(x,y-68);
- ctx.lineTo(x+42,y-5);
- ctx.lineTo(x,y+55);
- ctx.lineTo(x-42,y-5);
- ctx.fill();
-
- ctx.fillStyle="#e8b1ff";
- ctx.beginPath();
- ctx.moveTo(x,y-58);
- ctx.lineTo(x+12,y);
- ctx.lineTo(x,y+39);
- ctx.fill();
-
- ctx.shadowBlur=0;
-}
-
-function drawBackground(){
- const theme=chapters[chapter].theme;
- const [top,middle,bottom,accent]=palettes[theme];
-
- let sky=ctx.createLinearGradient(0,0,0,H);
- sky.addColorStop(0,top);
- sky.addColorStop(.56,middle);
- sky.addColorStop(1,bottom);
- ctx.fillStyle=sky;
- ctx.fillRect(0,0,W,H);
-
- glow(720,110,260,accent+"55");
-
- ctx.fillStyle="#ffebc8aa";
- ctx.beginPath();
- ctx.arc(715,120,43,0,Math.PI*2);
- ctx.fill();
-
- const layers=[
-  {y:345,h:135,color:"#70607855",speed:.012},
-  {y:370,h:165,color:"#302c4588",speed:.026},
-  {y:408,h:185,color:"#1e1a2f",speed:.048}
- ];
-
- for(let j=0;j<layers.length;j++){
-  const l=layers[j];
-
-  for(let i=-1;i<9;i++){
-   const x=i*170+
-    Math.sin(time*l.speed+i)*8;
-
-   mountain(
-    x,l.y,
-    220,l.h+(i*29+j*37)%80,
-    l.color
-   );
-  }
- }
-
- if(["kingdom","castle","corrupted","ruins","final"].includes(theme)){
-  tower(198,360,1.15,theme==="kingdom"?"#9b8296":"#665372");
-  tower(750,360,1.13,theme==="kingdom"?"#99849a":"#554366");
-
-  const castle=ctx.createLinearGradient(300,0,680,0);
-  castle.addColorStop(0,"#4c3c53");
-  castle.addColorStop(.45,theme==="kingdom"?"#aa96a1":"#6a5873");
-  castle.addColorStop(1,"#2d213b");
-
-  ctx.fillStyle=castle;
-  ctx.fillRect(300,180,360,177);
-  tower(480,360,1.35,theme==="kingdom"?"#a99ba1":"#624d73");
-
-  ctx.fillStyle="#160e20";
-  ctx.beginPath();
-  ctx.moveTo(427,357);
-  ctx.lineTo(427,282);
-  ctx.arc(480,282,53,Math.PI,0);
-  ctx.lineTo(533,357);
-  ctx.fill();
- }
-
- if(theme==="mines"||theme==="ritual"){
-  ctx.fillStyle="#110d1a";
-
-  for(let i=0;i<16;i++){
-   const x=i*75;
-   ctx.beginPath();
-   ctx.moveTo(x-15,0);
-   ctx.lineTo(x+10,60+i%4*25);
-   ctx.lineTo(x+55,0);
-   ctx.fill();
-  }
-
-  drawCrystal(510,264);
- }
-
- if(theme==="village"){
-  for(let i=0;i<5;i++){
-   const x=15+i*210;
-
-   ctx.fillStyle="#61495a";
-   ctx.fillRect(x,200,140,155);
-
-   ctx.fillStyle="#312237";
-   ctx.beginPath();
-   ctx.moveTo(x-20,205);
-   ctx.lineTo(x+70,115);
-   ctx.lineTo(x+160,205);
-   ctx.fill();
-
-   glow(x+70,270,90,"#ff974d66");
-   ctx.fillStyle="#ffc27c";
-   ctx.fillRect(x+55,260,30,65);
-  }
- }
-
- if(theme==="final"){
-  ctx.fillStyle="#6e4d88";
-  ctx.fillRect(420,160,120,195);
-  glow(480,280,240,"#b467ef44");
-  ctx.strokeStyle="#dc80ff";
-  ctx.lineWidth=7;
-  ctx.shadowColor="#bc5bf9";
-  ctx.shadowBlur=25;
-  ctx.beginPath();
-  ctx.ellipse(480,417,270,80,0,0,Math.PI*2);
-  ctx.stroke();
-  ctx.shadowBlur=0;
- }
-
- if(["kingdom","village"].includes(theme)){
-  for(let i=0;i<5;i++){
-   drawTree(i*247-20,355,.55);
-  }
- }
-
- // Perspective floor
- const floor=ctx.createLinearGradient(0,350,0,H);
- floor.addColorStop(0,"#514458");
- floor.addColorStop(.2,"#30283d");
- floor.addColorStop(1,"#100d1c");
-
- ctx.fillStyle=floor;
- ctx.fillRect(0,355,W,185);
-
- ctx.strokeStyle="#e5bf8d31";
- ctx.lineWidth=2;
-
- for(let y=372;y<H;y+=19+(y-350)*.065){
-  ctx.beginPath();
-  ctx.moveTo(0,y);
-  ctx.lineTo(W,y);
-  ctx.stroke();
- }
-
- for(let x=-600;x<=1500;x+=135){
-  ctx.beginPath();
-  ctx.moveTo(480,353);
-  ctx.lineTo(x,H);
-  ctx.stroke();
- }
-
- for(let i=0;i<65;i++){
-  const x=(i*137)%W;
-  const y=370+(i*97)%169;
-
-  ctx.fillStyle=i%3===0?"#f4c99a23":"#ffffff0c";
-  ctx.beginPath();
-  ctx.ellipse(x,y,8+i%5,2,0,0,Math.PI*2);
-  ctx.fill();
- }
-
- // Animated atmospheric mist
- const mist=ctx.createLinearGradient(0,285,0,455);
- mist.addColorStop(0,"transparent");
- mist.addColorStop(.5,accent+"22");
- mist.addColorStop(1,"transparent");
-
- ctx.fillStyle=mist;
- ctx.fillRect(0,285,W,170);
-
- // Floating motes
- for(let i=0;i<35;i++){
-  const x=(i*193+time*(5+i%5)*2)%W;
-  const y=(i*73+Math.sin(time+i)*14)%H;
-  ctx.globalAlpha=.15+.22*Math.sin(time+i)**2;
-  ctx.fillStyle=accent;
-  ctx.beginPath();
-  ctx.arc(x,y,1.5+i%3*.6,0,Math.PI*2);
-  ctx.fill();
- }
- ctx.globalAlpha=1;
-}
-
-/* SMOOTH ARMORED CHARACTERS */
-
-function drawKnight(x,y,king=false){
- ctx.save();
- ctx.translate(x,y+Math.sin(time*3+x*.01)*1.1);
-
- // Ground contact shadow
- ctx.fillStyle="#0009";
- ctx.beginPath();
- ctx.ellipse(0,31,31,9,0,0,Math.PI*2);
- ctx.fill();
-
- // Cape
- const cape=ctx.createLinearGradient(-28,-25,20,40);
- cape.addColorStop(0,king?"#9c67ca":"#587aab");
- cape.addColorStop(1,"#21192b");
-
- ctx.fillStyle=cape;
- ctx.beginPath();
- ctx.moveTo(-13,-23);
- ctx.quadraticCurveTo(-34,-9,-30,25+Math.sin(time*4)*4);
- ctx.lineTo(13,26);
- ctx.lineTo(16,-22);
- ctx.fill();
-
- // Legs
- for(const lx of [-10,10]){
-  ctx.lineCap="round";
-  ctx.strokeStyle="#25222c";
-  ctx.lineWidth=12;
-  ctx.beginPath();
-  ctx.moveTo(lx,3);
-  ctx.lineTo(lx,24);
-  ctx.stroke();
-
-  ctx.strokeStyle="#a59dab";
-  ctx.lineWidth=3;
-  ctx.beginPath();
-  ctx.moveTo(lx-4,18);
-  ctx.lineTo(lx+4,18);
-  ctx.stroke();
- }
-
- // Chest armor
- const armor=ctx.createLinearGradient(-20,-30,22,12);
- armor.addColorStop(0,"#c1c7d0");
- armor.addColorStop(.43,king?"#d3a971":"#718bb2");
- armor.addColorStop(1,"#242130");
-
- ctx.fillStyle=armor;
- ctx.beginPath();
- ctx.moveTo(-18,-22);
- ctx.quadraticCurveTo(0,-32,18,-22);
- ctx.lineTo(20,7);
- ctx.quadraticCurveTo(0,21,-20,7);
- ctx.closePath();
- ctx.fill();
-
- ctx.strokeStyle="#f4d099";
- ctx.lineWidth=2;
- ctx.stroke();
-
- // Shoulder armor
- for(const s of [-1,1]){
-  ctx.fillStyle=king?"#c09b5b":"#687d9c";
-  ctx.beginPath();
-  ctx.ellipse(s*21,-18,11,13,s*.2,0,Math.PI*2);
-  ctx.fill();
-  ctx.stroke();
- }
-
- // Face
- ctx.fillStyle="#dcc5ad";
- ctx.beginPath();
- ctx.ellipse(0,-37,13,16,0,0,Math.PI*2);
- ctx.fill();
-
- // Helmet
- const helm=ctx.createLinearGradient(-15,-55,15,-30);
- helm.addColorStop(0,"#d2cad6");
- helm.addColorStop(1,"#383142");
-
- ctx.fillStyle=helm;
- ctx.beginPath();
- ctx.moveTo(-15,-41);
- ctx.quadraticCurveTo(-12,-62,0,-55);
- ctx.quadraticCurveTo(17,-62,16,-41);
- ctx.lineTo(10,-29);
- ctx.lineTo(-10,-29);
- ctx.closePath();
- ctx.fill();
-
- ctx.strokeStyle="#edd0a2";
- ctx.stroke();
-
- // Eyes
- const eye=king&&chapter>=2?"#f58aff":"#dcf3ff";
- ctx.fillStyle=eye;
- ctx.shadowColor=eye;
- ctx.shadowBlur=king?12:5;
-
- for(const ex of [-6,6]){
-  ctx.beginPath();
-  ctx.ellipse(ex,-38,3,2,0,0,Math.PI*2);
-  ctx.fill();
- }
- ctx.shadowBlur=0;
-
- // Crown
- if(king){
-  ctx.fillStyle="#f8d68c";
-  ctx.shadowColor="#ffe4a4";
-  ctx.shadowBlur=10;
-  ctx.beginPath();
-  ctx.moveTo(-18,-52);
-  ctx.lineTo(-21,-73);
-  ctx.lineTo(-7,-62);
-  ctx.lineTo(0,-80);
-  ctx.lineTo(7,-62);
-  ctx.lineTo(21,-73);
-  ctx.lineTo(18,-52);
-  ctx.closePath();
-  ctx.fill();
-  ctx.shadowBlur=0;
- }
-
- ctx.restore();
-}
-
-function drawEnemy(e){
- ctx.save();
- ctx.translate(e.x,e.y+Math.sin(time*4+e.x)*2);
-
- const boss=e.r>=32;
- const color=boss?"#df83ff":"#fb77ab";
-
- ctx.fillStyle="#0008";
- ctx.beginPath();
- ctx.ellipse(0,e.r,35,10,0,0,Math.PI*2);
- ctx.fill();
-
- ctx.shadowColor=color;
- ctx.shadowBlur=boss?25:12;
-
- const g=ctx.createLinearGradient(-e.r,-e.r,e.r,e.r);
- g.addColorStop(0,e.flash?"#ffffff":"#ba8ace");
- g.addColorStop(.5,e.flash?"#ffffff":e.color);
- g.addColorStop(1,"#150b21");
-
- ctx.fillStyle=g;
- ctx.beginPath();
- ctx.ellipse(0,0,e.r*.84,e.r*1.15,0,0,Math.PI*2);
- ctx.fill();
-
- ctx.shadowBlur=0;
-
- // Dark hood
- ctx.fillStyle="#20122d";
- ctx.beginPath();
- ctx.moveTo(-e.r*.7,-e.r*.3);
- ctx.quadraticCurveTo(0,-e.r*1.75,e.r*.7,-e.r*.3);
- ctx.closePath();
- ctx.fill();
-
- // Glowing eyes
- ctx.fillStyle=color;
- ctx.shadowColor=color;
- ctx.shadowBlur=15;
-
- for(const ex of [-e.r*.28,e.r*.28]){
-  ctx.beginPath();
-  ctx.ellipse(ex,-3,e.r*.17,4,0,0,Math.PI*2);
-  ctx.fill();
- }
-
- ctx.shadowBlur=0;
-
- if(boss){
-  ctx.fillStyle="#f6cc81";
-  ctx.beginPath();
-  ctx.moveTo(-e.r,-e.r);
-  ctx.lineTo(-e.r,-e.r*1.6);
-  ctx.lineTo(-e.r*.3,-e.r*1.38);
-  ctx.lineTo(0,-e.r*1.84);
-  ctx.lineTo(e.r*.3,-e.r*1.38);
-  ctx.lineTo(e.r,-e.r*1.6);
-  ctx.lineTo(e.r,-e.r);
-  ctx.fill();
- }
-
- ctx.fillStyle="#1a1024";
- ctx.fillRect(-e.r,-e.r-48,e.r*2,9);
- ctx.fillStyle="#ed82ae";
- ctx.fillRect(
-  -e.r,-e.r-48,
-  e.r*2*Math.max(0,e.hp/e.maxHp),9
- );
-
- ctx.restore();
-}
-
-function draw(){
- ctx.clearRect(0,0,W,H);
- drawBackground();
-
- if(mode==="playing"&&currentTask()?.[1]==="talk"){
-  drawKnight(480,270,true);
-  ctx.textAlign="center";
-  ctx.fillStyle="#ffe5ac";
-  ctx.font="bold 24px Arial";
-  ctx.fillText("!",480,178);
-  ctx.font="14px Arial";
-  ctx.fillText("PRESS E TO INTERACT",480,210);
-  ctx.textAlign="left";
- }
-
- for(const e of enemies){
-  if(!e.dead)drawEnemy(e);
- }
-
- if(player.inv<=0||Math.floor(time*12)%2===0){
-  drawKnight(player.x,player.y);
-
-  // Sword
-  ctx.save();
-  ctx.translate(player.x,player.y);
-  ctx.rotate(player.dir>0?-.3:3.4);
-  ctx.fillStyle="#c9e2f6";
-  ctx.shadowColor="#c3e8ff";
-  ctx.shadowBlur=12;
-  ctx.fillRect(22,-53,7,62);
-  ctx.fillStyle="#f9d8a1";
-  ctx.fillRect(14,-7,23,6);
-  ctx.restore();
- }
-
- if(player.slash>0){
-  ctx.strokeStyle="#e4f5ff";
-  ctx.shadowColor="#a9d7ff";
-  ctx.shadowBlur=30;
-  ctx.lineWidth=12;
-  ctx.beginPath();
-  ctx.arc(
-   player.x+player.dir*25,
-   player.y-8,70,
-   Math.PI*1.62,Math.PI*.43
-  );
-  ctx.stroke();
-  ctx.shadowBlur=0;
- }
-
- if(player.shield>0){
-  ctx.strokeStyle="#ffe6a2";
-  ctx.shadowColor="#ffda78";
-  ctx.shadowBlur=28;
-  ctx.lineWidth=6;
-  ctx.beginPath();
-  ctx.arc(player.x,player.y-10,48,0,Math.PI*2);
-  ctx.stroke();
-  ctx.shadowBlur=0;
- }
-
- for(const p of projectiles){
-  const color=p.good?"#ffd28a":"#c774ff";
-  glow(p.x,p.y,p.r*4,color+"66");
-  ctx.fillStyle=color;
-  ctx.shadowColor=color;
-  ctx.shadowBlur=20;
-  ctx.beginPath();
-  ctx.arc(p.x,p.y,p.r,0,Math.PI*2);
-  ctx.fill();
-  ctx.shadowBlur=0;
- }
-
- for(const p of particles){
-  ctx.globalAlpha=clamp(p.life*2,0,1);
-  ctx.fillStyle=p.color;
-  ctx.fillRect(p.x,p.y,p.size,p.size);
- }
- ctx.globalAlpha=1;
-
- if(mode==="playing"&&currentTask()?.[1]==="fight"){
-  ctx.fillStyle="#100b19df";
-  ctx.fillRect(325,12,310,40);
-  ctx.fillStyle="#ffe1aa";
-  ctx.textAlign="center";
-  ctx.font="bold 17px Arial";
-  ctx.fillText(
-   "ENEMIES REMAINING: "+
-   enemies.filter(e=>!e.dead).length,
-   480,38
-  );
-  ctx.textAlign="left";
- }
-}
-
-function frame(t){
- const dt=Math.min((t-(previousTime||t))/1000,.045);
- previousTime=t;
- update(dt);
- draw();
- requestAnimationFrame(frame);
-}
-
-/* ROYAL SOUNDTRACK */
-
-const Music=(()=>{
- let audio,master,timer;
- let enabled=true;
- let volume=.35;
- let current=-1;
- let cursor=0;
- let next=0;
-
- const melodies=[
-  [60,64,67,72,67,64,62,67],
-  [60,59,55,62,60,55,58,54],
-  [64,62,60,55,59,60,62,60],
-  [57,60,62,64,62,60,57,55],
-  [62,65,69,67,65,62,60,57],
-  [60,63,66,67,66,63,59,55],
-  [57,60,64,69,67,64,62,60],
-  [72,67,64,67,69,67,64,62]
- ];
-
- function tone(note,at,length,bass=false){
-  if(!audio||!enabled)return;
-
-  const o=audio.createOscillator();
-  const g=audio.createGain();
-  const filter=audio.createBiquadFilter();
-
-  o.type=bass?"triangle":"sawtooth";
-  o.frequency.value=440*Math.pow(2,(note-69)/12);
-
-  filter.type="lowpass";
-  filter.frequency.value=bass?480:1400;
-
-  g.gain.setValueAtTime(.0001,at);
-  g.gain.linearRampToValueAtTime(bass?.13:.075,at+.025);
-  g.gain.exponentialRampToValueAtTime(.0001,at+length);
-
-  o.connect(filter);
-  filter.connect(g);
-  g.connect(master);
-  o.start(at);
-  o.stop(at+length+.02);
- }
-
- function tick(){
-  if(!audio||audio.state!=="running"||!enabled)return;
-
-  if(current!==chapter){
-   current=chapter;
-   cursor=0;
-   next=audio.currentTime+.04;
-  }
-
-  const beat=30/(105+chapter*8);
-  const notes=melodies[chapter];
-
-  while(next<audio.currentTime+.16){
-   const i=cursor%8;
-   tone(notes[i],next,beat*.85);
-   if(i%2===0){
-    tone(notes[i]-24,next,beat*1.8,true);
-   }
-   cursor++;
-   next+=beat;
-  }
- }
-
- async function start(){
-  try{
-   if(!audio){
-    const AC=window.AudioContext||window.webkitAudioContext;
-    if(!AC)return;
-    audio=new AC();
-    master=audio.createGain();
-    master.gain.value=volume*.5;
-    master.connect(audio.destination);
-   }
-   await audio.resume();
-   if(!timer)timer=setInterval(tick,55);
-  }catch(e){}
- }
-
- function toggle(){
-  enabled=!enabled;
-  $("musicButton").textContent=
-   enabled?"♫ MUSIC: ON":"♫ MUSIC: OFF";
-  if(master&&audio){
-   master.gain.setTargetAtTime(
-    enabled?volume*.5:0,
-    audio.currentTime,.03
-   );
-  }
-  if(enabled)start();
- }
-
- function changeVolume(v){
-  volume=Number(v)/100;
-  if(master&&audio){
-   master.gain.setTargetAtTime(
-    enabled?volume*.5:0,
-    audio.currentTime,.03
-   );
-  }
- }
-
- return{
-  start,toggle,changeVolume,
-  reset:()=>{current=-1;}
- };
-})();
-
-/* KEYBOARD AND BUTTONS */
-
-window.addEventListener("keydown",e=>{
- const k=e.key.toLowerCase();
-
- if([" ","arrowup","arrowdown","arrowleft","arrowright"].includes(k)){
-  e.preventDefault();
- }
-
- keys[k]=true;
- if(e.repeat)return;
-
- if(mode!=="playing")return;
-
- if(k==="e")interact();
- if(k===" "||k==="j")sword();
- if(k==="m")goldenSlash();
- if(k==="n")kingsShield();
- if(k==="k")sacredFlame();
-});
-
-window.addEventListener("keyup",e=>{
- keys[e.key.toLowerCase()]=false;
-});
-
-window.addEventListener("blur",()=>{
- for(const k in keys)keys[k]=false;
-});
-
-$("swordButton").onclick=sword;
-$("goldButton").onclick=goldenSlash;
-$("shieldButton").onclick=kingsShield;
-$("flameButton").onclick=sacredFlame;
-$("interactButton").onclick=interact;
-
-$("musicButton").onclick=Music.toggle;
-$("volume").oninput=e=>Music.changeVolume(e.target.value);
-
-$("difficulty").onchange=e=>{
- difficulty=e.target.value;
- if(mode==="playing")startChapter(chapter);
-};
-
-$("restartButton").onclick=()=>{
- if(mode==="playing"||mode==="scene")startChapter(chapter);
-};
-
-$("menuButton").onclick=menu;
-
-$("fullButton").onclick=async()=>{
- try{
-  if(document.fullscreenElement){
-   await document.exitFullscreen();
-  }else{
-   await $("stage").requestFullscreen();
-  }
- }catch(e){
-  alert("Fullscreen is unavailable.");
- }
-};
-
-menu();
-requestAnimationFrame(frame);
-
-})();
-</script>
+  <header>
+    <div class="logo">THE <span>FORGOTTEN</span> KING</div>
+    <a class="back-link" href="index.html">← BACK TO LAUNCHER</a>
+  </header>
+
+  <main>
+    <div class="top-panel">
+      <label>
+        DIFFICULTY
+        <select id="difficulty">
+          <option value="easy">Easy</option>
+          <option value="medium" selected>Medium</option>
+          <option value="hard">Hard</option>
+          <option value="extreme">Extreme</option>
+        </select>
+      </label>
+      <button id="fullscreenBtn">⛶ FULLSCREEN</button>
+      <button id="restartBtn">↻ RESTART CHAPTER</button>
+      <button id="menuBtn">☰ MENU</button>
+      <button id="musicBtn">♫ MUSIC ON</button>
+    </div>
+
+    <div id="stage">
+      <canvas id="game" width="960" height="540"></canvas>
+
+      <div id="hud">
+        <div id="chapterLabel"></div>
+        <div id="objectiveLabel" style="margin-top:4px;color:#d9c9bf;"></div>
+        <div id="statusLabel" style="margin-top:6px;color:#ffe7c0;"></div>
+        <div class="bar-bg">
+          <div class="bar-fill" id="hpFill"></div>
+        </div>
+      </div>
+
+      <div id="bossHud">
+        <div style="font-weight:bold;color:#ead0ff;">THE FORGOTTEN KING</div>
+        <div id="bossPhase" style="margin-top:5px;color:#f6dfbf;"></div>
+        <div class="bar-bg">
+          <div class="bar-fill boss-fill" id="bossFill"></div>
+        </div>
+      </div>
+
+      <div id="notice"></div>
+
+      <div id="overlay">
+        <div id="overlayTag">THEDARKWITHIN — PREQUEL DLC</div>
+        <div id="overlayTitle">THE FORGOTTEN KING</div>
+        <div id="overlayText"></div>
+        <div id="overlayButtons">
+          <button id="overlayPrimary">BEGIN STORY</button>
+          <button id="overlaySecondary">NEW GAME</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="bottom-panel">
+      <button id="jumpBtn">SPACE — JUMP</button>
+      <button id="swordBtn">J — ROYAL BLADE</button>
+      <button id="burstBtn">K — CRYSTAL BURST</button>
+      <button id="dashBtn">SHIFT — KING'S DASH</button>
+      <button id="guardBtn">N — ROYAL GUARD</button>
+    </div>
+
+    <div class="controls">
+      A / D OR ← / → MOVE • SPACE JUMP • J SWORD • K CRYSTAL BURST •
+      SHIFT DASH • N GUARD • ENTER / CLICK ADVANCE CUTSCENE
+    </div>
+  </main>
+
+  <footer>THEDARKWITHIN © 2026 — THE FORGOTTEN KING: REFORGED</footer>
+
+  <script>
+    (() => {
+      "use strict";
+
+      const canvas = document.getElementById("game");
+      const ctx = canvas.getContext("2d");
+      ctx.imageSmoothingEnabled = true;
+
+      const W = canvas.width;
+      const H = canvas.height;
+      const TAU = Math.PI * 2;
+
+      const $ = id => document.getElementById(id);
+      const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
+      const dist = (x1, y1, x2, y2) => Math.hypot(x2 - x1, y2 - y1);
+      const rand = (a, b) => a + Math.random() * (b - a);
+
+      const keys = {};
+      const SAVE_KEY = "tdw-forgotten-king-progress";
+
+      const difficulties = {
+        easy:    { hp: 170, enemyHp: 0.8, enemyDmg: 0.65, speed: 1.0 },
+        medium:  { hp: 130, enemyHp: 1.0, enemyDmg: 1.0, speed: 1.0 },
+        hard:    { hp: 105, enemyHp: 1.32, enemyDmg: 1.35, speed: 1.08 },
+        extreme: { hp: 90,  enemyHp: 1.65, enemyDmg: 1.75, speed: 1.15 }
+      };
+
+      const chapters = [
+        {
+          name: "A Crown Before the Fall",
+          objective: "Defeat the invaders in the royal courtyard.",
+          intro: [
+            "NARRATOR: Hundreds of years before TheDarkWithin, the kingdom still stood in gold and light.",
+            "GENERAL: Your Majesty, the outer walls are under attack.",
+            "KING ALDRIC: Then we will meet them blade to blade.",
+            "NARRATOR: The last age of the kingdom begins with steel, banners, and flame."
+          ],
+          outro: "The courtyard is saved, but the invaders were only the beginning."
+        },
+        {
+          name: "The Crystal Crypts",
+          objective: "Purge the corrupted crystal caverns below the castle.",
+          intro: [
+            "NARRATOR: Beneath the palace, purple crystal veins begin to pulse with strange life.",
+            "KING ALDRIC: This corruption was buried long before my reign.",
+            "ADVISOR: Then something has awakened it."
+          ],
+          outro: "The crystals whisper of a greater ruin waiting deeper below."
+        },
+        {
+          name: "Siege of the Ramparts",
+          objective: "Drive the corrupted knights from the high ramparts.",
+          intro: [
+            "NARRATOR: The corruption spreads to the ramparts, bending loyal soldiers into crystal husks.",
+            "KING ALDRIC: Then I will free them, even if I must strike them down."
+          ],
+          outro: "The walls hold, but the sky above the kingdom has darkened."
+        },
+        {
+          name: "The Shattered Archives",
+          objective: "Recover the royal seal and survive the haunted library.",
+          intro: [
+            "NARRATOR: The royal archives collapse into a maze of broken marble and magic.",
+            "SPIRIT SCHOLAR: The kingdom cannot survive unless you reclaim the seal.",
+            "KING ALDRIC: Then lead me to it."
+          ],
+          outro: "The royal seal answers the king — but so does the crystal."
+        },
+        {
+          name: "The Inner Keep",
+          objective: "Reach the throne sanctum and break the siege.",
+          intro: [
+            "NARRATOR: The final defenders fall back to the inner keep.",
+            "GENERAL: Sire, the throne chamber is nearly lost.",
+            "KING ALDRIC: Then we make our last stand there."
+          ],
+          outro: "At the heart of the keep, the crystal answers with a terrible kingly shadow."
+        },
+        {
+          name: "The Forgotten King",
+          objective: "Defeat the crystal-cursed Forgotten King.",
+          intro: [
+            "NARRATOR: In the throne sanctum, the old king stands transformed by crystal power.",
+            "FORGOTTEN KING: I protected this kingdom once. Now I will preserve it forever.",
+            "KING ALDRIC: Not as a prison of crystal and ruin.",
+            "FORGOTTEN KING: THEN COME, HEIR OF A DYING CROWN."
+          ],
+          outro: ""
+        }
+      ];
+
+      let chapterIndex = 0;
+      let difficulty = "medium";
+      let mode = "menu"; // menu, scene, playing, ending
+      let overlayPrimaryAction = null;
+      let overlaySecondaryAction = null;
+      let noticeTimer = 0;
+      let noticeText = "";
+      let time = 0;
+      let lastFrame = 0;
+      let camera = 0;
+      let worldWidth = 2400;
+      let cleared = false;
+      let musicEnabled = true;
+
+      let platforms = [];
+      let enemies = [];
+      let particles = [];
+      let projectiles = [];
+      let banners = [];
+      let boss = null;
+
+      const player = {
+        x: 140,
+        y: 410,
+        w: 34,
+        h: 60,
+        vx: 0,
+        vy: 0,
+        dir: 1,
+        hp: 130,
+        maxHp: 130,
+        grounded: false,
+        jumpCount: 0,
+        attackCd: 0,
+        burstCd: 0,
+        dashCd: 0,
+        guardCd: 0,
+        dashTimer: 0,
+        guardTimer: 0,
+        inv: 0,
+        attackSwing: 0
+      };
+
+      const synth = (() => {
+        let audio, master, timer;
+        let beatIndex = 0;
+        let chapterMusic = 0;
+        let nextTime = 0;
+
+        const melodies = [
+          [64,67,71,72,71,67,64,62],
+          [62,66,69,71,69,66,62,59],
+          [67,71,74,76,74,71,67,64],
+          [65,69,72,74,72,69,65,62],
+          [60,64,67,72,67,64,60,57],
+          [62,69,74,77,74,69,65,62]
+        ];
+
+        function midiToFreq(n){
+          return 440 * Math.pow(2, (n - 69) / 12);
+        }
+
+        function playNote(note, when, length, type="sawtooth", gainValue=0.04){
+          if(!audio || !master || !musicEnabled) return;
+          if(!note) return;
+
+          const o = audio.createOscillator();
+          const g = audio.createGain();
+
+          o.type = type;
+          o.frequency.value = midiToFreq(note);
+
+          g.gain.setValueAtTime(0.0001, when);
+          g.gain.linearRampToValueAtTime(gainValue, when + 0.02);
+          g.gain.exponentialRampToValueAtTime(0.0001, when + length);
+
+          o.connect(g);
+          g.connect(master);
+          o.start(when);
+          o.stop(when + length + 0.02);
+        }
+
+        function tick(){
+          if(!audio || audio.state !== "running" || !musicEnabled) return;
+          const melody = melodies[chapterMusic % melodies.length];
+          const beat = 0.22;
+
+          while(nextTime < audio.currentTime + 0.18){
+            const idx = beatIndex % melody.length;
+            const n = melody[idx];
+            playNote(n, nextTime, beat * 0.9, "sawtooth", 0.035);
+            if(idx % 2 === 0){
+              playNote(n - 12, nextTime, beat * 0.8, "triangle", 0.025);
+            }
+            if(idx % 4 === 0){
+              playNote(36, nextTime, 0.08, "square", 0.018);
+            }
+            nextTime += beat;
+            beatIndex++;
+          }
+        }
+
+        async function start(){
+          try{
+            if(!audio){
+              const AC = window.AudioContext || window.webkitAudioContext;
+              if(!AC) return;
+              audio = new AC();
+              master = audio.createGain();
+              master.gain.value = 0.55;
+              master.connect(audio.destination);
+            }
+            await audio.resume();
+            if(!timer){
+              nextTime = audio.currentTime + 0.06;
+              timer = setInterval(tick, 60);
+            }
+          }catch(err){}
+        }
+
+        function toggle(){
+          musicEnabled = !musicEnabled;
+          $("musicBtn").textContent = musicEnabled ? "♫ MUSIC ON" : "♫ MUSIC OFF";
+          if(master && audio){
+            master.gain.setTargetAtTime(musicEnabled ? 0.55 : 0.0, audio.currentTime, 0.05);
+          }
+          if(musicEnabled) start();
+        }
+
+        function setChapter(n){
+          chapterMusic = n;
+          beatIndex = 0;
+          if(audio) nextTime = audio.currentTime + 0.08;
+        }
+
+        return { start, toggle, setChapter };
+      })();
+
+      function saveProgress(){
+        try{
+          localStorage.setItem(SAVE_KEY, String(Math.max(chapterIndex, Number(localStorage.getItem(SAVE_KEY) || 0))));
+        }catch(err){}
+      }
+
+      function getProgress(){
+        try{
+          return clamp(Number(localStorage.getItem(SAVE_KEY) || 0), 0, chapters.length - 1);
+        }catch(err){
+          return 0;
+        }
+      }
+
+      function showOverlay(tag, title, text, primaryText, primaryAction, secondaryText, secondaryAction){
+        $("overlay").style.display = "flex";
+        $("overlayTag").textContent = tag;
+        $("overlayTitle").textContent = title;
+        $("overlayText").textContent = text;
+        $("overlayPrimary").textContent = primaryText;
+        $("overlaySecondary").style.display = secondaryText ? "inline-block" : "none";
+        $("overlaySecondary").textContent = secondaryText || "";
+        overlayPrimaryAction = primaryAction || null;
+        overlaySecondaryAction = secondaryAction || null;
+        $("hud").style.display = "none";
+        $("bossHud").style.display = "none";
+      }
+
+      function hideOverlay(){
+        $("overlay").style.display = "none";
+      }
+
+      $("overlayPrimary").onclick = () => {
+        if(overlayPrimaryAction) overlayPrimaryAction();
+      };
+      $("overlaySecondary").onclick = () => {
+        if(overlaySecondaryAction) overlaySecondaryAction();
+      };
+
+      function notify(text, duration = 1.5){
+        noticeText = text;
+        noticeTimer = duration;
+        $("notice").textContent = text;
+        $("notice").style.display = "block";
+      }
+
+      function clearNotice(){
+        noticeTimer = 0;
+        $("notice").style.display = "none";
+      }
+
+      function setModePlaying(){
+        mode = "playing";
+        hideOverlay();
+        $("hud").style.display = "block";
+        $("bossHud").style.display = boss ? "block" : "none";
+      }
+
+      function playCutscene(title, lines, done){
+        let idx = 0;
+        mode = "scene";
+
+        function next(){
+          if(idx >= lines.length){
+            setModePlaying();
+            if(done) done();
+            return;
+          }
+
+          showOverlay(
+            "STORY CUTSCENE",
+            title,
+            lines[idx],
+            idx === lines.length - 1 ? "CONTINUE" : "NEXT →",
+            () => {
+              idx++;
+              next();
+            }
+          );
+        }
+
+        next();
+      }
+
+      function buildChapter(index){
+        chapterIndex = index;
+        saveProgress();
+        synth.setChapter(index);
+
+        platforms = [];
+        enemies = [];
+        particles = [];
+        projectiles = [];
+        banners = [];
+        boss = null;
+        cleared = false;
+        camera = 0;
+        clearNotice();
+
+        const diff = difficulties[difficulty];
+
+        player.maxHp = diff.hp;
+        player.hp = diff.hp;
+        player.x = 120;
+        player.y = 410;
+        player.vx = 0;
+        player.vy = 0;
+        player.grounded = false;
+        player.jumpCount = 0;
+        player.attackCd = 0;
+        player.burstCd = 0;
+        player.dashCd = 0;
+        player.guardCd = 0;
+        player.dashTimer = 0;
+        player.guardTimer = 0;
+        player.inv = 0;
+        player.attackSwing = 0;
+
+        if(index === 0){
+          worldWidth = 2200;
+          platforms.push(
+            plat(0, 470, 420, 70),
+            plat(430, 440, 220, 30),
+            plat(760, 400, 220, 28),
+            plat(1090, 430, 240, 30),
+            plat(1440, 390, 230, 28),
+            plat(1760, 350, 240, 28),
+            plat(2050, 470, 160, 70)
+          );
+          enemies.push(
+            enemy(690, 380, "raider"),
+            enemy(975, 340, "raider"),
+            enemy(1265, 370, "raider"),
+            enemy(1625, 330, "knight"),
+            enemy(1940, 410, "knight")
+          );
+          banners.push({x: 330, y: 305}, {x: 930, y: 270}, {x: 1540, y: 255});
+        }
+
+        if(index === 1){
+          worldWidth = 2300;
+          platforms.push(
+            plat(0, 470, 300, 70),
+            plat(320, 430, 180, 26),
+            plat(560, 385, 190, 26),
+            plat(830, 340, 200, 28),
+            plat(1110, 395, 180, 24),
+            plat(1350, 350, 200, 26),
+            plat(1640, 310, 180, 24),
+            plat(1885, 370, 190, 25),
+            plat(2140, 470, 160, 70)
+          );
+          enemies.push(
+            enemy(510, 370, "wraith"),
+            enemy(790, 300, "wraith"),
+            enemy(1065, 355, "wraith"),
+            enemy(1600, 270, "knight"),
+            enemy(2035, 330, "knight")
+          );
+        }
+
+        if(index === 2){
+          worldWidth = 2350;
+          platforms.push(
+            plat(0, 470, 330, 70),
+            plat(360, 440, 220, 28),
+            plat(650, 390, 150, 26),
+            plat(885, 355, 190, 28),
+            plat(1140, 420, 220, 28),
+            plat(1440, 385, 190, 26),
+            plat(1710, 350, 190, 24),
+            plat(1965, 320, 190, 24),
+            plat(2200, 470, 150, 70)
+          );
+          enemies.push(
+            enemy(630, 350, "knight"),
+            enemy(850, 315, "knight"),
+            enemy(1120, 380, "raider"),
+            enemy(1690, 315, "knight"),
+            enemy(2160, 280, "wraith")
+          );
+          banners.push({x: 500, y: 300}, {x: 1510, y: 245});
+        }
+
+        if(index === 3){
+          worldWidth = 2400;
+          platforms.push(
+            plat(0, 470, 280, 70),
+            plat(320, 430, 160, 24),
+            plat(540, 390, 190, 24),
+            plat(790, 355, 170, 24),
+            plat(1010, 325, 180, 22),
+            plat(1260, 390, 210, 24),
+            plat(1540, 360, 190, 24),
+            plat(1790, 330, 190, 24),
+            plat(2040, 300, 190, 24),
+            plat(2290, 470, 120, 70)
+          );
+          enemies.push(
+            enemy(505, 350, "wraith"),
+            enemy(980, 285, "wraith"),
+            enemy(1490, 320, "knight"),
+            enemy(1765, 290, "wraith"),
+            enemy(2210, 260, "knight")
+          );
+        }
+
+        if(index === 4){
+          worldWidth = 2500;
+          platforms.push(
+            plat(0, 470, 320, 70),
+            plat(360, 425, 210, 25),
+            plat(640, 390, 170, 24),
+            plat(875, 350, 210, 24),
+            plat(1160, 405, 200, 24),
+            plat(1415, 365, 170, 22),
+            plat(1650, 325, 180, 22),
+            plat(1890, 285, 190, 22),
+            plat(2140, 345, 200, 22),
+            plat(2390, 470, 120, 70)
+          );
+          enemies.push(
+            enemy(610, 350, "knight"),
+            enemy(1105, 365, "knight"),
+            enemy(1390, 325, "raider"),
+            enemy(1860, 245, "wraith"),
+            enemy(2325, 305, "knight")
+          );
+          banners.push({x: 1260, y: 305}, {x: 2070, y: 230});
+        }
+
+        if(index === 5){
+          worldWidth = 2600;
+          platforms.push(
+            plat(0, 470, 350, 70),
+            plat(410, 430, 220, 24),
+            plat(700, 390, 230, 24),
+            plat(1000, 350, 250, 24),
+            plat(1310, 320, 220, 24),
+            plat(1590, 350, 220, 24),
+            plat(1870, 390, 250, 24),
+            plat(2190, 470, 410, 70)
+          );
+          boss = createBoss(2340, 338, 1450 * diff.enemyHp);
+          banners.push({x: 2300, y: 220});
+        }
+
+        updateHud();
+      }
+
+      function plat(x, y, w, h){
+        return { x, y, w, h };
+      }
+
+      function enemy(x, y, type){
+        const diff = difficulties[difficulty];
+        let hp = 80, speed = 58, dmg = 12, radius = 18;
+
+        if(type === "raider"){
+          hp = 85; speed = 68; dmg = 13; radius = 18;
+        }
+        if(type === "wraith"){
+          hp = 70; speed = 78; dmg = 12; radius = 16;
+        }
+        if(type === "knight"){
+          hp = 115; speed = 54; dmg = 18; radius = 20;
+        }
+
+        return {
+          type,
+          x,
+          y,
+          w: 34,
+          h: 50,
+          vx: 0,
+          vy: 0,
+          hp: hp * diff.enemyHp,
+          maxHp: hp * diff.enemyHp,
+          speed,
+          damage: dmg * diff.enemyDmg,
+          grounded: false,
+          attackCd: 0.8,
+          flash: 0,
+          dead: false,
+          phase: Math.random() * 9
+        };
+      }
+
+      function createBoss(x, y, hp){
+        return {
+          x,
+          y,
+          vx: 0,
+          vy: 0,
+          w: 94,
+          h: 150,
+          hp,
+          maxHp: hp,
+          phase: 1,
+          attackCd: 1.4,
+          action: "idle",
+          slashTimer: 0,
+          flash: 0,
+          dead: false
+        };
+      }
+
+      function startStoryFrom(index){
+        buildChapter(index);
+        synth.start();
+        playCutscene(
+          "CHAPTER " + (index + 1) + " — " + chapters[index].name,
+          chapters[index].intro,
+          () => {
+            notify("DEFEAT ALL ENEMIES", 2);
+          }
+        );
+      }
+
+      function showMainMenu(){
+        mode = "menu";
+        const progress = getProgress();
+        showOverlay(
+          "THEDARKWITHIN — PREQUEL DLC",
+          "THE FORGOTTEN KING",
+          "A royal prequel set hundreds of years before TheDarkWithin.\n\n" +
+          "Fight through golden courtyards, crystal crypts, shattered ramparts, and a ruined throne sanctum.\n\n" +
+          "Experience cinematic cutscenes, fast sword combat, crystal powers, and the final battle against the Forgotten King.",
+          progress > 0 ? "CONTINUE — CHAPTER " + (progress + 1) : "BEGIN STORY",
+          () => startStoryFrom(progress),
+          "NEW GAME",
+          () => {
+            try{ localStorage.removeItem(SAVE_KEY); }catch(err){}
+            startStoryFrom(0);
+          }
+        );
+      }
+
+      function updateHud(){
+        $("chapterLabel").textContent =
+          "CHAPTER " + (chapterIndex + 1) + " — " + chapters[chapterIndex].name;
+        $("objectiveLabel").textContent = chapters[chapterIndex].objective;
+        $("statusLabel").textContent =
+          "HP " + Math.ceil(Math.max(0, player.hp)) + "/" + player.maxHp +
+          " | SWORD " + (player.attackCd <= 0 ? "READY" : player.attackCd.toFixed(1) + "s") +
+          " | BURST " + (player.burstCd <= 0 ? "READY" : player.burstCd.toFixed(1) + "s") +
+          " | DASH " + (player.dashCd <= 0 ? "READY" : player.dashCd.toFixed(1) + "s") +
+          " | GUARD " + (player.guardCd <= 0 ? "READY" : player.guardCd.toFixed(1) + "s");
+
+        $("hpFill").style.width = clamp((player.hp / player.maxHp) * 100, 0, 100) + "%";
+
+        if(boss && !boss.dead){
+          $("bossHud").style.display = mode === "playing" ? "block" : "none";
+          $("bossPhase").textContent = "PHASE " + boss.phase + " OF 3";
+          $("bossFill").style.width = clamp((boss.hp / boss.maxHp) * 100, 0, 100) + "%";
+        }else{
+          $("bossHud").style.display = "none";
+        }
+      }
+
+      function particleBurst(x, y, color, count = 18, speed = 170){
+        for(let i = 0; i < count; i++){
+          const a = Math.random() * TAU;
+          const s = rand(35, speed);
+          particles.push({
+            x, y,
+            vx: Math.cos(a) * s,
+            vy: Math.sin(a) * s,
+            size: rand(2, 5),
+            life: rand(0.25, 0.8),
+            maxLife: rand(0.25, 0.8),
+            color
+          });
+        }
+      }
+
+      function damageEnemy(e, amount){
+        if(e.dead) return;
+        e.hp -= amount;
+        e.flash = 0.16;
+        particleBurst(e.x, e.y - 18, e.type === "wraith" ? "#c69dff" : "#ffcf7b", 10, 160);
+
+        if(e.hp <= 0){
+          e.dead = true;
+          particleBurst(e.x, e.y - 10, e.type === "wraith" ? "#c69dff" : "#ffd995", 28, 230);
+        }
+      }
+
+      function damageBoss(amount){
+        if(!boss || boss.dead) return;
+        boss.hp -= amount;
+        boss.flash = 0.16;
+        particleBurst(boss.x, boss.y - 70, "#f0c07b", 15, 200);
+
+        const ratio = boss.hp / boss.maxHp;
+        const newPhase = ratio < 0.33 ? 3 : ratio < 0.66 ? 2 : 1;
+
+        if(newPhase !== boss.phase){
+          boss.phase = newPhase;
+          notify("THE FORGOTTEN KING ENTERS PHASE " + newPhase, 2);
+          particleBurst(boss.x, boss.y - 40, "#b689ff", 60, 260);
+        }
+
+        if(boss.hp <= 0){
+          boss.dead = true;
+          particleBurst(boss.x, boss.y - 30, "#ffdfa1", 90, 300);
+          finishBossChapter();
+        }
+      }
+
+      function damagePlayer(amount){
+        if(player.inv > 0 || player.guardTimer > 0 || mode !== "playing") return;
+        player.hp -= amount;
+        player.inv = 0.85;
+        particleBurst(player.x, player.y - 18, "#ff8ba5", 15, 180);
+
+        if(player.hp <= 0){
+          player.hp = 0;
+          showDeath();
+        }
+      }
+
+      function showDeath(){
+        mode = "scene";
+        showOverlay(
+          "THE FALL OF A KING",
+          "YOU HAVE FALLEN",
+          "The kingdom's hope fades for a moment.\n\nRise again and continue the fight.",
+          "RETRY CHAPTER",
+          () => startStoryFrom(chapterIndex),
+          "MENU",
+          () => showMainMenu()
+        );
+      }
+
+      function playerSword(){
+        if(mode !== "playing" || player.attackCd > 0) return;
+        player.attackCd = 0.32;
+        player.attackSwing = 0.22;
+        particleBurst(player.x + player.dir * 40, player.y - 18, "#ffe3a3", 12, 140);
+
+        for(const e of enemies){
+          if(e.dead) continue;
+          const inRange =
+            dist(player.x, player.y, e.x, e.y) < 110 &&
+            (e.x - player.x) * player.dir > -35;
+
+          if(inRange){
+            damageEnemy(e, 38);
+          }
+        }
+
+        if(boss && !boss.dead){
+          const hitBoss =
+            dist(player.x, player.y, boss.x, boss.y) < 155 &&
+            (boss.x - player.x) * player.dir > -50;
+
+          if(hitBoss){
+            damageBoss(40);
+          }
+        }
+      }
+
+      function crystalBurst(){
+        if(mode !== "playing" || player.burstCd > 0) return;
+        player.burstCd = 4.2;
+        particleBurst(player.x, player.y - 15, "#b992ff", 55, 270);
+        particleBurst(player.x, player.y - 15, "#ffe3ad", 28, 190);
+        notify("CRYSTAL BURST!", 1);
+
+        for(const e of enemies){
+          if(e.dead) continue;
+          if(dist(player.x, player.y, e.x, e.y) < 185){
+            damageEnemy(e, 78);
+          }
+        }
+
+        if(boss && !boss.dead && dist(player.x, player.y, boss.x, boss.y) < 210){
+          damageBoss(88);
+        }
+      }
+
+      function kingDash(){
+        if(mode !== "playing" || player.dashCd > 0) return;
+        player.dashCd = 3.0;
+        player.dashTimer = 0.22;
+        player.inv = Math.max(player.inv, 0.30);
+        particleBurst(player.x, player.y - 12, "#fff2bc", 22, 150);
+        notify("KING'S DASH", 0.8);
+      }
+
+      function royalGuard(){
+        if(mode !== "playing" || player.guardCd > 0) return;
+        player.guardCd = 5.8;
+        player.guardTimer = 1.25;
+        particleBurst(player.x, player.y - 18, "#ffdca3", 16, 120);
+        notify("ROYAL GUARD", 0.8);
+      }
+
+      function jump(){
+        if(mode !== "playing") return;
+        if(player.jumpCount >= 2) return;
+        player.vy = player.jumpCount === 0 ? -610 : -560;
+        player.jumpCount++;
+        player.grounded = false;
+        particleBurst(player.x, player.y + 18, "#ffe0a1", 8, 90);
+      }
+
+      function finishNormalChapter(){
+        if(cleared) return;
+        cleared = true;
+        mode = "scene";
+
+        playCutscene(
+          "CHAPTER COMPLETE",
+          [
+            "NARRATOR: " + chapters[chapterIndex].outro,
+            "The king presses onward toward the heart of the corruption."
+          ],
+          () => {
+            if(chapterIndex < chapters.length - 1){
+              startStoryFrom(chapterIndex + 1);
+            }
+          }
+        );
+      }
+
+      function finishBossChapter(){
+        mode = "scene";
+        playCutscene(
+          "THE FALL OF THE FORGOTTEN KING",
+          [
+            "FORGOTTEN KING: My crown... my kingdom... buried in crystal...",
+            "KING ALDRIC: Rest now. I will remember what this place once was.",
+            "NARRATOR: The crystal curse cracks. The throne sanctum falls silent.",
+            "NARRATOR: Though the kingdom is saved for a time, its tragedy will echo into the age of TheDarkWithin."
+          ],
+          () => {
+            showOverlay(
+              "THEDARKWITHIN — PREQUEL COMPLETE",
+              "THE FORGOTTEN KING",
+              "The prequel has been completed.\n\nA golden kingdom was saved, but its scars remained.\nThose scars would one day become part of TheDarkWithin.",
+              "PLAY AGAIN",
+              () => {
+                try{ localStorage.removeItem(SAVE_KEY); }catch(err){}
+                startStoryFrom(0);
+              },
+              "MENU",
+              () => showMainMenu()
+            );
+            mode = "ending";
+          }
+        );
+      }
+
+      function update(dt){
+        time += dt;
+
+        if(noticeTimer > 0){
+          noticeTimer -= dt;
+          if(noticeTimer <= 0){
+            $("notice").style.display = "none";
+          }
+        }
+
+        for(let i = particles.length - 1; i >= 0; i--){
+          const p = particles[i];
+          p.x += p.vx * dt;
+          p.y += p.vy * dt;
+          p.life -= dt;
+          if(p.life <= 0){
+            particles.splice(i, 1);
+          }
+        }
+
+        for(let i = projectiles.length - 1; i >= 0; i--){
+          const p = projectiles[i];
+          p.x += p.vx * dt;
+          p.y += p.vy * dt;
+          p.life -= dt;
+
+          let remove = false;
+
+          if(p.enemy){
+            if(dist(p.x, p.y, player.x, player.y) < p.r + 22){
+              damagePlayer(p.damage);
+              remove = true;
+            }
+          }else{
+            for(const e of enemies){
+              if(e.dead) continue;
+              if(dist(p.x, p.y, e.x, e.y) < p.r + 20){
+                damageEnemy(e, p.damage);
+                remove = true;
+                break;
+              }
+            }
+
+            if(!remove && boss && !boss.dead && dist(p.x, p.y, boss.x, boss.y) < p.r + 58){
+              damageBoss(p.damage);
+              remove = true;
+            }
+          }
+
+          if(p.life <= 0 || remove){
+            projectiles.splice(i, 1);
+          }
+        }
+
+        if(mode !== "playing") return;
+
+        player.attackCd = Math.max(0, player.attackCd - dt);
+        player.burstCd = Math.max(0, player.burstCd - dt);
+        player.dashCd = Math.max(0, player.dashCd - dt);
+        player.guardCd = Math.max(0, player.guardCd - dt);
+        player.dashTimer = Math.max(0, player.dashTimer - dt);
+        player.guardTimer = Math.max(0, player.guardTimer - dt);
+        player.inv = Math.max(0, player.inv - dt);
+        player.attackSwing = Math.max(0, player.attackSwing - dt);
+
+        let moveDir = 0;
+        if(keys.a || keys.arrowleft) moveDir--;
+        if(keys.d || keys.arrowright) moveDir++;
+
+        if(moveDir) player.dir = moveDir;
+
+        if(player.dashTimer > 0){
+          player.vx = player.dir * 680;
+          player.vy = 0;
+        }else{
+          player.vx = moveDir * 250;
+          player.vy += 1550 * dt;
+        }
+
+        const prevX = player.x;
+        const prevY = player.y;
+        player.x += player.vx * dt;
+        player.y += player.vy * dt;
+
+        player.grounded = false;
+
+        for(const pl of platforms){
+          if(
+            prevY + player.h/2 <= pl.y &&
+            player.y + player.h/2 >= pl.y &&
+            player.x + player.w/2 > pl.x &&
+            player.x - player.w/2 < pl.x + pl.w &&
+            player.vy >= 0
+          ){
+            player.y = pl.y - player.h/2;
+            player.vy = 0;
+            player.grounded = true;
+            player.jumpCount = 0;
+          }
+        }
+
+        player.x = clamp(player.x, 10, worldWidth - 10);
+
+        if(player.y > H + 100){
+          showDeath();
+          return;
+        }
+
+        for(const e of enemies){
+          if(e.dead) continue;
+
+          e.attackCd = Math.max(0, e.attackCd - dt);
+          e.flash = Math.max(0, e.flash - dt);
+
+          const dx = player.x - e.x;
+          const dy = player.y - e.y;
+          const d = Math.hypot(dx, dy) || 1;
+
+          if(e.type === "wraith"){
+            e.y += Math.sin(time * 2 + e.phase) * 15 * dt * 3.5;
+          }
+
+          if(d > 38){
+            e.x += (dx / d) * e.speed * dt;
+          }
+
+          if(d < 42 && e.attackCd <= 0){
+            damagePlayer(e.damage);
+            e.attackCd = 1.0;
+          }
+        }
+
+        enemies = enemies.filter(e => !e.dead || e.flash > 0);
+
+        if(boss && !boss.dead){
+          boss.flash = Math.max(0, boss.flash - dt);
+          boss.attackCd = Math.max(0, boss.attackCd - dt);
+
+          const ratio = boss.hp / boss.maxHp;
+          boss.phase = ratio < 0.33 ? 3 : ratio < 0.66 ? 2 : 1;
+
+          if(dist(player.x, player.y, boss.x, boss.y) < 90){
+            damagePlayer(8 * difficulties[difficulty].enemyDmg);
+          }
+
+          if(boss.attackCd <= 0){
+            if(Math.random() < 0.45){
+              boss.action = "orbs";
+              const count = boss.phase === 1 ? 3 : boss.phase === 2 ? 5 : 7;
+              for(let i = 0; i < count; i++){
+                const angle = Math.atan2(player.y - (boss.y - 70), player.x - boss.x) + (i - (count - 1)/2) * 0.15;
+                projectiles.push({
+                  x: boss.x,
+                  y: boss.y - 65,
+                  vx: Math.cos(angle) * (250 + boss.phase * 40),
+                  vy: Math.sin(angle) * (250 + boss.phase * 40),
+                  r: 10,
+                  damage: 12 * difficulties[difficulty].enemyDmg,
+                  enemy: true,
+                  life: 4
+                });
+              }
+              notify("CRYSTAL ORBS!", 0.8);
+            }else{
+              boss.action = "slash";
+              boss.slashTimer = 0.42;
+              if(Math.abs(player.x - boss.x) < 190){
+                damagePlayer(20 * difficulties[difficulty].enemyDmg);
+              }
+              particleBurst(boss.x + (player.x < boss.x ? -55 : 55), boss.y - 40, "#c9a0ff", 26, 220);
+              notify("ROYAL RUIN!", 0.8);
+            }
+            boss.attackCd = boss.phase === 1 ? 1.8 : boss.phase === 2 ? 1.35 : 0.95;
+          }
+
+          boss.slashTimer = Math.max(0, boss.slashTimer - dt);
+        }
+
+        if(!boss && enemies.every(e => e.dead || e.hp <= 0) && !cleared){
+          finishNormalChapter();
+        }
+
+        updateHud();
+
+        const targetCamera = clamp(player.x - 260, 0, Math.max(0, worldWidth - W));
+        camera += (targetCamera - camera) * Math.min(1, dt * 5.5);
+      }
+
+      function draw(){
+        ctx.clearRect(0, 0, W, H);
+
+        drawBackground();
+        drawPlatforms();
+        drawDecor();
+        drawEnemies();
+        drawBoss();
+        drawProjectiles();
+        drawPlayer();
+        drawParticles();
+      }
+
+      function drawBackground(){
+        const palettes = [
+          ["#6e4a5f", "#2a2034", "#1a1520", "#ffdb94"],
+          ["#5c4762", "#20182a", "#16131f", "#d4b0ff"],
+          ["#72525a", "#2e2430", "#1a141d", "#ffd08f"],
+          ["#735465", "#2d2033", "#17121c", "#f1bb91"],
+          ["#6d4257", "#241a29", "#151019", "#ffcf8d"],
+          ["#59385f", "#1c1324", "#120d18", "#ffc98b"]
+        ];
+
+        const p = palettes[chapterIndex];
+        const sky = ctx.createLinearGradient(0, 0, 0, H);
+        sky.addColorStop(0, p[0]);
+        sky.addColorStop(0.56, p[1]);
+        sky.addColorStop(1, p[2]);
+
+        ctx.fillStyle = sky;
+        ctx.fillRect(0, 0, W, H);
+
+        const sunX = 720 - camera * 0.05;
+        const sunY = 112;
+
+        glow(sunX, sunY, 210, chapterIndex >= 5 ? "rgba(194,131,255,0.28)" : "rgba(255,217,138,0.26)");
+        ellipse(sunX, sunY, 58, 58, chapterIndex >= 5 ? "#caa3ff" : "#ffd88a");
+
+        if(chapterIndex >= 4){
+          ellipse(sunX + 18, sunY - 4, 48, 48, "#170f1b");
+          ctx.strokeStyle = chapterIndex >= 5 ? "#d4b4ff" : "#ffd79c";
+          ctx.lineWidth = 6;
+          ctx.beginPath();
+          ctx.arc(sunX, sunY, 72, 0, TAU);
+          ctx.stroke();
+        }
+
+        // far mountains
+        for(let layer = 0; layer < 3; layer++){
+          const speed = [0.12, 0.23, 0.42][layer];
+          const y = [370, 400, 430][layer];
+          const color = ["rgba(255,255,255,0.08)", "rgba(68,52,86,0.52)", "rgba(34,25,42,0.95)"][layer];
+
+          ctx.fillStyle = color;
+          ctx.beginPath();
+          ctx.moveTo(0, H);
+
+          for(let i = -2; i < 10; i++){
+            const mx = i * 180 - (camera * speed % 180);
+            const mh = 120 + ((i * 53 + layer * 24) % 85);
+            ctx.lineTo(mx, y);
+            ctx.lineTo(mx + 90, y - mh);
+            ctx.lineTo(mx + 180, y);
+          }
+
+          ctx.lineTo(W, H);
+          ctx.closePath();
+          ctx.fill();
+        }
+
+        // castle silhouettes
+        drawCastleSilhouettes();
+
+        // light shafts
+        for(let i = 0; i < 6; i++){
+          const x = i * 170 + Math.sin(time * 0.3 + i) * 20 - camera * 0.08;
+          const g = ctx.createLinearGradient(x, 0, x + 85, H);
+          g.addColorStop(0, "rgba(255,255,255,0)");
+          g.addColorStop(0.5, chapterIndex >= 5 ? "rgba(201,156,255,0.08)" : "rgba(255,221,158,0.08)");
+          g.addColorStop(1, "rgba(255,255,255,0)");
+          ctx.fillStyle = g;
+          ctx.beginPath();
+          ctx.moveTo(x, 0);
+          ctx.lineTo(x + 40, 0);
+          ctx.lineTo(x + 140, H);
+          ctx.lineTo(x + 100, H);
+          ctx.closePath();
+          ctx.fill();
+        }
+
+        // floor haze
+        const fog = ctx.createLinearGradient(0, 330, 0, H);
+        fog.addColorStop(0, "rgba(255,255,255,0)");
+        fog.addColorStop(1, chapterIndex >= 5 ? "rgba(145,110,189,0.18)" : "rgba(255,218,161,0.12)");
+        ctx.fillStyle = fog;
+        ctx.fillRect(0, 330, W, H - 330);
+      }
+
+      function drawCastleSilhouettes(){
+        for(let i = 0; i < 6; i++){
+          const x = i * 260 - camera * 0.18 + 30;
+          const baseY = 360 + (i % 2) * 18;
+          drawCastle(x, baseY, 0.75, i % 2 === 0);
+        }
+
+        if(chapterIndex >= 5){
+          drawCastle(640 - camera * 0.28, 340, 1.35, true, true);
+        }
+      }
+
+      function drawCastle(x, y, scale = 1, purple = false, throne = false){
+        ctx.save();
+        ctx.translate(x, y);
+        ctx.scale(scale, scale);
+
+        const wall = ctx.createLinearGradient(-110, -150, 110, 0);
+        wall.addColorStop(0, purple ? "#5d456f" : "#9d8c91");
+        wall.addColorStop(1, purple ? "#24192c" : "#463840");
+
+        ctx.fillStyle = wall;
+        ctx.fillRect(-105, -140, 210, 140);
+
+        for(const dx of [-84, 0, 84]){
+          ctx.fillStyle = purple ? "#4d385f" : "#6f6067";
+          ctx.fillRect(dx - 28, -225, 56, 225);
+          ctx.fillStyle = purple ? "#6e4f8c" : "#c29f68";
+          ctx.beginPath();
+          ctx.moveTo(dx - 40, -225);
+          ctx.lineTo(dx, -285);
+          ctx.lineTo(dx + 40, -225);
+          ctx.fill();
+          ctx.fillStyle = purple ? "#e4b8ff" : "#ffdca2";
+          ctx.fillRect(dx - 7, -188, 14, 42);
+        }
+
+        ctx.fillStyle = "#18111d";
+        ctx.beginPath();
+        ctx.arc(0, -40, 32, Math.PI, 0);
+        ctx.lineTo(32, 0);
+        ctx.lineTo(-32, 0);
+        ctx.fill();
+
+        if(throne){
+          ctx.strokeStyle = "rgba(255,202,135,0.34)";
+          ctx.lineWidth = 6;
+          ctx.beginPath();
+          ctx.ellipse(0, -150, 125, 165, 0, 0, TAU);
+          ctx.stroke();
+        }
+
+        ctx.restore();
+      }
+
+      function drawPlatforms(){
+        for(const pl of platforms){
+          const x = pl.x - camera;
+          const y = pl.y;
+
+          // top
+          const g = ctx.createLinearGradient(x, y, x, y + 34);
+          g.addColorStop(0, "#d9b183");
+          g.addColorStop(1, "#8f675a");
+          ctx.fillStyle = g;
+          ctx.beginPath();
+          ctx.ellipse(x + pl.w/2, y, pl.w/2, 11, 0, 0, TAU);
+          ctx.fill();
+
+          // underside body for 2.5D effect
+          const under = ctx.createLinearGradient(x, y, x, y + 65);
+          under.addColorStop(0, "#715667");
+          under.addColorStop(0.5, "#3e2f3d");
+          under.addColorStop(1, "#1a141c");
+          ctx.fillStyle = under;
+          ctx.beginPath();
+          ctx.moveTo(x, y);
+          ctx.lineTo(x + pl.w, y);
+          ctx.lineTo(x + pl.w * 0.82, y + 55);
+          ctx.lineTo(x + pl.w * 0.56, y + 72);
+          ctx.lineTo(x + pl.w * 0.18, y + 45);
+          ctx.closePath();
+          ctx.fill();
+
+          ctx.strokeStyle = "rgba(255,255,255,0.15)";
+          ctx.lineWidth = 2;
+          ctx.beginPath();
+          ctx.moveTo(x + pl.w * 0.2, y + 18);
+          ctx.lineTo(x + pl.w * 0.42, y + 40);
+          ctx.lineTo(x + pl.w * 0.72, y + 21);
+          ctx.stroke();
+        }
+
+        // ground glow
+        ctx.fillStyle = "rgba(255,232,190,0.03)";
+        ctx.fillRect(0, 420, W, 120);
+      }
+
+      function drawDecor(){
+        // crystals, banners, particles in environment
+        for(const b of banners){
+          const x = b.x - camera;
+          const y = b.y;
+
+          ctx.strokeStyle = "#8a6a5f";
+          ctx.lineWidth = 4;
+          ctx.beginPath();
+          ctx.moveTo(x, y);
+          ctx.lineTo(x, y + 110);
+          ctx.stroke();
+
+          const cloth = ctx.createLinearGradient(x, y + 18, x + 48, y + 60);
+          cloth.addColorStop(0, chapterIndex >= 5 ? "#8e63d6" : "#7d5060");
+          cloth.addColorStop(1, chapterIndex >= 5 ? "#d4b2ff" : "#f2c17e");
+          ctx.fillStyle = cloth;
+          ctx.beginPath();
+          ctx.moveTo(x, y + 20);
+          ctx.lineTo(x + 56, y + 30);
+          ctx.lineTo(x + 34, y + 78);
+          ctx.lineTo(x, y + 68);
+          ctx.closePath();
+          ctx.fill();
+        }
+
+        for(let i = 0; i < 8; i++){
+          const x = ((i * 320 - camera * 0.35) % 1300 + 1300) % 1300 - 100;
+          const y = 440 + Math.sin(time * 1.4 + i) * 4;
+          drawCrystalCluster(x, y, 0.7 + (i % 3) * 0.12, chapterIndex >= 5);
+        }
+      }
+
+      function drawCrystalCluster(x, y, scale = 1, corrupted = false){
+        ctx.save();
+        ctx.translate(x, y);
+        ctx.scale(scale, scale);
+
+        const colors = corrupted
+          ? ["#d0b0ff", "#8f61d9", "#2b153b"]
+          : ["#ffe8b4", "#c98f71", "#3b2231"];
+
+        glow(0, -18, 42, corrupted ? "rgba(175,115,255,0.22)" : "rgba(255,220,155,0.18)");
+
+        for(const c of [
+          {x:0, y:0, s:22},
+          {x:-18, y:8, s:14},
+          {x:18, y:6, s:16}
+        ]){
+          ctx.fillStyle = colors[1];
+          ctx.beginPath();
+          ctx.moveTo(c.x, c.y - c.s);
+          ctx.lineTo(c.x + c.s * 0.45, c.y - 5);
+          ctx.lineTo(c.x + c.s * 0.18, c.y + c.s * 0.68);
+          ctx.lineTo(c.x - c.s * 0.18, c.y + c.s * 0.9);
+          ctx.lineTo(c.x - c.s * 0.48, c.y + 1);
+          ctx.closePath();
+          ctx.fill();
+
+          ctx.fillStyle = colors[0];
+          ctx.beginPath();
+          ctx.moveTo(c.x, c.y - c.s);
+          ctx.lineTo(c.x, c.y + c.s * 0.9);
+          ctx.lineTo(c.x - c.s * 0.18, c.y + c.s * 0.9);
+          ctx.lineTo(c.x - c.s * 0.48, c.y + 1);
+          ctx.closePath();
+          ctx.fill();
+        }
+
+        ctx.restore();
+      }
+
+      function drawEnemies(){
+        for(const e of enemies){
+          drawEnemy(e);
+        }
+      }
+
+      function drawEnemy(e){
+        const x = e.x - camera;
+        const y = e.y;
+        const flash = e.flash > 0;
+
+        ctx.save();
+        ctx.translate(x, y);
+
+        ellipse(0, 24, 20, 7, "rgba(0,0,0,0.36)");
+
+        if(e.type === "wraith"){
+          glow(0, -18, 55, "rgba(186,136,255,0.28)");
+          const g = ctx.createLinearGradient(-25, -40, 25, 30);
+          g.addColorStop(0, flash ? "#ffffff" : "#ccb4ff");
+          g.addColorStop(0.45, flash ? "#ffffff" : "#8d61d0");
+          g.addColorStop(1, "#20142d");
+          ctx.fillStyle = g;
+          ctx.beginPath();
+          ctx.moveTo(-22, -12);
+          ctx.quadraticCurveTo(-22, -40, 0, -38);
+          ctx.quadraticCurveTo(22, -40, 22, -12);
+          ctx.lineTo(14, 26);
+          ctx.lineTo(4, 12);
+          ctx.lineTo(-8, 26);
+          ctx.lineTo(-16, 11);
+          ctx.closePath();
+          ctx.fill();
+
+          ctx.fillStyle = "#ffd0ff";
+          ctx.shadowColor = "#e8c5ff";
+          ctx.shadowBlur = 14;
+          ctx.fillRect(-10, -16, 6, 4);
+          ctx.fillRect(4, -16, 6, 4);
+          ctx.shadowBlur = 0;
+        } else {
+          // armored enemy
+          const armor = ctx.createLinearGradient(-18, -38, 18, 18);
+          armor.addColorStop(0, flash ? "#ffffff" : "#e1c39d");
+          armor.addColorStop(0.45, e.type === "knight" ? "#8c6d7d" : "#b0726b");
+          armor.addColorStop(1, "#251a22");
+
+          ctx.fillStyle = armor;
+          ctx.beginPath();
+          ctx.moveTo(-16, -20);
+          ctx.quadraticCurveTo(0, -36, 16, -20);
+          ctx.lineTo(18, 12);
+          ctx.quadraticCurveTo(0, 26, -18, 12);
+          ctx.closePath();
+          ctx.fill();
+
+          ctx.fillStyle = "#e0b58e";
+          ellipse(0, -35, 12, 14, "#3c2731");
+
+          ctx.fillStyle = "#1a1319";
+          ctx.beginPath();
+          ctx.moveTo(-13, -35);
+          ctx.quadraticCurveTo(0, -57, 13, -35);
+          ctx.lineTo(8, -23);
+          ctx.lineTo(-8, -23);
+          ctx.fill();
+
+          ctx.fillStyle = "#ffd6af";
+          ctx.shadowColor = "#ffd8ad";
+          ctx.shadowBlur = 12;
+          ctx.fillRect(-8, -38, 5, 4);
+          ctx.fillRect(3, -38, 5, 4);
+          ctx.shadowBlur = 0;
+
+          if(e.type === "knight"){
+            ctx.strokeStyle = "#c79b68";
+            ctx.lineWidth = 3;
+            ctx.beginPath();
+            ctx.moveTo(14, -16);
+            ctx.lineTo(28, -30);
+            ctx.stroke();
+          }
+        }
+
+        // hp bar
+        const width = 42;
+        ctx.fillStyle = "rgba(17, 11, 20, 0.8)";
+        ctx.fillRect(-width/2, -64, width, 6);
+        ctx.fillStyle = e.type === "wraith" ? "#c39cff" : "#f0ba7a";
+        ctx.fillRect(-width/2, -64, width * clamp(e.hp / e.maxHp, 0, 1), 6);
+
+        ctx.restore();
+      }
+
+      function drawBoss(){
+        if(!boss || boss.dead) return;
+
+        const x = boss.x - camera;
+        const y = boss.y;
+        const flash = boss.flash > 0;
+
+        ctx.save();
+        ctx.translate(x, y);
+
+        glow(0, -50, 180, "rgba(184,130,255,0.28)");
+        ellipse(0, 42, 58, 10, "rgba(0,0,0,0.4)");
+
+        // cape
+        const cape = ctx.createLinearGradient(-70, -35, 70, 110);
+        cape.addColorStop(0, "#5c2f78");
+        cape.addColorStop(1, "#1f1228");
+        ctx.fillStyle = cape;
+        ctx.beginPath();
+        ctx.moveTo(-42, -16);
+        ctx.lineTo(-84, 72);
+        ctx.lineTo(-32, 132);
+        ctx.lineTo(0, 148);
+        ctx.lineTo(32, 132);
+        ctx.lineTo(84, 72);
+        ctx.lineTo(42, -16);
+        ctx.closePath();
+        ctx.fill();
+
+        // body armor
+        const armor = ctx.createLinearGradient(-55, -80, 55, 55);
+        armor.addColorStop(0, flash ? "#ffffff" : "#e2d1d9");
+        armor.addColorStop(0.35, "#8d6aa3");
+        armor.addColorStop(0.7, "#442c55");
+        armor.addColorStop(1, "#18111e");
+
+        ctx.fillStyle = armor;
+        ctx.beginPath();
+        ctx.moveTo(-52, -22);
+        ctx.lineTo(0, -72);
+        ctx.lineTo(52, -22);
+        ctx.lineTo(66, 42);
+        ctx.lineTo(0, 80);
+        ctx.lineTo(-66, 42);
+        ctx.closePath();
+        ctx.fill();
+
+        ctx.strokeStyle = "#d7b07a";
+        ctx.lineWidth = 5;
+        ctx.stroke();
+
+        // shoulders
+        for(const s of [-1, 1]){
+          ctx.fillStyle = "#5b456d";
+          ctx.beginPath();
+          ctx.moveTo(s * 36, -36);
+          ctx.lineTo(s * 92, -98);
+          ctx.lineTo(s * 118, -40);
+          ctx.lineTo(s * 80, -5);
+          ctx.closePath();
+          ctx.fill();
+        }
+
+        // head
+        ellipse(0, -102, 34, 40, "#201623");
+        ctx.fillStyle = "#f0d9ca";
+        ellipse(0, -100, 28, 34, "#352231");
+
+        // crown
+        ctx.fillStyle = "#f3c179";
+        ctx.shadowColor = "#f2cd90";
+        ctx.shadowBlur = 18;
+        ctx.beginPath();
+        ctx.moveTo(-34, -118);
+        ctx.lineTo(-42, -155);
+        ctx.lineTo(-12, -136);
+        ctx.lineTo(0, -175);
+        ctx.lineTo(12, -136);
+        ctx.lineTo(42, -155);
+        ctx.lineTo(34, -118);
+        ctx.closePath();
+        ctx.fill();
+        ctx.shadowBlur = 0;
+
+        // eyes
+        ctx.fillStyle = "#ffd8a7";
+        ctx.shadowColor = "#ffd39f";
+        ctx.shadowBlur = 18;
+        ctx.fillRect(-18, -106, 10, 5);
+        ctx.fillRect(8, -106, 10, 5);
+        ctx.shadowBlur = 0;
+
+        // heart crystal
+        drawBossCrystal(0, -18);
+
+        if(boss.slashTimer > 0){
+          ctx.strokeStyle = "#d4b1ff";
+          ctx.shadowColor = "#d4b1ff";
+          ctx.shadowBlur = 22;
+          ctx.lineWidth = 13;
+          ctx.beginPath();
+          ctx.arc(player.x - boss.x, player.y - boss.y, 110, -1.0, 1.05);
+          ctx.stroke();
+          ctx.shadowBlur = 0;
+        }
+
+        ctx.restore();
+      }
+
+      function drawBossCrystal(x, y){
+        ctx.save();
+        ctx.translate(x, y);
+        glow(0, 0, 48, "rgba(220,184,255,0.34)");
+        ctx.fillStyle = "#f7d59c";
+        ctx.beginPath();
+        ctx.moveTo(0, -24);
+        ctx.lineTo(16, -6);
+        ctx.lineTo(8, 20);
+        ctx.lineTo(0, 28);
+        ctx.lineTo(-10, 16);
+        ctx.lineTo(-16, -6);
+        ctx.closePath();
+        ctx.fill();
+
+        ctx.fillStyle = "#ffffff88";
+        ctx.beginPath();
+        ctx.moveTo(0, -24);
+        ctx.lineTo(0, 28);
+        ctx.lineTo(-10, 16);
+        ctx.lineTo(-16, -6);
+        ctx.closePath();
+        ctx.fill();
+        ctx.restore();
+      }
+
+      function drawProjectiles(){
+        for(const p of projectiles){
+          const x = p.x - camera;
+          glow(x, p.y, p.r * 4, p.enemy ? "rgba(190,145,255,0.28)" : "rgba(255,232,169,0.28)");
+          ellipse(x, p.y, p.r, p.r, p.enemy ? "#c9a2ff" : "#ffe2a8");
+          ellipse(x - 3, p.y - 3, p.r * 0.35, p.r * 0.35, "#ffffff");
+        }
+      }
+
+      function drawPlayer(){
+        const x = player.x - camera;
+        const y = player.y;
+
+        if(player.inv > 0 && Math.floor(time * 12) % 2 === 0){
+          // flicker
+        }
+
+        ctx.save();
+        ctx.translate(x, y);
+
+        ellipse(0, 28, 24, 8, "rgba(0,0,0,0.35)");
+
+        // cape
+        const cape = ctx.createLinearGradient(-24, -22, 18, 22);
+        cape.addColorStop(0, "#6f3b77");
+        cape.addColorStop(1, "#2c1a31");
+        ctx.fillStyle = cape;
+        ctx.beginPath();
+        ctx.moveTo(-12, -22);
+        ctx.quadraticCurveTo(-34, -4, -28, 25 + Math.sin(time * 6) * 3);
+        ctx.lineTo(14, 22);
+        ctx.lineTo(16, -22);
+        ctx.closePath();
+        ctx.fill();
+
+        // legs
+        ctx.fillStyle = "#2f2632";
+        ctx.fillRect(-13, 10, 11, 19);
+        ctx.fillRect(3, 10, 11, 19);
+
+        // body armor
+        const armor = ctx.createLinearGradient(-18, -28, 18, 16);
+        armor.addColorStop(0, "#fff3cb");
+        armor.addColorStop(0.38, "#f1c77f");
+        armor.addColorStop(0.75, "#8d654a");
+        armor.addColorStop(1, "#32212a");
+
+        ctx.fillStyle = armor;
+        ctx.beginPath();
+        ctx.moveTo(-18, -22);
+        ctx.quadraticCurveTo(0, -34, 18, -22);
+        ctx.lineTo(20, 10);
+        ctx.quadraticCurveTo(0, 22, -20, 10);
+        ctx.closePath();
+        ctx.fill();
+
+        ctx.strokeStyle = "#ffe1a7";
+        ctx.lineWidth = 2;
+        ctx.stroke();
+
+        // shoulders
+        for(const s of [-1, 1]){
+          ctx.fillStyle = "#b2865d";
+          ctx.beginPath();
+          ctx.ellipse(s * 20, -17, 12, 13, s * 0.18, 0, TAU);
+          ctx.fill();
+        }
+
+        // face
+        ellipse(0, -39, 12, 15, "#e8cbb4");
+
+        // helmet
+        ctx.fillStyle = "#3e2b31";
+        ctx.beginPath();
+        ctx.moveTo(-15, -40);
+        ctx.quadraticCurveTo(-16, -61, 0, -56);
+        ctx.quadraticCurveTo(16, -61, 15, -40);
+        ctx.lineTo(10, -31);
+        ctx.lineTo(-10, -31);
+        ctx.closePath();
+        ctx.fill();
+
+        // crown crest
+        ctx.fillStyle = "#f3ca86";
+        ctx.beginPath();
+        ctx.moveTo(-4, -57);
+        ctx.lineTo(0, -69);
+        ctx.lineTo(4, -57);
+        ctx.fill();
+
+        // eyes
+        ctx.fillStyle = "#fff0cf";
+        ctx.shadowColor = "#fff0cf";
+        ctx.shadowBlur = 8;
+        ctx.fillRect(player.dir > 0 ? 3 : -9, -41, 6, 4);
+        ctx.shadowBlur = 0;
+
+        // sword
+        ctx.save();
+        ctx.translate(player.dir * 22, -5);
+        ctx.rotate(player.dir > 0 ? -0.27 : Math.PI + 0.27);
+
+        ctx.fillStyle = "#fff4d8";
+        ctx.shadowColor = "#ffeab5";
+        ctx.shadowBlur = 15;
+        ctx.beginPath();
+        ctx.moveTo(-4, 0);
+        ctx.lineTo(-6, -55);
+        ctx.lineTo(0, -73);
+        ctx.lineTo(6, -55);
+        ctx.lineTo(4, 0);
+        ctx.closePath();
+        ctx.fill();
+        ctx.shadowBlur = 0;
+
+        ctx.fillStyle = "#e0b06c";
+        ctx.fillRect(-13, -4, 26, 7);
+        ctx.fillStyle = "#513a35";
+        ctx.fillRect(-4, 3, 8, 17);
+        ctx.restore();
+
+        if(player.attackSwing > 0){
+          ctx.strokeStyle = "#fff0bd";
+          ctx.shadowColor = "#ffe2a7";
+          ctx.shadowBlur = 28;
+          ctx.lineWidth = 13;
+          const base = player.dir > 0 ? 0 : Math.PI;
+          ctx.beginPath();
+          ctx.arc(player.dir * 48, -8, 76, base - 0.85, base + 0.85);
+          ctx.stroke();
+          ctx.shadowBlur = 0;
+        }
+
+        if(player.guardTimer > 0){
+          ctx.strokeStyle = "#ffd696";
+          ctx.shadowColor = "#ffd696";
+          ctx.shadowBlur = 22;
+          ctx.lineWidth = 5;
+          ctx.beginPath();
+          ctx.arc(0, -5, 39, 0, TAU);
+          ctx.stroke();
+          ctx.shadowBlur = 0;
+        }
+
+        if(player.dashTimer > 0){
+          for(let i = 1; i <= 4; i++){
+            ctx.globalAlpha = 0.27 - i * 0.04;
+            ctx.fillStyle = "#fff5cd";
+            ctx.beginPath();
+            ctx.ellipse(-player.dir * i * 20, -7, 12, 25, 0, 0, TAU);
+            ctx.fill();
+          }
+          ctx.globalAlpha = 1;
+        }
+
+        ctx.restore();
+      }
+
+      function drawParticles(){
+        for(const p of particles){
+          ctx.globalAlpha = clamp(p.life / p.maxLife, 0, 1);
+          ctx.fillStyle = p.color;
+          ctx.shadowColor = p.color;
+          ctx.shadowBlur = 9;
+          ctx.beginPath();
+          ctx.arc(p.x - camera, p.y, p.size, 0, TAU);
+          ctx.fill();
+        }
+        ctx.globalAlpha = 1;
+        ctx.shadowBlur = 0;
+      }
+
+      function glow(x, y, r, color){
+        const g = ctx.createRadialGradient(x, y, 0, x, y, r);
+        g.addColorStop(0, color);
+        g.addColorStop(1, "rgba(0,0,0,0)");
+        ctx.fillStyle = g;
+        ctx.fillRect(x - r, y - r, r * 2, r * 2);
+      }
+
+      function ellipse(x, y, rx, ry, color){
+        ctx.fillStyle = color;
+        ctx.beginPath();
+        ctx.ellipse(x, y, rx, ry, 0, 0, TAU);
+        ctx.fill();
+      }
+
+      function frameLoop(timestamp){
+        const dt = Math.min((timestamp - (lastFrame || timestamp)) / 1000, 0.04);
+        lastFrame = timestamp;
+        update(dt);
+        draw();
+        requestAnimationFrame(frameLoop);
+      }
+
+      window.addEventListener("keydown", e => {
+        const key = e.key.toLowerCase();
+
+        if([" ", "arrowup", "arrowdown", "arrowleft", "arrowright", "shift"].includes(key)){
+          e.preventDefault();
+        }
+
+        keys[key] = true;
+
+        if(e.repeat) return;
+
+        if(mode === "scene"){
+          if(key === "enter" || key === " "){
+            if(overlayPrimaryAction) overlayPrimaryAction();
+          }
+          return;
+        }
+
+        if(mode === "playing"){
+          if(key === " " || key === "w" || key === "arrowup") jump();
+          if(key === "j") playerSword();
+          if(key === "k") crystalBurst();
+          if(key === "shift") kingDash();
+          if(key === "n") royalGuard();
+        }
+      });
+
+      window.addEventListener("keyup", e => {
+        keys[e.key.toLowerCase()] = false;
+      });
+
+      window.addEventListener("blur", () => {
+        for(const k in keys) keys[k] = false;
+      });
+
+      canvas.addEventListener("click", () => {
+        if(mode === "scene" && overlayPrimaryAction){
+          overlayPrimaryAction();
+        } else if(mode === "playing"){
+          playerSword();
+        }
+      });
+
+      $("jumpBtn").onclick = jump;
+      $("swordBtn").onclick = playerSword;
+      $("burstBtn").onclick = crystalBurst;
+      $("dashBtn").onclick = kingDash;
+      $("guardBtn").onclick = royalGuard;
+
+      $("musicBtn").onclick = () => synth.toggle();
+
+      $("difficulty").onchange = e => {
+        difficulty = e.target.value;
+        if(mode === "playing" || mode === "scene"){
+          startStoryFrom(chapterIndex);
+        }
+      };
+
+      $("restartBtn").onclick = () => {
+        if(mode !== "menu"){
+          startStoryFrom(chapterIndex);
+        }
+      };
+
+      $("menuBtn").onclick = () => {
+        showMainMenu();
+      };
+
+      $("fullscreenBtn").onclick = async () => {
+        try{
+          if(document.fullscreenElement){
+            await document.exitFullscreen();
+          }else{
+            await $("stage").requestFullscreen();
+          }
+        }catch(err){
+          alert("Fullscreen is unavailable in this browser.");
+        }
+      };
+
+      showMainMenu();
+      requestAnimationFrame(frameLoop);
+    })();
+  </script>
 </body>
 </html>
